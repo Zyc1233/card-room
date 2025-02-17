@@ -1,5 +1,5 @@
 <template>
-  <button @click="navigateBack" class="back-button">退出房间</button>
+  <u-button @click="navigateBack" class="back-button">退出房间</u-button>
 </template>
 
 <script>

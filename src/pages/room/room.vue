@@ -1,8 +1,16 @@
 <template>
   <div class="room-container">
-    <div class="countdown">
-      剩余时间：{{ remainingTime }}
-    </div>
+    <u-count-down 
+      ref="countDown"
+      :time="timeDiff"
+      :format="'HH小时mm分ss秒'"
+      :autoStart="false"
+      @change="updateTimeDisplay"
+      @finish="handleTimeFinish"
+      class="countdown"
+    >
+      <view class="countdown-text">剩余时间：{{ formattedTime }}</view>
+    </u-count-down>
     <div class="room-info">
       <p>当前房间：{{ currentRoom }}</p>
       <p>预约时间：{{ reservationTime }}</p>
@@ -38,7 +46,8 @@ export default {
   },
   data() {
     return {
-      remainingTime: '00:00:00',
+      formattedTime: '00:00:00',
+      timeDiff: 0,
       currentRoom: this.$route.query.roomType || '未知房间',
       reservationTime: '',
       endTimestamp: 0,
@@ -71,44 +80,35 @@ export default {
     this.initCountdown();
   },
   beforeDestroy() {
-    clearInterval(this.timer);
+    this.$refs.countDown.pause();
   },
   methods: {
     initCountdown() {
-      clearInterval(this.timer); // 清除旧定时器
       const start = `${this.$route.query.date}T${this.$route.query.startTime}`;
       const end = `${this.$route.query.date}T${this.$route.query.endTime}`;
       
       const startTime = new Date(start).getTime();
       const endTime = new Date(end).getTime();
-      this.endTimestamp = endTime;
+      this.timeDiff = endTime - Date.now();
 
       this.reservationTime = `${this.formattedDate} ${this.$route.query.startTime}-${this.$route.query.endTime}`;
       
-      this.updateTime(); 
-      
-      this.timer = setInterval(this.updateTime, 1000);
+      this.$nextTick(() => {
+        this.$refs.countDown.start();
+      });
     },
-    updateTime() {
-      const now = Date.now();
-      const diff = this.endTimestamp - now;
-
-      if (diff <= 0) {
-        this.remainingTime = '00:00:00';
-        clearInterval(this.timer);
-        alert('预约时间已结束');
-        this.exitRoom();
-        return;
-      }
-
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-      this.remainingTime = 
-        `${hours.toString().padStart(2, '0')}小时
-         ${minutes.toString().padStart(2, '0')}分
-         ${seconds.toString().padStart(2, '0')}秒`.replace(/\s+/g, ' ');
+    updateTimeDisplay(timeObj) {
+      this.formattedTime = 
+        `${timeObj.hours.toString().padStart(2, '0')}小时
+         ${timeObj.minutes.toString().padStart(2, '0')}分
+         ${timeObj.seconds.toString().padStart(2, '0')}秒`.replace(/\s+/g, ' ');
+    },
+    handleTimeFinish() {
+      this.$refs.uToast.show({
+        type: 'warning',
+        message: '预约时间已结束',
+        complete: () => this.exitRoom()
+      });
     },
     exitRoom() {
       this.$router.push('/pages/reservation/check');
@@ -126,6 +126,11 @@ export default {
   font-size: 30px;
   font-weight: bold;
   margin-bottom: 20px;
+  color: #2979ff;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(41,121,255,0.1);
 }
 
 .room-info {

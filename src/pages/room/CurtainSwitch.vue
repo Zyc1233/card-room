@@ -1,9 +1,25 @@
 <template>
-  <div class="device-row">
-    <span>窗帘</span>
-    <img :src="imageResource" @click="toggleCurtain" class="device-icon" />
-    <span>{{ switchState ? '窗帘已拉开' : '窗帘已封闭' }}</span>
-  </div>
+  <u-row class="device-row" justify="space-between" align="center">
+    <u-col span="3">
+      <text class="u-font-sm">窗帘控制</text>
+    </u-col>
+    
+    <u-col span="3" class="u-text-right">
+      <u-switch 
+        v-model="switchState"
+        :active-color="activeColor"
+        :inactive-color="inactiveColor"
+        size="40"
+        @change="handleChange"
+      ></u-switch>
+    </u-col>
+
+    <u-col span="3" class="u-text-right">
+      <text class="state-text" :class="switchState ? 'active' : 'inactive'">
+        {{ switchState ? '窗帘已开启' : '窗帘已关闭' }}
+      </text>
+    </u-col>
+  </u-row>
 </template>
 
 <script>
@@ -11,29 +27,35 @@ export default {
   data() {
     return {
       switchState: false,
+      activeColor: '#2979ff',
+      inactiveColor: '#ebedf0'
     };
   },
-  computed: {
-    imageResource() {
-      return this.switchState ? 'static/curtain_on.png' : 'static/curtain_off.png';
-    }
-  },
   methods: {
-    toggleCurtain() {
-      this.switchState = !this.switchState;
+    handleChange(e) {
+      // 可在此处添加异步控制逻辑
+      console.log('开关状态变更:', e);
     }
   }
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .device-row {
-  display: flex;
-  align-items: center;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
 }
-.device-icon {
-  width: 50px;
-  cursor: pointer;
-  margin: 0 10px;
+
+.state-text {
+  font-size: 12px;
+  &.active {
+    color: #2979ff;
+  }
+  &.inactive {
+    color: #909399;
+  }
 }
 </style> 
