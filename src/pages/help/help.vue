@@ -1,52 +1,25 @@
 <template>
-	<view class="call-container">
-		<view class="header">
-			<text class="title">关于应用</text>
-		</view>
-		<view class="content">
-			<text class="section">
-				1. 预约房间
-				<text class="details">
-					- 点击"房间预约"进入预约界面。<br />
-					- 选择房间类型、日期、开始时间和结束时间。<br />
-					- 输入预约人姓名并点击"预约"按钮。<br />
-					- 预约成功后，系统会跳转到预约详情页面。
-				</text>
-			</text>
-			<text class="section">
-				2. 查看预约记录
-				<text class="details">
-					- 点击"查看预约情况"进入预约列表。<br />
-					- 预约列表会显示所有预约记录。
-				</text>
-			</text>
-			<text class="section">
-				3. 删除预约
-				<text class="details">
-					- 在预约列表中找到需要删除的预约记录。<br />
-					- 点击"取消预约"按钮并确认删除。
-				</text>
-			</text>
-			<text class="section">
-				4. 修改预约
-				<text class="details">
-					- 在预约列表中找到需要修改的预约记录。<br />
-					- 点击"修改预约"按钮并修改相关信息。<br />
-					- 点击"修改"按钮完成修改。
-				</text>
-			</text>
-			<text class="section">
-				5. 前往房间
-				<text class="details">
-					- 在预约列表中找到需要前往的房间。<br />
-					- 点击"前往房间"按钮进入房间详情页面。<br />
-					- 页面会显示房间信息和倒计时。<br />
-					- 可以通过页面上的按钮控制设备。
-				</text>
-			</text>
-			<text class="contact">有问题请联系：12345678912</text>
-		</view>
-	</view>
+	<u-row class="call-container">
+		<u-col span="5">
+			
+			<u-col class="content" span="12">
+				<u-col v-for="(item,index) in helpList" :key="index" class="section">
+					<u-text type="title" :text="`${index+1}. ${item.title}`"></u-text>
+					<u-col class="details">
+						<u-text 
+							v-for="(detail,i) in item.details" 
+							:key="i"
+							:type="i===0 ? 'primary' : 'info'"
+							:text="detail"
+							class="detail-item"
+						></u-text>
+					</u-col>
+				</u-col>
+				
+				<u-text class="contact" type="warning" text="有问题请联系：12345678912"></u-text>
+			</u-col>
+		</u-col>
+	</u-row>
 </template>
 
 <script>
@@ -54,7 +27,48 @@
 		name: 'Call',
 		data() {
 			return {
-				
+				helpList: [
+					{
+						title: '预约房间',
+						details: [
+							'点击"房间预约"进入预约界面',
+							'选择房间类型、日期、开始时间和结束时间',
+							'输入预约人姓名并点击"预约"按钮',
+							'预约成功后，系统会跳转到预约详情页面'
+						]
+					},
+					{
+						title: '查看预约记录',
+						details: [
+							'点击"查看预约情况"进入预约列表',
+							'预约列表会显示所有预约记录'
+						]
+					},
+					{
+						title: '删除预约',
+						details: [
+							'在预约列表中找到需要删除的预约记录',
+							'点击"取消预约"按钮并确认删除'
+						]
+					},
+					{
+						title: '修改预约',
+						details: [
+							'在预约列表中找到需要修改的预约记录',
+							'点击"修改预约"按钮并修改相关信息',
+							'点击"修改"按钮完成修改'
+						]
+					},
+					{
+						title: '前往房间',
+						details: [
+							'在预约列表中找到需要前往的房间',
+							'点击"前往房间"按钮进入房间详情页面',
+							'页面会显示房间信息和倒计时',
+							'可以通过页面上的按钮控制设备'
+						]
+					}
+				]
 			}
 		},
 		methods: {
@@ -66,35 +80,28 @@
 <style scoped>
 	.call-container {
 		padding: 16px;
-		background-color: #f8f9fa; /* 背景颜色 */
-		height: 100vh; /* 充满整个视口 */
-	}
-
-	.header {
-		margin-bottom: 20px;
-	}
-
-	.title {
-		font-size: 24px;
-		font-weight: bold;
+		height: 100vh;
 	}
 
 	.content {
-		font-size: 18px;
+		padding: 0 20rpx;
 	}
 
 	.section {
-		margin-bottom: 16px;
+		margin-bottom: 32rpx;
 	}
 
 	.details {
-		display: block; /* 使细节部分换行 */
-		margin-left: 10px; /* 缩进 */
+		margin-left: 20rpx;
+	}
+
+	.detail-item {
+		margin-top: 8rpx;
+		display: block;
 	}
 
 	.contact {
-		margin-top: 20px;
-		font-size: 16px;
-		color: #333; /* 联系方式颜色 */
+		margin-top: 40rpx;
+		padding: 20rpx 0;
 	}
 </style>
