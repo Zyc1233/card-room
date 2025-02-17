@@ -200,11 +200,11 @@ export default {
       const now = new Date();
       
       if (now < startDateTime) {
-        alert('还未到预约时间，无法进入房间');
+        this.showFeedback('还未到预约时间，无法进入房间', 'warning');
         return;
       }
       if (now > endDateTime) {
-        alert('预约时间已结束，无法进入房间');
+        this.showFeedback('预约时间已结束，无法进入房间', 'warning');
         return;
       }
       
@@ -212,7 +212,7 @@ export default {
         path: '/pages/room/room',
         query: {
           roomType: reservation.roomType,
-          date: reservervation.date,
+          date: reservation.date,
           startTime: reservation.startTime,
           endTime: reservation.endTime
         }
