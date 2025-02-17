@@ -1,0 +1,125 @@
+{	
+	"easycom": {
+		"autoscan": true,
+		"custom": {
+		  "^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
+		  }
+		},
+	"pages": [ 
+		{
+			"path" : "pages/login/login",
+			"style" : 
+			{
+				"navigationBarTitleText": "用户登录",
+				"navigationStyle": "custom",
+				"navigationBarTextStyle": "black"
+			}
+		},
+		{
+			"path" : "pages/login/register",
+			"style" : 
+			{
+				"navigationBarTitleText": "注册",
+				"navigationBarBackgroundColor": "#ffffff",
+				"navigationBarTextStyle": "black"
+			}
+		},
+		{
+			"path" : "pages/login/forget",
+			"style" : 
+			{
+				"navigationBarTitleText": "忘记密码",
+				"navigationBarBackgroundColor": "#ffffff",
+				"navigationBarTextStyle": "black"
+			}
+		},
+		{
+			"path" : "pages/reservation/reservation",
+			"style" : 
+			{
+				"navigationBarTitleText" : "房间预约",
+				"navigationBarBackgroundColor": "#ffffff",
+				"navigationBarTextStyle": "black"
+			}
+		},
+		{
+			"path" : "pages/reservation/info",
+			"style" : 
+			{
+				"navigationBarTitleText" : "预约信息",
+				"navigationBarBackgroundColor": "#ffffff",
+				"navigationBarTextStyle": "black"
+			}
+		},
+		{
+			"path" : "pages/reservation/check",
+			"style" : 
+			{
+				"navigationBarTitleText" : "预约记录",
+				"navigationBarBackgroundColor": "#ffffff",
+				"navigationBarTextStyle": "black"
+			}
+		},
+		{
+			"path" : "pages/reservation/cost",
+			"style" : 
+			{
+				"navigationBarTitleText" : "费用计算",
+				"navigationBarBackgroundColor": "#ffffff",
+				"navigationBarTextStyle": "black"
+
+			}
+		},
+		{
+			"path" : "pages/reservation/modify",
+			"style" : 
+			{
+				"navigationBarTitleText" : "修改预约",
+				"navigationBarBackgroundColor": "#ffffff",
+				"navigationBarTextStyle": "black"
+			}
+		},
+		{
+			"path" : "pages/room/room",
+			"style" : 
+			{
+				"navigationBarTitleText" : "房间",
+				"navigationBarBackgroundColor": "#ffffff",
+				"navigationBarTextStyle": "black"
+
+			}
+		},
+		{
+			"path" : "pages/setting/setting",
+			"style" : 
+			{
+				"navigationBarTitleText" : "设置",
+				"navigationBarBackgroundColor": "#ffffff",
+				"navigationBarTextStyle": "black"
+
+			}
+		},
+		{
+			"path" : "pages/user/user",
+			"style" : 
+			{
+				"navigationBarTitleText" : "个人中心",
+				"navigationBarBackgroundColor": "#ffffff",
+				"navigationBarTextStyle": "black"
+			}
+		},
+		{
+			"path" : "pages/call/call",
+			"style" : 
+			{
+				"navigationBarTitleText" : ""
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	}
+}
