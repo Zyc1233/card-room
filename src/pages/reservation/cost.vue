@@ -117,10 +117,7 @@
 				this.selectedRoom = e.value[0]
 				this.showRoomPicker = false
 			},
-			calculateFee() {
-				// 添加调试信息
-				console.log('开始计算，输入分钟数：', this.inputMinutes);
-				
+			calculateFee() {	
 				// 加强输入验证
 				if (!this.inputMinutes || isNaN(this.inputMinutes) || this.inputMinutes.trim() === '') {
 					uni.showToast({ title: '请输入有效时间', icon: 'none' });
@@ -134,20 +131,19 @@
 				}
 
 				try {
-					// 打印中间计算值
-					console.log('基础分钟数：', Math.max(minutes, 60));
+				
 					
 					let total = 0;
 					const baseMinutes = Math.max(minutes, 60);
 					const hours = Math.floor(baseMinutes / 60);
 					total += this.selectedRoom.price * hours;
-					console.log('基础费用：', total);
+			
 
 					const extraMinutes = baseMinutes % 60;
 					if (extraMinutes > 0) {
 						const extraFee = Math.ceil(extraMinutes / 30) * 5;
 						total += extraFee;
-						console.log('附加费用：', extraFee);
+					
 					}
 
 					if (this.isVip) {
@@ -168,7 +164,7 @@
 						----------------------------
 						计费规则:
 						- 基础费用: ${baseHours}小时 × ${this.selectedRoom.price}元/小时 = ${this.selectedRoom.price * baseHours}元
-						${extraMinutes > 0 ? `- 附加费用: ${Math.ceil(extraMinutes/30)}个半小时段 × 5元 = ${extraFee}元\n` : ''}
+						${extraMinutes > 0 ? `- 附加费用: 超过${Math.ceil(extraMinutes/30)}个半小时段 × 5元 = ${extraFee}元（不足半小时按半小时算）\n` : ''}
 						总费用: ${Math.round(total)}元
 					`;
 
@@ -188,57 +184,72 @@
 
 <style lang="scss" scoped>
 .container {
-	padding: 20rpx;
-	
-	.zoom-image {
-		height: 400rpx;
-		margin-bottom: 30rpx;
-		overflow: hidden;
-		
-		.room-img {
-			width: 100%;
-			height: 100%;
-			transition: transform 0.3s;
-			
-			&.zoomed {
-				transform: scale(1.5);
-			}
-		}
-	}
-	.result-popup {
-		width: 500rpx;
-		min-height: 300rpx;
-		background: #fff;
-		border-radius: 20rpx;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		padding: 40rpx;
-		
-		.popup-content {
-			width: 100%;
-			text-align: center;
-			
-			.result-text {
-				font-size: 36rpx;
-				color: #2979ff;
-				font-weight: bold;
-			}
-		}
-	}
-	.result-area {
-		width: 100%;
-		margin-top: 30rpx;
-		padding: 30rpx;
-		background-color: #f8f8f8;
-		border-radius: 16rpx;
-		border: 2rpx solid #e4e7ed;
-		animation: fadeIn 0.3s ease;
+	padding: 30rpx;
+	background: #f5f7fa;
 
-		@keyframes fadeIn {
-			from { opacity: 0; transform: translateY(20rpx); }
-			to { opacity: 1; transform: translateY(0); }
+	.calculator-card {
+		background: #fff;
+		border-radius: 24rpx;
+		padding: 20rpx;
+		box-shadow: 0 10rpx 30rpx rgba(0,0,0,0.05);
+	}
+
+	.result-area {
+		margin-top: 40rpx;
+		padding: 40rpx;
+		background: linear-gradient(135deg, #f8f9ff 0%, #f1f4ff 100%);
+		border-radius: 20rpx;
+		border: none;
+		box-shadow: 0 4rpx 12rpx rgba(41,121,255,0.1);
+		
+		.u--text {
+			line-height: 1.8;
+			padding: 20rpx;
+			background: #fff;
+			border-radius: 12rpx;
+			box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.05);
+			white-space: pre-wrap;
+			text-align: left;
+			
+			&::before {
+				content: '💰';
+				display: block;
+				font-size: 48rpx;
+				text-align: center;
+				margin-bottom: 20rpx;
+			}
 		}
+		
+		.u-button {
+			border-radius: 50rpx;
+			transition: all 0.3s;
+			&:active {
+				transform: scale(0.95);
+			}
+		}
+	}
+
+	.u-form-item {
+		margin-bottom: 30rpx;
+		border-radius: 12rpx;
+		padding: 0 20rpx;
+		background: #f8f9fa;
+		
+		&__body {
+			padding: 25rpx 0;
+		}
+	}
+
+	.u-button {
+		height: 90rpx;
+		font-size: 32rpx;
+		letter-spacing: 2rpx;
+		box-shadow: 0 4rpx 12rpx rgba(41,121,255,0.3);
+	}
+
+	@keyframes fadeIn {
+		from { opacity: 0; transform: translateY(30rpx) scale(0.95); }
+		to { opacity: 1; transform: translateY(0) scale(1); }
 	}
 }
 

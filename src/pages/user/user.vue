@@ -2,46 +2,79 @@
   <view class="profile-container">
     <u-toast ref="uToast"></u-toast>
 
-    <div class="profile-header">
-      <div class="avatar-wrapper">
+    <!-- 用户信息卡片 -->
+    <view class="user-card">
+      <view class="avatar-section">
         <u-avatar 
           :src="userInfo.avatar || 'static/own.png'" 
-          size="150"
-          @click="handleAvatarButtonClick"
-          class="custom-avatar"
+          size="120"
+          class="main-avatar"
+          @click="showAvatarDialog = true"
         ></u-avatar>
         <u-button 
-          @click="handleAvatarButtonClick" 
+          @click="showAvatarDialog = true" 
           shape="circle" 
           type="primary"
-          class="change-avatar-btn"
-        >更换头像</u-button>
-      </div>
+          size="mini"
+          class="change-btn"
+        >更换</u-button>
+      </view>
+      
+      <view class="info-section">
+        <view class="nickname-wrapper">
+          <text class="nickname">{{ userInfo.nickname }}</text>
+          <u-icon 
+            name="edit-pen" 
+            size="28" 
+            color="#666" 
+            @click="showNicknameDialog = true"
+            class="edit-icon"
+          ></u-icon>
+        </view>
+        <view class="vip-badge" v-if="userInfo.isVip">
+          <u-icon name="vip" color="#ffd700" size="18"></u-icon>
+          <text>VIP会员</text>
+        </view>
+      </view>
+    </view>
 
-      <u-cell 
-        :title="userInfo.nickname" 
-        is-link 
-        @click="showNicknameDialog = true"
-        class="nickname-cell"
-        :border="false"
-      ></u-cell>
-    </div>
-
-    <u-grid :col="4" :border="false" class="buttons-section">
-      <u-grid-item 
-        v-for="(btn, index) in buttons" 
-        :key="index"
-        @click="btn.handler"
+    <!-- 功能入口 -->
+    <view class="function-grid">
+      <view 
+        v-for="(item, index) in functions" 
+        :key="index" 
+        class="grid-item"
+        @click="item.handler"
       >
-        <u-image 
-          :src="btn.icon" 
-          width="50" 
-          height="50"
-          class="button-icon"
-        ></u-image>
-        <text class="button-text">{{ btn.text }}</text>
-      </u-grid-item>
-    </u-grid>
+        <view class="icon-wrapper" :style="{ backgroundColor: item.bgColor }">
+          <u-icon 
+            :name="item.icon" 
+            size="28"
+            color="#fff"
+          ></u-icon>
+        </view>
+        <text class="grid-text">{{ item.title }}</text>
+      </view>
+    </view>
+
+    <!-- 服务列表 -->
+    <view class="service-card">
+      <view class="card-header">
+        <text class="card-title">常用服务</text>
+      </view>
+      <view class="service-list">
+        <view 
+          v-for="(service, index) in services" 
+          :key="index" 
+          class="service-item"
+          @click="service.handler"
+        >
+          <u-icon :name="service.icon" size="24" :color="service.color"></u-icon>
+          <text class="service-name">{{ service.name }}</text>
+          <u-icon name="arrow-right" size="18" color="#999"></u-icon>
+        </view>
+      </view>
+    </view>
 
     <!-- 自定义头像选择弹窗 -->
     <view class="custom-modal" v-if="showAvatarDialog">
@@ -82,16 +115,16 @@
         </scroll-view>
         
         <view class="modal-footer">
-          <u-button 
+			<u-button
+			  plain 
+			  @click="showAvatarDialog = false"
+			  class="cancel-btn"
+			>取消</u-button>
+			<u-button 
             type="primary" 
             @click="confirmAvatar"
             class="confirm-btn"
-          >确认</u-button>
-          <u-button 
-            plain 
-            @click="showAvatarDialog = false"
-            class="cancel-btn"
-          >取消</u-button>
+			>确认</u-button>
         </view>
       </view>
     </view>
@@ -113,17 +146,27 @@
         <view class="modal-content">
           <u-input 
             v-model="tempNickname" 
-            placeholder="请输入新昵称"
+            placeholder="请输入新昵称（2-12个字符）"
             maxlength="12"
-            border="bottom"
+            border="none"
+            :focus="showNicknameDialog"
             @confirm="saveNickname"
             class="nickname-input"
           ></u-input>
         </view>
         
         <view class="modal-footer">
-          <u-button plain @click="showNicknameDialog = false" class="cancel-btn">取消</u-button>
-          <u-button type="primary" @click="saveNickname" class="confirm-btn">确定</u-button>
+          <u-button 
+            plain 
+            @click="showNicknameDialog = false" 
+            class="cancel-btn"
+          >取消</u-button>
+          <u-button 
+            type="primary" 
+            @click="saveNickname" 
+            :disabled="!tempNickname.trim()"
+            class="confirm-btn"
+          >保存</u-button>
         </view>
       </view>
     </view>
@@ -143,7 +186,8 @@ export default {
     return {
       userInfo: {
         nickname: localStorage.getItem('userNickname') || '新用户',
-        avatar: localStorage.getItem('userAvatar') || ''
+        avatar: localStorage.getItem('userAvatar') || '',
+        isVip: false
       },
       showAvatarDialog: false,
       showNicknameDialog: false,
@@ -158,26 +202,75 @@ export default {
 		'/static/image9.png',
       ],
       selectedAvatar: '',
-      buttons: [
-        { icon: 'static/register.png', text: '注册', handler: this.goToRegister },
-        { icon: 'static/check.png', text: '记录', handler: this.goToRecords },
-        { icon: 'static/call.png', text: '关于', handler: this.goToContact },
-        { icon: 'static/setting.png', text: '设置', handler: this.goToSettings }
+      functions: [
+        { 
+          icon: 'order', 
+          title: '预约', 
+          bgColor: '#2979ff', 
+          handler: this.goToReservation 
+        },
+        { 
+          icon: 'clock', 
+          title: '记录', 
+          bgColor: '#19be6b', 
+          handler: this.goToRecords 
+        },
+        { 
+          icon: 'coupon', 
+          title: '费用',
+          bgColor: '#ff9900', 
+          handler: this.goToCoupon 
+        },
+        { 
+          icon: 'setting', 
+          title: '设置', 
+          bgColor: '#909399', 
+          handler: this.goToSettings 
+        }
+      ],
+      services: [
+        { 
+          icon: 'edit-pen', 
+          name: '我的评价', 
+          color: '#2979ff', 
+          handler: this.goToComments 
+        },
+        { 
+          icon: 'heart', 
+          name: '我的收藏', 
+          color: '#f56c6c', 
+          handler: this.goToFavorites 
+        },
+        { 
+          icon: 'question-circle', 
+          name: '帮助中心', 
+          color: '#19be6b', 
+          handler: this.goToHelp 
+        }
       ]
     };
   },
   methods: {
-    goToRegister() {
-      this.$router.push('/pages/login/register');
+    goToReservation() {
+      this.$router.push('/pages/reservation/reservation');
     },
     goToRecords() {
       this.$router.push('/pages/reservation/check');
     },
-    goToContact() {
-      this.$router.push('/pages/call/call');
+    goToCoupon() {
+      this.$router.push('/pages/reservation/cost');
     },
     goToSettings() {
       this.$router.push('/pages/setting/setting');
+    },
+    goToComments() {
+      this.$router.push('/pages/comment/comment');
+    },
+    goToFavorites() {
+      this.$router.push('/pages/favorite/favorite');
+    },
+    goToHelp() {
+      this.$router.push('/pages/help/help');
     },
     selectAvatar(url) {
       this.selectedAvatar = url;
@@ -222,14 +315,20 @@ export default {
       }
     },
     saveNickname() {
-      if (this.tempNickname.trim()) {
-        this.userInfo.nickname = this.tempNickname.trim();
-        localStorage.setItem('userNickname', this.userInfo.nickname);
-        this.showNicknameDialog = false;
-        this.showFeedback('昵称修改成功', 'success');
-      } else {
-        this.showFeedback('昵称不能为空', 'error');
+      if (this.tempNickname.trim().length < 2) {
+        this.showFeedback('昵称至少需要2个字符', 'warning');
+        return;
       }
+      
+      if (this.tempNickname.trim().length > 12) {
+        this.showFeedback('昵称不能超过12个字符', 'warning');
+        return;
+      }
+
+      this.userInfo.nickname = this.tempNickname.trim();
+      localStorage.setItem('userNickname', this.userInfo.nickname);
+      this.showNicknameDialog = false;
+      this.showFeedback('昵称修改成功', 'success');
     },
     showFeedback(message, type = 'success') {
       this.$refs.uToast.show({
@@ -262,66 +361,149 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .profile-container {
   padding: 30rpx;
+  background: #f5f6f8;
   min-height: 100vh;
-  background: #f8f8f8;
 }
 
-.profile-header {
-  display: flex;
-  align-items: center;
-  gap: 40rpx;
-  padding: 30rpx;
+.user-card {
   background: #fff;
-  border-radius: 20rpx;
-  margin: 30rpx 0;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
-}
-
-.avatar-wrapper {
+  border-radius: 24rpx;
+  padding: 40rpx;
+  margin-bottom: 30rpx;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 20rpx;
-}
-
-.custom-avatar {
-  border: 4rpx solid #fff;
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
-  margin-right: 20rpx;
-}
-
-.button-icon {
-  margin-bottom: 16rpx;
-}
-
-.button-text {
-  font-size: 28rpx;
-  color: #666;
-}
-
-.nickname-cell {
-  flex: 1;
-  /deep/ .u-cell__title {
-    font-size: 36rpx !important;
-    font-weight: 500;
-    color: #333;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.05);
+  
+  .avatar-section {
+    position: relative;
+    margin-right: 40rpx;
+    
+    .main-avatar {
+      border: 4rpx solid #fff;
+      box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.1);
+    }
+    
+    .change-btn {
+      position: absolute;
+      bottom: -16rpx;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120rpx;
+    }
+  }
+  
+  .info-section {
+    flex: 1;
+    
+    .nickname-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 20rpx;
+    }
+    
+    .nickname {
+      display: block;
+      font-size: 40rpx;
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 16rpx;
+    }
+    
+    .edit-icon {
+      padding: 8rpx;
+      background: #f5f5f5;
+      border-radius: 50%;
+    }
+    
+    .vip-badge {
+      display: flex;
+      align-items: center;
+      background: linear-gradient(45deg, #ffeb3b, #ffc107);
+      border-radius: 8rpx;
+      padding: 8rpx 16rpx;
+      width: fit-content;
+      
+      text {
+        font-size: 24rpx;
+        color: #333;
+        margin-left: 8rpx;
+      }
+    }
   }
 }
 
-.buttons-section {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  flex-wrap: wrap;
+.function-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20rpx;
+  margin-bottom: 30rpx;
+  
+  .grid-item {
+    background: #fff;
+    border-radius: 16rpx;
+    padding: 24rpx 0;
+    text-align: center;
+    transition: all 0.2s;
+    
+    &:active {
+      transform: scale(0.95);
+    }
+    
+    .icon-wrapper {
+      width: 80rpx;
+      height: 80rpx;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20rpx;
+    }
+    
+    .grid-text {
+      font-size: 28rpx;
+      color: #666;
+    }
+  }
 }
 
-.action-button {
-  height: 100px;
-  flex-direction: column;
-  padding: 10px;
+.service-card {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.05);
+  
+  .card-header {
+    margin-bottom: 30rpx;
+    
+    .card-title {
+      font-size: 34rpx;
+      font-weight: 500;
+      color: #333;
+    }
+  }
+  
+  .service-list {
+    .service-item {
+      display: flex;
+      align-items: center;
+      padding: 28rpx 0;
+      border-bottom: 1rpx solid #eee;
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      .service-name {
+        flex: 1;
+        font-size: 30rpx;
+        color: #666;
+        margin: 0 20rpx;
+      }
+    }
+  }
 }
 
 .custom-modal {
@@ -431,30 +613,20 @@ export default {
 }
 
 .nickname-input {
-  border: 1px solid #e4e7ed;
-  border-radius: 8rpx;
-  padding: 20rpx;
+  border: 2rpx solid #e4e7ed;
+  border-radius: 16rpx;
+  padding: 24rpx;
   margin: 20rpx 0;
+  background: #fff;
 }
 
 .modal-footer {
   justify-content: flex-end;
 }
 
-.confirm-btn {
-  order: 2;
-  width: 200rpx;
-}
-
-.cancel-btn {
-  order: 1;
-  width: 200rpx;
-  margin-right: 20rpx;
-}
-
-.nickname-input {
-  /* 确保没有以下限制性样式 */
-  /* text-transform: uppercase; */
-  /* ime-mode: disabled; */
+.confirm-btn[disabled] {
+  opacity: 0.6;
+  background-color: #f0f0f0 !important;
+  color: #c0c4cc !important;
 }
 </style>

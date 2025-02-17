@@ -109,10 +109,12 @@
 			}
 		},
 		{
-			"path" : "pages/call/call",
+			"path" : "pages/help/help",
 			"style" : 
 			{
-				"navigationBarTitleText" : ""
+				"navigationBarTitleText" : "帮助中心",
+				"navigationBarBackgroundColor": "#ffffff",
+				"navigationBarTextStyle": "black"
 			}
 		}
 	],

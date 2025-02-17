@@ -1,137 +1,148 @@
 <template>
-	<div class="room-reservation">
-		<div class="form-container">
-			<form @submit.prevent="submitForm">
-				<!-- 房间类型 -->
-				<div class="form-group">
-					<label for="room-type">房间类型</label>
-					<select id="room-type" v-model="roomType">
-						<option v-for="(room, index) in roomOptions" :key="index" :value="room">{{ room }}</option>
-					</select>
-				</div>
+	<view class="room-reservation">
+		<u-form class="form-container" ref="uForm">
+			<!-- 房间类型 -->
+			<u-form-item label="房间类型" prop="roomType" borderBottom @click="showRoomPicker = true">
+				<u--input
+					v-model="roomType"
+					disabled
+					disabledColor="#ffffff"
+					placeholder="请选择房间类型"
+					border="none"
+				></u--input>
+				<u-icon name="arrow-down" slot="right"></u-icon>
+			</u-form-item>
 
-				<!-- 预约日期 -->
-				<div class="form-group">
-					<label for="date">预约日期</label>
-					<input type="text" id="date" v-model="formattedDate" @click="openDatePicker" readonly />
-					<div v-if="showDatePicker" class="date-picker-modal">
-						<div class="header-date">
-							<button @click="prevMonth" class="month-switch-button"><</button>
-							<span>{{ selectedYear }}年{{ selectedMonth }}月</span>
-							<button @click="nextMonth" class="month-switch-button">></button>
-						</div>
-						<div class="date-week">
-							<div v-for="day in daysOfWeek" :key="day">{{ day }}</div>
-						</div>
-						<div class="date-grid">
-							<div
-								v-for="(dayObj, index) in daysInMonth"
-								:key="index"
-								@click="selectDate(dayObj.day)"
-								:class="{
-									'active-day': isSelectedDate(dayObj.day),
-									'today-day': dayObj.isToday,
-								}"
-							>
-								{{ dayObj.day || '' }}
-							</div>
-						</div>
-						<div class="button-container">
-							<button @click="closeDatePicker" class="cancel-button">取消</button>
-							<button @click="confirmDatePicker" class="confirm-button">确定</button>
-						</div>
+			<!-- 预约日期 -->
+			<u-form-item label="预约日期" prop="date" borderBottom @click="showDatePicker = true">
+				<u--input
+					:value="formattedDate"
+					@click="showDatePicker = true"
+					disabled
+					disabledColor="#ffffff"
+					placeholder="请选择日期"
+					border="none"
+				></u--input>
+				<u-icon name="arrow-down" slot="right"></u-icon>
+			</u-form-item>
+
+			<!-- 时间选择 -->
+			<u-form-item label="预约时间" prop="time" borderBottom @click="openTimePicker">
+				<u--input
+					v-model="timeRange"
+					disabled
+					disabledColor="#ffffff"
+					placeholder="请选择时间"
+					border="none"
+				></u--input>
+			</u-form-item>
+
+			<!-- 时间选择弹窗 -->
+			<div v-if="showTimePicker" class="time-picker-modal">
+				<div class="time-picker-header">
+					<h2>修改预约时间</h2>
+				</div>
+				<div class="time-input-container">
+					<label>开始时间</label>
+					<div class="time-input">
+						<input
+							type="number"
+							v-model="startHour"
+							:max="23"
+							:min="0"
+							placeholder="时"
+							@input="validateTime('start')"
+						/>
+						<span>:</span>
+						<input
+							type="number"
+							v-model="startMinute"
+							:max="59"
+							:min="0"
+							placeholder="分"
+							@input="validateTime('start')"
+						/>
 					</div>
 				</div>
-
-				<!-- 时间选择 -->
-				<div class="form-group">
-					<label for="time">预约时间</label>
-					<input type="text" id="time" v-model="timeRange" @click="openTimePicker" readonly />
-					
-					<!-- 时间选择弹窗 -->
-					<div v-if="showTimePicker" class="time-picker-modal">
-						<div class="time-picker-header">
-							<h2>修改预约时间</h2>
-						</div>
-						<div class="time-input-container">
-							<label>开始时间</label>
-							<div class="time-input">
-								<input
-									type="number"
-									v-model="startHour"
-									:max="23"
-									:min="0"
-									placeholder="时"
-									@input="validateTime('start')"
-								/>
-								<span>:</span>
-								<input
-									type="number"
-									v-model="startMinute"
-									:max="59"
-									:min="0"
-									placeholder="分"
-									@input="validateTime('start')"
-								/>
-							</div>
-						</div>
-						<div class="time-input-container">
-							<label>结束时间</label>
-							<div class="time-input">
-								<input
-									type="number"
-									v-model="endHour"
-									:max="23"
-									:min="0"
-									placeholder="时"
-									@input="validateTime('end')"
-								/>
-								<span>:</span>
-								<input
-									type="number"
-									v-model="endMinute"
-									:max="59"
-									:min="0"
-									placeholder="分"
-									@input="validateTime('end')"
-								/>
-							</div>
-						</div>
-						<div class="time-validation">
-							<p v-if="timeError" class="error-message">{{ timeError }}</p>
-							<p v-else>时长：{{ durationHours }}小时{{ durationMinutes }}分钟</p>
-						</div>
-						<div class="button-container">
-							<button type="button" @click="closeTimePicker" class="cancel-button">取消</button>
-							<button type="button" @click="confirmTimePicker" class="confirm-button">确定</button>
-						</div>
+				<div class="time-input-container">
+					<label>结束时间</label>
+					<div class="time-input">
+						<input
+							type="number"
+							v-model="endHour"
+							:max="23"
+							:min="0"
+							placeholder="时"
+							@input="validateTime('end')"
+						/>
+						<span>:</span>
+						<input
+							type="number"
+							v-model="endMinute"
+							:max="59"
+							:min="0"
+							placeholder="分"
+							@input="validateTime('end')"
+						/>
 					</div>
 				</div>
-
-				<!-- 预约人信息 -->
-				<div class="form-group">
-					<label for="name">预约人姓名</label>
-					<input
-						type="text"
-						id="name"
-						v-model="name"
-						placeholder="请输入姓名"
-						:class="{ 'input-error': nameError }"
-						@input="validateName"
-					/>
-					<p v-if="nameError" class="error-message">{{ nameError }}</p>
+				<div class="time-validation">
+					<p v-if="timeError" class="error-message">{{ timeError }}</p>
+					<p v-else>时长：{{ durationHours }}小时{{ durationMinutes }}分钟</p>
 				</div>
-
-				<!-- 操作按钮 -->
-				<div class="button-group">
-					<button
-					 type="button"
-					 class="submit-button"
-					 @click="submitForm">确认修改</button>
+				<div class="button-container">
+					<button type="button" @click="closeTimePicker" class="cancel-button">取消</button>
+					<button type="button" @click="confirmTimePicker" class="confirm-button">确定</button>
 				</div>
-			</form>
-		</div>
-	</div>
+			</div>
+
+			<!-- 预约人信息 -->
+			<u-form-item label="预约人姓名" prop="name" borderBottom>
+				<u--input
+					v-model="name"
+					placeholder="请输入姓名"
+					border="none"
+					:customStyle="{ padding: '12px' }"
+				></u--input>
+			</u-form-item>
+
+			<!-- 操作按钮 -->
+			<u-button 
+				type="primary" 
+				@click="submitForm"
+				customStyle="margin-top:30px"
+			>确认修改</u-button>
+		</u-form>
+
+		<!-- uView组件 -->
+		<u-picker
+			:show="showRoomPicker"
+			:columns="[roomOptions]"
+			keyName="name"
+			@confirm="roomConfirm"
+			@cancel="showRoomPicker = false"
+		></u-picker>
+
+		<u-datetime-picker
+			:show="showDatePicker"
+			v-model="dateTimestamp"
+			mode="date"
+			:minDate="minDate"
+			:maxDate="maxDate"
+			@confirm="dateConfirm"
+			@cancel="showDatePicker = false"
+		></u-datetime-picker>
+
+		<!-- 在模板底部添加alert -->
+		<u-alert
+			v-if="showAlert"
+			:title="alertMessage"
+			:type="alertType"
+			:closeAble="true"
+			@close="showAlert = false"
+			customStyle="position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:9999;"
+		/>
+	</view>
 </template>
 
 <script>
@@ -143,32 +154,38 @@
 			return {
 				editingId: null,
 				roomType: '',
-				date: '',
+				dateTimestamp: Number(new Date()),
 				name: '',
-				startHour: '',
-				startMinute: '',
-				endHour: '',
-				endMinute: '',
+				startHour: '00',
+				startMinute: '00',
+				endHour: '00',
+				endMinute: '00',
 				timeRange: '',
 				showTimePicker: false,
 				timeError: '',
 				nameError: '',
 				roomOptions: [
-					'扑克室1', '扑克室2',
-					'麻将室1', '麻将室2',
-					'象棋室1', '象棋室2',
-					'桌游室1', '桌游室2'
+					{ name: '扑克室1' }, 
+					{ name: '扑克室2' },
+					{ name: '麻将室1' },
+					{ name: '麻将室2' },
+					{ name: '象棋室1' },
+					{ name: '象棋室2' },
+					{ name: '桌游室1' },
+					{ name: '桌游室2' }
 				],
 				showDatePicker: false,
-				selectedYear: new Date().getFullYear(),
-				selectedMonth: new Date().getMonth() + 1,
-				daysInMonth: [],
-				daysOfWeek: ['日', '一', '二', '三', '四', '五', '六'],
+				minDate: Number(new Date()),
+				maxDate: Number(new Date()) + 365 * 24 * 60 * 60 * 1000,
+				showRoomPicker: false,
+				showAlert: false,
+				alertMessage: '',
+				alertType: 'error',
 			}
 		},
 		computed: {
 			formattedDate() {
-				return dayjs(this.date).format('YYYY年MM月DD日');
+				return dayjs(this.dateTimestamp).format('YYYY年MM月DD日');
 			},
 			durationHours() {
 				const start = this.startHour * 60 + parseInt(this.startMinute);
@@ -179,6 +196,9 @@
 				const start = this.startHour * 60 + parseInt(this.startMinute);
 				const end = this.endHour * 60 + parseInt(this.endMinute);
 				return (end - start) % 60;
+			},
+			date() {
+				return dayjs(this.dateTimestamp).format('YYYY-MM-DD');
 			}
 		},
 		created() {
@@ -195,19 +215,17 @@
 			initializeData() {
 				// 清空旧数据
 				this.roomType = '';
-				this.date = '';
 				this.name = '';
-				this.startHour = '';
-				this.startMinute = '';
-				this.endHour = '';
-				this.endMinute = '';
+				this.startHour = '00';
+				this.startMinute = '00';
+				this.endHour = '00';
+				this.endMinute = '00';
 
 				if (this.$route.query.id) {
 					// 使用nextTick确保DOM更新
 					this.$nextTick(() => {
 						this.editingId = this.$route.query.id;
 						this.roomType = this.$route.query.roomType;
-						this.date = this.$route.query.date;
 						this.name = this.$route.query.name;
 						
 						// 处理带前导零的时间格式（如09:05）
@@ -230,9 +248,7 @@
 						
 						this.updateTimeRange();
 						const initDate = new Date(this.$route.query.date);
-						this.selectedYear = initDate.getFullYear();
-						this.selectedMonth = initDate.getMonth() + 1;
-						this.calculateDaysInMonth();
+						this.dateTimestamp = initDate.getTime();
 					});
 				}
 			},
@@ -241,19 +257,19 @@
 			},
 			validateTime(type) {
 				const validateField = (value, max, field) => {
-					value = Math.max(0, Math.min(max, parseInt(value) || 0));
-					this[field] = value.toString().padStart(2, '0');
-					return value;
+					let num = parseInt(value) || 0;
+					num = Math.max(0, Math.min(max, num));
+					this[field] = num.toString().padStart(2, '0');
+					return num;
 				};
 
 				if (type === 'start') {
-					this.startHour = validateField(this.startHour, 23, 'startHour');
-					this.startMinute = validateField(this.startMinute, 59, 'startMinute');
+					validateField(this.startHour, 23, 'startHour');
+					validateField(this.startMinute, 59, 'startMinute');
 				} else {
-					this.endHour = validateField(this.endHour, 23, 'endHour');
-					this.endMinute = validateField(this.endMinute, 59, 'endMinute');
+					validateField(this.endHour, 23, 'endHour');
+					validateField(this.endMinute, 59, 'endMinute');
 				}
-
 				this.checkTimeValidation();
 			},
 			checkTimeValidation() {
@@ -283,66 +299,24 @@
 				this.updateTimeRange();
 				this.closeTimePicker();
 			},
-			openDatePicker() {
-				this.showDatePicker = true;
-				this.calculateDaysInMonth();
-			},
-			closeDatePicker() {
+			dateConfirm(e) {
+				this.dateTimestamp = e.value;
 				this.showDatePicker = false;
 			},
-			confirmDatePicker() {
-				if (!this.date) {
-					alert('请选择一个日期');
-					return;
-				}
-				this.showDatePicker = false;
-			},
-			selectDate(day) {
-				this.date = `${this.selectedYear}-${String(this.selectedMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-			},
-			isSelectedDate(day) {
-				const selected = new Date(this.date);
-				return (
-					selected.getDate() === day &&
-					selected.getMonth() + 1 === this.selectedMonth &&
-					selected.getFullYear() === this.selectedYear
-				);
-			},
-			calculateDaysInMonth() {
-				const today = new Date();
-				const days = new Date(this.selectedYear, this.selectedMonth, 0).getDate();
-				const firstDay = new Date(this.selectedYear, this.selectedMonth - 1, 1).getDay();
-				this.daysInMonth = Array.from({ length: days + firstDay }, (_, i) => {
-					if (i < firstDay) return { day: null, isToday: false };
-					const day = i - firstDay + 1;
-					const isToday = day === today.getDate() &&
-						this.selectedMonth === today.getMonth() + 1 &&
-						this.selectedYear === today.getFullYear();
-					return { day, isToday };
-				});
-			},
-			prevMonth() {
-				this.selectedMonth--;
-				if (this.selectedMonth < 1) {
-					this.selectedMonth = 12;
-					this.selectedYear--;
-				}
-				this.calculateDaysInMonth();
-			},
-			nextMonth() {
-				this.selectedMonth++;
-				if (this.selectedMonth > 12) {
-					this.selectedMonth = 1;
-					this.selectedYear++;
-				}
-				this.calculateDaysInMonth();
+			showNotification(message, type = 'error') {
+				this.alertMessage = message;
+				this.alertType = type;
+				this.showAlert = true;
+				setTimeout(() => {
+					this.showAlert = false;
+				}, 3000);
 			},
 			async submitForm() {
 				this.validateName();
 				if (this.nameError) return;
 
 				if (!this.timeRange || this.timeError) {
-					alert('请选择有效的时间段');
+					this.showNotification('请选择有效的时间段');
 					return;
 				}
 
@@ -352,7 +326,7 @@
 					const otherReservations = existing.filter(item => item.id !== this.editingId);
 					
 					if (this.checkTimeConflict(otherReservations)) {
-						alert('该时间段已被预约，请选择其他时间');
+						this.showNotification('该时间段已被预约，请选择其他时间');
 						return;
 					}
 
@@ -365,18 +339,14 @@
 						timestamp: new Date().getTime()
 					});
 
-					// 添加成功反馈
+					this.showNotification('修改成功', 'success');
 					this.$router.push({
 						path: '/pages/reservation/check',
-						query: { 
-							refresh: true,
-							message: '修改成功',
-							type: 'success'
-						}
+						query: { refresh: true }
 					});
 				} catch (error) {
+					this.showNotification(`修改失败: ${error.message}`);
 					console.error('更新错误:', error);
-					alert(`修改失败: ${error.message}`);
 				}
 			},
 			checkTimeConflict(existing) {
@@ -391,9 +361,13 @@
 					
 					return (newStart < existEnd) && (newEnd > existStart);
 				});
+			},
+			roomConfirm(e) {
+				this.roomType = e.value[0].name;
+				this.showRoomPicker = false;
+			},
 		}
 	}
-}
 </script>
 
 <style scoped>
@@ -537,90 +511,12 @@
 		color: white;
 	}
 
-	/* 日期选择器样式（从reservation.vue复制） */
-	.date-picker-modal {
-		position: fixed;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		background: white;
-		padding: 20px;
-		border-radius: 10px;
-		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-		z-index: 1000;
-		width: 300px;
+	/* 优化uView组件样式 */
+	:deep(.u-form-item__body) {
+		padding: 12px 0;
 	}
 
-	.header-date {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		font-size: 20px;
-		font-weight: bold;
-		margin-bottom: 10px;
-	}
-
-	.month-switch-button {
-		background: none;
-		border: none;
-		font-size: 20px;
-		cursor: pointer;
-	}
-
-	.date-week {
-		display: flex;
-		justify-content: space-around;
-		margin-bottom: 10px;
-	}
-
-	.date-grid {
-		display: grid;
-		grid-template-columns: repeat(7, 1fr);
-		gap: 5px;
-	}
-
-	.date-grid div {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		height: 30px;
-		border-radius: 5px;
-		cursor: pointer;
-		background-color: #f9f9f9;
-	}
-
-	.active-day {
-		background-color: #00b38a;
-		color: white;
-	}
-
-	.today-day {
-		background-color: #ffeb3b;
-	}
-
-	.button-container {
-		display: flex;
-		justify-content: space-around;
-		margin-top: 10px;
-	}
-
-	.cancel-button,
-	.confirm-button {
-		padding: 8px 16px;
-		border: none;
-		border-radius: 5px;
-		cursor: pointer;
-		font-weight: bold;
-	}
-
-	.cancel-button {
-		color: #00b38a;
-		background-color: white;
-		border: 1px solid #00b38a;
-	}
-
-	.confirm-button {
-		background-color: #00b38a;
-		color: white;
+	:deep(.u-input__content) {
+		min-height: auto;
 	}
 </style>
