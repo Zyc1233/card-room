@@ -79,12 +79,11 @@
     <!-- 添加返回顶部按钮 -->
     <u-back-top 
       :scroll-top="scrollTop"
-      icon="arrow-upward"
-      :duration="300"
-      :top="100"
-      :icon-style="iconStyle"
+	  icon="arrow-upward"
+      :top="0"
+	   mode="circle"
       @click="scrollToTop"
-      :custom-style="{bottom: '160px'}"
+      :custom-style="{right: '20rpx', bottom: '100px'}"
     ></u-back-top>
 
     <!-- 添加底部导航 -->
@@ -114,11 +113,6 @@ export default {
       type: 'success'
     },
     scrollTop: 0,
-    // 添加按钮样式配置
-    iconStyle: {
-      backgroundColor: '#2979ff',
-      color: '#fff'
-    }
   }),
   async created() {
     await this.loadReservations();
@@ -256,13 +250,11 @@ export default {
     },
     handleScroll(e) {
       if (!e.detail) return;
-      this.scrollTop = e.detail.scrollTop || 0;
     },
-    // 添加返回顶部方法
     scrollToTop() {
-      this.scrollTop = this.scrollTop ? 0 : 1;
-      this.$nextTick(() => {
-        this.scrollTop = 0;
+      uni.pageScrollTo({
+        scrollTop: 0,
+        duration: 300
       });
     },
   },
@@ -274,18 +266,13 @@ export default {
       }
     }
   },
-  onReady() {
-    this.scrollTop = 1; // 触发响应式更新
-  },
-  onPageScroll(e) {  // 必须使用页面滚动监听
-    this.scrollTop = e.scrollTop;
-  }
 };
 </script>
 
 <style lang="scss" scoped>
 .container {
   height: 100vh;
+  padding: 20px;
   box-sizing: border-box;
   position: relative;
   padding-bottom: 120rpx; // 为底部导航留出空间
@@ -311,7 +298,7 @@ export default {
 .scroll-list {
   height: calc(100vh - 160rpx);
   ::v-deep .u-list {
-    // 保持原有滚动容器样式
+   	padding: 0;
   }
 }
 
@@ -334,15 +321,4 @@ export default {
   z-index: 999;
 }
 
-// 添加返回顶部按钮样式
-::v-deep .u-back-top {
-  bottom: 160px !important;
-  right: 30rpx;
-  z-index: 1002;
-  
-  @media (min-width: 768px) {
-    bottom: 200px;
-    right: 60rpx;
-  }
-}
 </style>

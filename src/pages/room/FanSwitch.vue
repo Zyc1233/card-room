@@ -1,6 +1,6 @@
 <template>
   <u-row class="device-row" justify="space-between" align="center">
-    <u-col span="3">
+    <u-col span="5">
       <text class="u-font-sm">风扇控制</text>
     </u-col>
     

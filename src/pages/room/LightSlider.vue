@@ -1,6 +1,6 @@
 <template>
   <u-row class="light-control" justify="space-between" align="center">
-    <u-col span="3">
+    <u-col span="5">
       <text class="u-font-sm">灯光亮度</text>
     </u-col>
     

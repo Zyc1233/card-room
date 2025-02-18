@@ -37,64 +37,77 @@
 				></u--input>
 			</u-form-item>
 
-			<!-- 时间选择弹窗 -->
-			<div v-if="showTimePicker" class="time-picker-modal">
-				<div class="time-picker-header">
-					<h2>修改预约时间</h2>
-				</div>
-				<div class="time-input-container">
-					<label>开始时间</label>
-					<div class="time-input">
-						<input
-							type="number"
+			<!-- 修改时间选择弹窗为uview组件 -->
+			<u-modal 
+				:show="showTimePicker"
+				title="修改预约时间"
+				@confirm="confirmTimePicker"
+				@cancel="closeTimePicker"
+				:showCancelButton="true"
+				width="80%"
+			>
+				<view class="time-picker-content">
+					<view class="time-input-container">
+						<text class="time-label">开始时间</text>
+						<u-input
 							v-model="startHour"
+							type="number"
+							placeholder="时"
 							:max="23"
 							:min="0"
-							placeholder="时"
+							border="bottom"
 							@input="validateTime('start')"
-						/>
-						<span>:</span>
-						<input
-							type="number"
+						></u-input>
+						<text class="time-colon">:</text>
+						<u-input
 							v-model="startMinute"
+							type="number"
+							placeholder="分"
 							:max="59"
 							:min="0"
-							placeholder="分"
+							border="bottom"
 							@input="validateTime('start')"
-						/>
-					</div>
-				</div>
-				<div class="time-input-container">
-					<label>结束时间</label>
-					<div class="time-input">
-						<input
-							type="number"
+						></u-input>
+					</view>
+
+					<view class="time-input-container">
+						<text class="time-label">结束时间</text>
+						<u-input
 							v-model="endHour"
+							type="number"
+							placeholder="时"
 							:max="23"
 							:min="0"
-							placeholder="时"
+							border="bottom"
 							@input="validateTime('end')"
-						/>
-						<span>:</span>
-						<input
-							type="number"
+						></u-input>
+						<text class="time-colon">:</text>
+						<u-input
 							v-model="endMinute"
+							type="number"
+							placeholder="分"
 							:max="59"
 							:min="0"
-							placeholder="分"
+							border="bottom"
 							@input="validateTime('end')"
-						/>
-					</div>
-				</div>
-				<div class="time-validation">
-					<p v-if="timeError" class="error-message">{{ timeError }}</p>
-					<p v-else>时长：{{ durationHours }}小时{{ durationMinutes }}分钟</p>
-				</div>
-				<div class="button-container">
-					<button type="button" @click="closeTimePicker" class="cancel-button">取消</button>
-					<button type="button" @click="confirmTimePicker" class="confirm-button">确定</button>
-				</div>
-			</div>
+						></u-input>
+					</view>
+
+					<view class="time-validation">
+						<u-alert 
+							v-if="timeError" 
+							:title="timeError" 
+							type="error"
+							:showIcon="true"
+						></u-alert>
+						<u-text 
+							v-else 
+							type="info" 
+							:text="`时长：${durationHours}小时${durationMinutes}分钟`"
+						></u-text>
+					</view>
+				</view>
+			</u-modal>
 
 			<!-- 预约人信息 -->
 			<u-form-item label="预约人姓名" prop="name" borderBottom>
@@ -444,40 +457,25 @@
 	}
 
 	/* 时间选择弹窗样式 */
-	.time-picker-modal {
-		position: fixed;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		background: white;
-		width: 320px;
-		padding: 20px;
-		border-radius: 12px;
-		box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-		z-index: 1000;
-	}
-
-	.time-picker-header h2 {
-		margin: 0 0 20px;
-		color: #333;
-		font-size: 18px;
-		text-align: center;
+	.time-picker-content {
+		padding: 15px;
 	}
 
 	.time-input-container {
+		display: flex;
+		align-items: center;
 		margin: 15px 0;
 	}
 
-	.time-input {
-		display: flex;
-		align-items: center;
-		gap: 8px;
+	.time-label {
+		width: 80px;
+		font-size: 14px;
+		color: #606266;
 	}
 
-	.time-input input {
-		width: 70px;
-		padding: 8px;
-		text-align: center;
+	.time-colon {
+		margin: 0 8px;
+		font-size: 16px;
 	}
 
 	.time-validation {
@@ -485,30 +483,6 @@
 		margin: 15px 0;
 		font-size: 14px;
 		color: #666;
-	}
-
-	.button-container {
-		display: flex;
-		gap: 10px;
-		margin-top: 20px;
-	}
-
-	.cancel-button, .confirm-button {
-		flex: 1;
-		padding: 10px;
-		border: none;
-		border-radius: 6px;
-		cursor: pointer;
-	}
-
-	.cancel-button {
-		background: #f0f0f0;
-		color: #666;
-	}
-
-	.confirm-button {
-		background: #00b38a;
-		color: white;
 	}
 
 	/* 优化uView组件样式 */

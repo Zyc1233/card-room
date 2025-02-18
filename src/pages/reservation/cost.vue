@@ -1,11 +1,13 @@
 <template>
 	<view class="container">
-		<!-- 图片区域保持不变 -->
-
 		<view class="calculator-card">
 			<u-form :model="formData" ref="uForm">
 				<!-- 房间选择 -->
-				<u-form-item label="房间类型" prop="room" borderBottom @click="showRoomPicker = true">
+				<u-form-item
+				 label="房间类型" 
+				 prop="room"  
+				 @click="showRoomPicker = true"
+				 label-width="160rpx">
 					<u--input
 						v-model="selectedRoom.name"
 						disabled
@@ -17,7 +19,10 @@
 				</u-form-item>
 
 				<!-- 时间输入 -->
-				<u-form-item label="使用时间" prop="minutes" borderBottom>
+				<u-form-item 
+				 label="使用时间" 
+				 prop="minutes"
+				 label-width="160rpx">
 					<u--input
 						v-model="inputMinutes"
 						placeholder="请输入使用时间（分钟）"
@@ -27,7 +32,10 @@
 				</u-form-item>
 
 				<!-- VIP选择 -->
-				<u-form-item label="VIP优惠" prop="vip" borderBottom>
+				<u-form-item 
+				 label="VIP优惠" 
+				 prop="vip"
+				 label-width="160rpx">
 					<u-checkbox-group
 						v-model="checkboxValue"
 						placement="row"
@@ -212,7 +220,6 @@
 			text-align: left;
 			
 			&::before {
-				content: '💰';
 				display: block;
 				font-size: 48rpx;
 				text-align: center;
@@ -252,6 +259,7 @@
 		to { opacity: 1; transform: translateY(0) scale(1); }
 	}
 }
+
 
 .u-form-item__message {
 	color: #fa3534;
