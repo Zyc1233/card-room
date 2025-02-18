@@ -4,7 +4,7 @@
 			<u-form :model="formData" ref="uForm">
 				<!-- 房间选择 -->
 				<u-form-item
-				 label="房间类型" 
+				 label="房间类型:" 
 				 prop="room"  
 				 @click="showRoomPicker = true"
 				 label-width="160rpx">
@@ -20,7 +20,7 @@
 
 				<!-- 时间输入 -->
 				<u-form-item 
-				 label="使用时间" 
+				 label="使用时间:" 
 				 prop="minutes"
 				 label-width="160rpx">
 					<u--input
@@ -33,7 +33,7 @@
 
 				<!-- VIP选择 -->
 				<u-form-item 
-				 label="VIP优惠" 
+				 label="VIP优惠:" 
 				 prop="vip"
 				 label-width="160rpx">
 					<u-checkbox-group
@@ -100,12 +100,12 @@
 		data() {
 			return {
 				rooms: [
-					{ name: '麻将室', price: 30 },
-					{ name: '象棋室', price: 20 },
-					{ name: '扑克室', price: 30 },
+					{ name: '麻将室', price: 20 },
+					{ name: '象棋室', price: 15 },
+					{ name: '扑克室', price: 15 },
 					{ name: '桌游室', price: 40 }
 				],
-				selectedRoom: { name: '麻将室', price: 30 },
+				selectedRoom: { name: '麻将室', price: 20 },
 				inputMinutes: '',
 				checkboxValue: [],
 				isVip: false,

@@ -18,10 +18,10 @@
 
 <script>
 const navItems = [
-  { text: '房间预约', icon: 'home', activeIcon: 'home-fill', path: '/pages/reservation/reservation' },
-  { text: '预约情况', icon: 'list-dot', activeIcon: 'list-dot-fill', path: '/pages/reservation/check' },
-  { text: '计算费用', icon: 'coupon', activeIcon: 'coupon-fill', path: '/pages/reservation/cost' },
-  { text: '我的', icon: 'account', activeIcon: 'account-fill', path: '/pages/user/user' }
+  { text: '房间预约', icon: 'home', activeIcon: 'home-fill', path: "/pages/reservation/reservation" },
+  { text: '预约情况', icon: 'list-dot', activeIcon: 'list-dot-fill', path: "/pages/reservation/check" },
+  { text: '计算费用', icon: 'coupon', activeIcon: 'coupon-fill', path: "/pages/reservation/cost" },
+  { text: '我的', icon: 'account', activeIcon: 'account-fill', path: "/pages/user/user" }
 ];
 
 export default {

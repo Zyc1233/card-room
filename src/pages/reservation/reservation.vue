@@ -5,22 +5,30 @@
 
     <!-- 轮播图改用u-swiper -->
     <u-swiper 
-      :list="images" 
+      :list="swiperList"
       keyName="image"
-      :title="prices[currentPrice]"
+      :title="currentPriceText"
       showTitle
-      @change="e => currentPrice = e.current"
+      @change="handleSwiperChange"
       height="200"
       indicator
       indicatorMode="dot"
-    ></u-swiper>
+      indicatorActiveColor="#3c9cff"
+      radius="4"
+      :previousMargin="30"
+      :nextMargin="30"
+      circular
+      bgColor="#f3f4f6"
+    >
+  
+    </u-swiper>
 
     <!-- 表单容器 -->
     <div class="form-container">
       <u-form @submit="submitForm">
         <!-- 房间类型选择改用u-picker -->
         <u-form-item 
-		label="房间类型" 
+		label="房间类型:" 
 		prop="roomType" 
 		borderBottom 
 		@click="showRoomPicker = true"
@@ -44,9 +52,9 @@
           @cancel="showRoomPicker = false"
         ></u-picker>
 
-        <!-- 日期选择改用u-datetime-picker -->
+        <!-- 日期选择改用u-calendar -->
         <u-form-item
-		 label="预约日期" 
+		 label="预约日期:" 
 		 prop="date" 
 		 borderBottom 
 		 @click="showDatePicker = true"
@@ -61,20 +69,22 @@
           <u-icon name="arrow-down" slot="right"></u-icon>
         </u-form-item>
 
-        <!-- 添加日期选择器 -->
-        <u-datetime-picker
+        <!-- 修改日期选择器为u-calendar -->
+        <u-calendar
           :show="showDatePicker"
-          v-model="dateTimestamp"
-          mode="date"
+          mode="single"
           :minDate="minDate"
           :maxDate="maxDate"
           @confirm="dateConfirm"
-          @cancel="showDatePicker = false"
-        ></u-datetime-picker>
+          @close="showDatePicker = false"
+          :defaultDate="date"
+          title="选择预约日期"
+          color="#3c9cff"
+        ></u-calendar>
 
         <!-- 修改时间选择部分 -->
         <u-form-item 
-		label="预约时间" 
+		label="预约时间:" 
 		prop="timeRange" 
 		borderBottom 
 		@click="openTimePicker"
@@ -162,7 +172,7 @@
         </u-modal>
 
         <!-- 姓名输入 -->
-        <u-form-item label="预约人" prop="name" label-width="160rpx">
+        <u-form-item label="用户名称:" prop="name" label-width="160rpx">
           <u-input v-model="name" placeholder="请输入姓名"></u-input>
         </u-form-item>
 
@@ -190,9 +200,26 @@ export default {
   },
   data() {
     return {
-      // 轮播图相关状态
-      currentImage: 0,      // 当前轮播图索引
-      currentPrice: 0,      // 当前价格说明索引
+      // 修改轮播图数据结构
+      swiperList: [
+        { 
+          image: '/static/puke.png',
+          title: '扑克室 15 元/小时 1 小时起,每半小时加 5 元'
+        },
+        { 
+          image: '/static/majiang.png',
+          title: '麻将室 20 元/小时 2 小时起,每半小时加 5 元'
+        },
+        { 
+          image: '/static/xiangqi.png',
+          title: '象棋室 15 元/小时 1 小时起,每半小时加 5 元'
+        },
+        { 
+          image: '/static/zhuoyou.png',
+          title: '桌游室 40 元/小时 1 小时起,每半小时加 5 元'
+        }
+      ],
+      currentPrice: 0,
       
       // 表单数据
       roomType: '扑克室1',  // 选择的房间类型
@@ -212,18 +239,6 @@ export default {
       showRoomPicker: false, // 房间选择器显示状态
       
       // 静态数据
-      images: [
-        '/static/puke.png',
-        '/static/majiang.png',
-        '/static/xiangqi.png',
-        '/static/zhuoyou.png'
-      ],
-      prices: [
-        '扑克室 15 元/小时 1 小时起,每半小时加 3 元',
-        '麻将室 20 元/小时 2 小时起,每半小时加 5 元',
-        '象棋室 15 元/小时 1 小时起,每半小时加 3 元',
-        '桌游室 30 元/小时 1 小时起,每半小时加 8 元'
-      ],
       roomOptions: [
         { name: '扑克室1' },
         { name: '扑克室2' },
@@ -238,16 +253,18 @@ export default {
         Array.from({length:24}, (_,i) => `${i}时`),
         Array.from({length:60}, (_,i) => `${i}分`)
       ],
-      minDate: Number(new Date()) - 7 * 86400000, // 可选最小日期（7天前）
-      maxDate: Number(new Date()) + 30 * 86400000, // 可选最大日期（30天后）
-      selectedTime: [12, 0],
-      dateTimestamp: Number(new Date())
+      minDate: dayjs().subtract(7, 'day').format('YYYY-MM-DD'),
+      maxDate: dayjs().add(30, 'day').format('YYYY-MM-DD'),
+      date: dayjs().format('YYYY-MM-DD'),  // 默认当天
     };
   },
   computed: {
+    currentPriceText() {
+      return this.swiperList[this.currentPrice]?.title || '';
+    },
     // 格式化显示日期
     formattedDate() {
-      return dayjs(this.dateTimestamp).format('YYYY年MM月DD日');
+      return dayjs(this.date).format('YYYY年MM月DD日');
     },
     // 计算持续时间
     durationHours() {
@@ -259,9 +276,6 @@ export default {
       const start = this.startHour * 60 + parseInt(this.startMinute);
       const end = this.endHour * 60 + parseInt(this.endMinute);
       return (end - start) % 60;
-    },
-    date() {
-      return dayjs(this.dateTimestamp).format('YYYY-MM-DD');
     }
   },
   created() {
@@ -386,17 +400,11 @@ export default {
       console.log('查看预约情况');
 	   this.$router.push('/pages/reservation/check');
     },
-    nextImage() {
-      this.currentImage = (this.currentImage + 1) % this.images.length;
-      this.currentPrice = (this.currentPrice + 1) % this.prices.length;
-    },
-    prevImage() {
-      this.currentImage = (this.currentImage - 1 + this.images.length) % this.images.length;
-      this.currentPrice = (this.currentPrice - 1 + this.prices.length) % this.prices.length;
+    handleSwiperChange(e) {
+      this.currentPrice = e.current;
     },
     openDatePicker() {
       this.showDatePicker = true;
-      this.calculateDaysInMonth();
     },
     openTimePicker() {
       this.showTimePicker = true;
@@ -544,7 +552,7 @@ export default {
       this.showRoomPicker = false;
     },
     dateConfirm(e) {
-      this.dateTimestamp = e.value;
+      this.date = e[0];
       this.showDatePicker = false;
     },
     async loadReservations() {
@@ -559,7 +567,10 @@ export default {
     }
   },
   mounted() {
-    setInterval(this.nextImage, 3000); // 轮播图自动切换
+    // 保留自动轮播功能
+    setInterval(() => {
+      this.currentPrice = (this.currentPrice + 1) % this.swiperList.length;
+    }, 3000);
   },
   watch: {
     '$route'(to, from) {
@@ -658,4 +669,13 @@ export default {
   box-shadow: 0 -4rpx 20rpx rgba(0,0,0,0.06);
 }
 
+
+
+.swiper-arrow.left {
+  left: 20rpx;
+}
+
+.swiper-arrow.right {
+  right: 20rpx;
+}
 </style>

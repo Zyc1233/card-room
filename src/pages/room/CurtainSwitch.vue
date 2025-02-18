@@ -16,7 +16,7 @@
 
     <u-col span="3" class="u-text-right">
       <text class="state-text" :class="switchState ? 'active' : 'inactive'">
-        {{ switchState ? '窗帘已开启' : '窗帘已关闭' }}
+        {{ switchState ? '窗帘已打开' : '窗帘已关闭' }}
       </text>
     </u-col>
   </u-row>

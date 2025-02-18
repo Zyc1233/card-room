@@ -2,7 +2,7 @@
 	<view class="room-reservation">
 		<u-form class="form-container" ref="uForm">
 			<!-- 房间类型 -->
-			<u-form-item label="房间类型" prop="roomType" borderBottom @click="showRoomPicker = true">
+			<u-form-item label-width="160rpx" label="房间类型:" prop="roomType" borderBottom @click="showRoomPicker = true">
 				<u--input
 					v-model="roomType"
 					disabled
@@ -14,7 +14,7 @@
 			</u-form-item>
 
 			<!-- 预约日期 -->
-			<u-form-item label="预约日期" prop="date" borderBottom @click="showDatePicker = true">
+			<u-form-item label-width="160rpx" label="预约日期:" prop="date" borderBottom @click="showDatePicker = true">
 				<u--input
 					:value="formattedDate"
 					@click="showDatePicker = true"
@@ -27,7 +27,7 @@
 			</u-form-item>
 
 			<!-- 时间选择 -->
-			<u-form-item label="预约时间" prop="time" borderBottom @click="openTimePicker">
+			<u-form-item label-width="160rpx" label="预约时间:" prop="time" borderBottom @click="openTimePicker">
 				<u--input
 					v-model="timeRange"
 					disabled
@@ -110,7 +110,7 @@
 			</u-modal>
 
 			<!-- 预约人信息 -->
-			<u-form-item label="预约人姓名" prop="name" borderBottom>
+			<u-form-item label-width="160rpx" label="用户名称:" prop="name" borderBottom>
 				<u--input
 					v-model="name"
 					placeholder="请输入姓名"
@@ -136,15 +136,17 @@
 			@cancel="showRoomPicker = false"
 		></u-picker>
 
-		<u-datetime-picker
+		<u-calendar
 			:show="showDatePicker"
-			v-model="dateTimestamp"
-			mode="date"
+			mode="single"
 			:minDate="minDate"
 			:maxDate="maxDate"
 			@confirm="dateConfirm"
-			@cancel="showDatePicker = false"
-		></u-datetime-picker>
+			@close="showDatePicker = false"
+			:defaultDate="date"
+			title="选择预约日期"
+			color="#3c9cff"
+		></u-calendar>
 
 		<!-- 在模板底部添加alert -->
 		<u-alert
@@ -167,7 +169,7 @@
 			return {
 				editingId: null,
 				roomType: '',
-				dateTimestamp: Number(new Date()),
+				date: dayjs().format('YYYY-MM-DD'),
 				name: '',
 				startHour: '00',
 				startMinute: '00',
@@ -188,8 +190,8 @@
 					{ name: '桌游室2' }
 				],
 				showDatePicker: false,
-				minDate: Number(new Date()),
-				maxDate: Number(new Date()) + 365 * 24 * 60 * 60 * 1000,
+				minDate: dayjs().format('YYYY-MM-DD'),
+				maxDate: dayjs().add(365, 'day').format('YYYY-MM-DD'),
 				showRoomPicker: false,
 				showAlert: false,
 				alertMessage: '',
@@ -198,7 +200,7 @@
 		},
 		computed: {
 			formattedDate() {
-				return dayjs(this.dateTimestamp).format('YYYY年MM月DD日');
+				return dayjs(this.date).format('YYYY年MM月DD日');
 			},
 			durationHours() {
 				const start = this.startHour * 60 + parseInt(this.startMinute);
@@ -209,9 +211,6 @@
 				const start = this.startHour * 60 + parseInt(this.startMinute);
 				const end = this.endHour * 60 + parseInt(this.endMinute);
 				return (end - start) % 60;
-			},
-			date() {
-				return dayjs(this.dateTimestamp).format('YYYY-MM-DD');
 			}
 		},
 		created() {
@@ -260,8 +259,7 @@
 						this.endMinute = end.minute;
 						
 						this.updateTimeRange();
-						const initDate = new Date(this.$route.query.date);
-						this.dateTimestamp = initDate.getTime();
+						this.date = this.$route.query.date;
 					});
 				}
 			},
@@ -313,7 +311,7 @@
 				this.closeTimePicker();
 			},
 			dateConfirm(e) {
-				this.dateTimestamp = e.value;
+				this.date = e[0];
 				this.showDatePicker = false;
 			},
 			showNotification(message, type = 'error') {

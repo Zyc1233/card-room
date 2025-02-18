@@ -77,10 +77,10 @@ export default {
       handler(newVal) {
         this.infoItems = [
           // { label: '预约ID：', value: newVal.id || '加载中...' },
-          { label: '用户：', value: newVal.user || '未知用户' },
+          { label: '用户名称：', value: newVal.user || '未知用户' },
           { label: '房间类型：', value: newVal.roomType || '未知类型' },
-          { label: '日期：', value: this.formattedDate || '未选择日期' },
-          { label: '时间段：', value: `${newVal.startTime || ''} - ${newVal.endTime || ''}`.trim() || '未选择时间' }
+          { label: '预约日期：', value: this.formattedDate || '未选择日期' },
+          { label: '预约时间：', value: `${newVal.startTime || ''} - ${newVal.endTime || ''}`.trim() || '未选择时间' }
         ]
       }
     }
