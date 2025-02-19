@@ -234,16 +234,21 @@ export default {
 
     getVerificationCode() {
       if (this.counting > 0) return;
-      const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+	  const registeredUsers = JSON.parse(uni.getStorageSync('registeredUsers')) || [];
+      // const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
       if (!registeredUsers.some(u => u.phone === this.form.phone)) {
         uni.showToast({ title: '该手机号未注册', icon: 'none' });
         return;
       }
       const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-      localStorage.setItem('verificationCode', JSON.stringify({
-        code: verificationCode,
-        timestamp: Date.now()
-      }));
+      // localStorage.setItem('verificationCode', JSON.stringify({
+      //   code: verificationCode,
+      //   timestamp: Date.now()
+      // }));
+	  uni.setStorageSync('verificationCode', JSON.stringify({
+	  code: verificationCode,
+	  timestamp: Date.now()
+	  }));
       uni.showModal({
         title: '验证码',
         content: `您的验证码是：${verificationCode}`,
@@ -258,8 +263,8 @@ export default {
     async validateLogin() {
       try {
         await this.$refs.uForm.validate();
-        // const registeredUsers = JSON.parse(uni.getStorageSync('registeredUsers')) || [];
-        const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+        const registeredUsers = JSON.parse(uni.getStorageSync('registeredUsers')) || [];
+        // const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
         const currentUser = registeredUsers.find(u => u.phone === this.form.phone);
         if (!currentUser) {
           return {
@@ -277,7 +282,8 @@ export default {
             };
           }
         } else {
-          const storedCode = JSON.parse(localStorage.getItem('verificationCode'));
+          // const storedCode = JSON.parse(localStorage.getItem('verificationCode'));
+		  const storedCode = JSON.parse(uni.getStorageSync('verificationCode'));
           if (!storedCode || storedCode.code !== this.form.code) {
             return {
               valid: false,

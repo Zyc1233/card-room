@@ -123,5 +123,33 @@
 		"navigationBarTitleText": "uni-app",
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8"
+	},
+	"tabBar": {
+		"color": "#7A7E83",
+		"selectedColor": "#2979FF",
+		"backgroundColor": "#FFFFFF",
+		"borderStyle": "black",
+		"list": [
+			{
+				"pagePath": "pages/reservation/reservation",
+				"text": "房间预约",
+				"iconPath": "/static/reservation.png"
+			},
+			{
+				"pagePath": "pages/reservation/check",
+				"text": "预约记录",
+				"iconPath": "static/check.png"
+			},
+			{
+				"pagePath": "pages/reservation/cost",
+				"text": "计算费用",
+				"iconPath": "static/cost.png"
+			},
+			{
+				"pagePath": "pages/user/user",
+				"text": "我的",
+				"iconPath": "static/user.png"
+			}
+		]
 	}
 }

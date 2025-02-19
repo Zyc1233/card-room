@@ -8,7 +8,8 @@
       :list="swiperList"
       keyName="image"
       :title="currentPriceText"
-      showTitle
+      :autoplay="true"
+      :interval="3000"
       @change="handleSwiperChange"
       height="200"
       indicator
@@ -181,10 +182,6 @@
         <u-button @click="viewReservation">查看预约</u-button>
       </u-form>
     </div>
-
-   <view class="bottom-nav-wrapper">
-     <BottomNav activeIndex="0" />
-   </view>
   </div>
 </template>
 
@@ -284,34 +281,15 @@ export default {
   methods: {
     // 表单提交处理
     async submitForm() {
-      // 表单验证流程修改为uview提示
-      if (!this.roomType) {
-        this.$refs.uToast.show({
-          title: '请选择房间类型',
-          type: 'error'
-        });
-        return;
-      }
-      if (!this.date) {
-        this.$refs.uToast.show({
-          title: '请选择预约日期',
-          type: 'error'
-        });
-        return;
-      }
-      if (!this.startTime || !this.endTime) {
-        this.$refs.uToast.show({
-          title: '请选择预约时间',
-          type: 'error'
-        });
-        return;
-      }
-      if (!this.name) {
-        this.$refs.uToast.show({
-          title: '请输入预约人姓名',
-          type: 'error'
-        });
-        return;
+      // 添加表单验证规则
+      if (!this.$refs.uForm.validate()) return;
+      
+      // 修改时间验证逻辑
+      const start = parseInt(this.startHour) * 60 + parseInt(this.startMinute)
+      const end = parseInt(this.endHour) * 60 + parseInt(this.endMinute)
+      if (end - start < 60) {
+        this.$refs.uToast.show({ title: '预约时长至少60分钟', type: 'error' })
+        return
       }
 
       // 使用优化后的检查
@@ -331,70 +309,20 @@ export default {
         return;
       }
 
-      // 修改时间有效性验证逻辑
-      const now = new Date();
-      const startDateTime = new Date(`${this.date}T${this.startTime}`);
-      const endDateTime = new Date(`${this.date}T${this.endTime}`);
-      
-      // 仅保留过期时间检查
-      if (now > endDateTime) {
-        this.$refs.uToast.show({
-          title: '预约时间已全部过期',
-          type: 'error'
-        });
-        return;
-      }
-
-      // 检查冲突
-      const checkConflict = (existing) => {
-        const newStart = startDateTime.getTime();
-        const newEnd = endDateTime.getTime();
-        
-        return existing.some(reservation => {
-          const existStart = new Date(reservation.startTime).getTime();
-          const existEnd = new Date(reservation.endTime).getTime();
-          return (newStart < existEnd) && (newEnd > existStart);
-        });
+      // 修改路由跳转方式（Android兼容）
+      const reservation = {
+        user: this.name,
+        roomType: this.roomType,
+        date: this.date,
+        startTime: this.startTime,
+        endTime: this.endTime,
+        timestamp: new Date().getTime()
       };
 
-      try {
-        const existing = await getReservationsByRoomAndDate(this.roomType, this.date);
-        if (checkConflict(existing)) {
-          this.$refs.uToast.show({
-            title: '该时间段已被预约',
-            type: 'error'
-          });
-          return;
-        }
-        
-        const reservation = {
-          user: this.name,
-          roomType: this.roomType,
-          date: this.date,
-          startTime: this.startTime,
-          endTime: this.endTime,
-          timestamp: new Date().getTime()
-        };
-
-        const id = await addReservation(reservation);
-        this.$router.push({
-          path: '/pages/reservation/info',
-          query: {
-            id: id,
-            roomType: this.roomType,
-            date: this.date,
-            startTime: this.startTime,
-            endTime: this.endTime,
-            user: this.name
-          }
-        });
-        
-      } catch (error) {
-        this.$refs.uToast.show({
-          title: '保存预约失败',
-          type: 'error'
-        });
-      }
+      const id = await addReservation(reservation);
+      uni.navigateTo({
+        url: `/pages/reservation/info?id=${id}&roomType=${this.roomType}&date=${this.date}&startTime=${this.startTime}&endTime=${this.endTime}&user=${this.name}`
+      });
     },
     viewReservation() {
       console.log('查看预约情况');
@@ -407,14 +335,13 @@ export default {
       this.showDatePicker = true;
     },
     openTimePicker() {
-      this.showTimePicker = true;
-      // 设置默认时间为当前时间+30分钟
-      const now = new Date();
-      const startTime = new Date(now.getTime() + 2 * 60000);
-      this.startHour = startTime.getHours().toString().padStart(2, '0');
-      this.startMinute = startTime.getMinutes().toString().padStart(2, '0');
-      this.endHour = (startTime.getHours() + 1).toString().padStart(2, '0');
-      this.endMinute = startTime.getMinutes().toString().padStart(2, '0');
+      this.showTimePicker = true
+      // 使用当前时间初始化
+      const now = new Date()
+      this.startHour = now.getHours().toString()
+      this.startMinute = now.getMinutes().toString()
+      this.endHour = (now.getHours() + 1).toString()
+      this.endMinute = now.getMinutes().toString()
     },
     closeDatePicker() {
       this.showDatePicker = false;
@@ -591,7 +518,7 @@ export default {
 </script>
 
 
-<style scoped>
+<style lang="scss" scoped>
 .room-reservation {
   padding: 20rpx 30rpx 120rpx;
   min-height: 100vh;
@@ -678,4 +605,19 @@ export default {
 .swiper-arrow.right {
   right: 20rpx;
 }
+
+/* 添加Android平台专属样式 */
+/* #ifdef APP-PLUS */
+.u-form-item {
+  min-height: 100rpx !important;
+}
+
+.u-input {
+  padding: 20rpx 0 !important;
+}
+
+.time-input-container {
+  padding: 0 10rpx !important;
+}
+/* #endif */
 </style>

@@ -9,7 +9,7 @@
       <!-- 头像区域 -->
       <view class="avatar-section">
         <u-avatar 
-          :src="userInfo.avatar || 'static/own.png'" 
+          :src="userInfo.avatar || '/static/own.png'" 
           size="120"
           class="main-avatar"
           @click="showAvatarDialog = true" 
@@ -38,7 +38,7 @@
           ></u-icon>
         </view>
         <view class="vip-badge" v-if="userInfo.isVip">
-          <u-icon name="vip" color="#ffd700" size="18"></u-icon>
+          <u-icon name="level" color="#000000" size="18"></u-icon>
           <text>VIP会员</text>
         </view>
       </view>
@@ -176,8 +176,6 @@
         </view>
       </view>
     </view>
-
-    <bottom-nav></bottom-nav>
   </view>
 </template>
 
@@ -190,11 +188,11 @@ export default {
   },
   data() {
     return {
-      // 用户信息（从本地存储读取）
+      // 用户信息（改为固定值测试显示效果）
       userInfo: {
-        nickname: localStorage.getItem('userNickname') || '新用户', // 默认昵称
-        avatar: localStorage.getItem('userAvatar') || '', // 用户头像
-        isVip: false // VIP状态
+        nickname: uni.getStorageSync('userNickname') || '新用户',
+        avatar: uni.getStorageSync('userAvatar') || '',
+        isVip: true // 强制显示VIP标识
       },
       showAvatarDialog: false, // 头像弹窗显示状态
       showNicknameDialog: false, // 昵称弹窗显示状态
@@ -235,19 +233,6 @@ export default {
           bgColor: '#909399', 
           handler: this.goToSettings 
         },
-		{
-		  icon: 'setting', 
-		  title: '设置', 
-		  bgColor: '#909399', 
-		  handler: this.goToSettings 
-		},
-		
-		{
-		  icon: 'setting', 
-		  title: '设置', 
-		  bgColor: '#909399', 
-		  handler: this.goToSettings 
-		}
       ],
       // 服务列表配置
       services: [
@@ -273,34 +258,33 @@ export default {
     };
   },
   methods: {
-    // 路由跳转方法组
     goToReservation() {
-      this.$router.push('/pages/reservation/reservation');
+      uni.switchTab({ url: '/pages/reservation/reservation' });
     },
     goToRecords() {
-      this.$router.push('/pages/reservation/check');
+      uni.switchTab({ url: '/pages/reservation/check' });
     },
     goToCoupon() {
-      this.$router.push('/pages/reservation/cost');
+      uni.switchTab({ url: '/pages/reservation/cost' });
     },
     goToSettings() {
-      this.$router.push('/pages/setting/setting');
+      uni.navigateTo({ url: '/pages/setting/setting' });
     },
     goToComments() {
-      this.$router.push('/pages/comment/comment');
+      uni.navigateTo({ url: '/pages/comment/comment' });
     },
     goToFavorites() {
-      this.$router.push('/pages/favorite/favorite');
+      uni.navigateTo({ url: '/pages/favorite/favorite' });
     },
     goToHelp() {
-      this.$router.push('/pages/help/help');
+      uni.navigateTo({ url: '/pages/help/help' });
     },
     // 选择头像处理
     selectAvatar(url) {
       this.selectedAvatar = url;
       this.showFeedback(`已选择头像${this.avatarUrls.indexOf(url) + 1}`, 'info');
     },
-    // 确认更换头像
+    // 确认更换头像（添加Android文件路径处理）
     async confirmAvatar() {
       if (!this.selectedAvatar) {
         this.showFeedback('请先选择头像', 'warning');
@@ -310,26 +294,44 @@ export default {
       try {
         uni.showLoading({ title: '更新中...', mask: true });
         
+        // 处理Android文件路径前缀
+        if (this.selectedAvatar.startsWith('file://')) {
+          this.selectedAvatar = this.selectedAvatar.replace('file://', '');
+        }
+        
         await new Promise(resolve => setTimeout(resolve, 1000));
         
         this.userInfo.avatar = this.selectedAvatar;
-        localStorage.setItem('userAvatar', this.selectedAvatar);
+        uni.setStorageSync('userAvatar', this.selectedAvatar);
         this.showAvatarDialog = false;
         this.showFeedback('头像更换成功', 'success');
         
       } catch (error) {
-        this.showFeedback('头像更新失败', 'error');
+        this.showFeedback('头像更新失败: ' + error.errMsg, 'error');
       } finally {
         uni.hideLoading();
       }
     },
-    // 上传本地图片
+    // 上传本地图片（添加Android权限处理）
     async uploadLocalImage() {
       try {
+        // 检查Android权限
+        const status = await uni.authorize({
+          scope: 'scope.writePhotosAlbum'
+        });
+        
         const res = await uni.chooseImage({
           count: 1,
           sizeType: ['compressed'],
-          sourceType: ['album', 'camera']
+          sourceType: ['album', 'camera'],
+          // Android专属配置
+          camera: 'back',
+          success: (res) => {
+            // 处理Android7.0以上文件路径
+            res.tempFilePaths = res.tempFilePaths.map(item => {
+              return item.replace(/^file:\/\//, '');
+            });
+          }
         });
         
         if (res.tempFilePaths.length > 0) {
@@ -337,7 +339,7 @@ export default {
           this.showFeedback('已选择本地图片', 'info');
         }
       } catch (error) {
-        this.showFeedback('图片选择失败', 'error');
+        this.showFeedback('图片选择失败: ' + error.errMsg, 'error');
       }
     },
     // 保存昵称
@@ -353,7 +355,7 @@ export default {
       }
 
       this.userInfo.nickname = this.tempNickname.trim();
-      localStorage.setItem('userNickname', this.userInfo.nickname);
+      uni.setStorageSync('userNickname', this.userInfo.nickname);
       this.showNicknameDialog = false;
       this.showFeedback('昵称修改成功', 'success');
     },

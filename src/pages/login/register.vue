@@ -110,8 +110,8 @@ export default {
         password: btoa(this.form.password)
       };
       registeredUsers.push(encryptedUser);
-      // uni.setStorageSync('registeredUsers', JSON.stringify(registeredUsers));
-      localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+      uni.setStorageSync('registeredUsers', JSON.stringify(registeredUsers));
+      // localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
       uni.reLaunch({
         url: '/pages/login/login'
       });

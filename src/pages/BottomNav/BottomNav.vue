@@ -46,6 +46,5 @@ export default {
 
 .bottom-nav {
   height: 120rpx; 
-  /* 其他样式 */
 }
 </style>

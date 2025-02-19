@@ -1,13 +1,8 @@
 <template>
   <view class="container">
+	<u-toast ref="uToast"></u-toast> 
     <!-- 新增操作按钮组 -->
     <view class="left-button-group">
-		<u-button
-		  type="error" 
-		  icon="arrow-leftward" 
-		  size="small"
-		  @click="logout"
-		>退出登录</u-button>
       <u-button 
         type="primary" 
         icon="reload" 
@@ -64,6 +59,20 @@
         </u-cell>
       </u-list-item>
       
+	  <!-- 修改后的返回顶部组件 -->
+	  <u-back-top 
+	    :scroll-top="scrollTop"
+	    icon="arrow-upward"
+	    mode="circle"
+	    top="0"
+		duration="100"
+	    :bottom="100"
+	    :right="20"
+		z-index="9"
+	    @click="scrollToTop"
+		:iconStyle="iconStyle"
+	  ></u-back-top>
+	  
       <u-loadmore 
         :status="loadStatus"
         :load-text="{
@@ -74,22 +83,7 @@
       />
     </u-list>
 
-    <u-toast ref="uToast"></u-toast>
 
-    <!-- 添加返回顶部按钮 -->
-    <u-back-top 
-      :scroll-top="scrollTop"
-	  icon="arrow-upward"
-      :top="0"
-	   mode="circle"
-      @click="scrollToTop"
-      :custom-style="{right: '20rpx', bottom: '100px'}"
-    ></u-back-top>
-
-    <!-- 添加底部导航 -->
-    <view class="bottom-nav-wrapper">
-      <BottomNav activeIndex="1" />
-    </view>
   </view>
 </template>
 
@@ -113,6 +107,11 @@ export default {
       type: 'success'
     },
     scrollTop: 0,
+	mode: 'square',
+	iconStyle: {
+		fontSize: '32rpx',
+		color: '#2979ff'
+	}
   }),
   async created() {
     await this.loadReservations();
@@ -122,12 +121,16 @@ export default {
       try {
         this.loadStatus = 'loading';
         
-        const allData = await getAllReservations();
+        const res = await getAllReservations();
+        const allData = res.sort((a, b) => b.timestamp - a.timestamp)
+          .map(item => ({
+            ...item,
+            date: item.date.replace(/\//g, '-') // 统一日期格式
+          }));
+        
         // 模拟分页逻辑
         const start = (this.currentPage - 1) * this.pageSize;
-        const newData = allData
-          .sort((a, b) => b.timestamp - a.timestamp)
-          .slice(start, start + this.pageSize);
+        const newData = allData.slice(start, start + this.pageSize);
 
         this.reservations = loadmore 
           ? [...this.reservations, ...newData]
@@ -136,7 +139,7 @@ export default {
         this.loadStatus = newData.length >= this.pageSize ? 'loadmore' : 'nomore';
         
       } catch (error) {
-        this.showFeedback('加载失败', 'error');
+        this.showFeedback('加载失败: ' + error.errMsg, 'error');
         this.loadStatus = 'loadmore';
       }
     },
@@ -212,20 +215,6 @@ export default {
         }
       });
     },
-    async logout() {
-      const { confirm } = await this.showConfirmModal('确认退出', '确定要退出登录吗？');
-      if (!confirm) return;
-
-      try {
-        uni.navigateTo({
-          url: '/pages/login/login'
-        });
-        this.showFeedback('已退出登录');
-      } catch (error) {
-        this.showFeedback('退出登录失败', 'error');
-        console.error('路由跳转错误:', error);
-      }
-    },
     refresh() {
       this.loadReservations();
       this.$refs.uToast.show({
@@ -254,7 +243,7 @@ export default {
     scrollToTop() {
       uni.pageScrollTo({
         scrollTop: 0,
-        duration: 300
+        duration: 100
       });
     },
   },
@@ -265,6 +254,9 @@ export default {
         this.showFeedback('预约信息已更新', 'success');
       }
     }
+  },
+  onPageScroll(e) {
+    this.scrollTop = e.scrollTop;
   },
 };
 </script>
@@ -281,17 +273,13 @@ export default {
 
 .left-button-group {
   position: fixed;
-  left: 10rpx;
-  width: 200px;
-  bottom: 100rpx; // 在底部导航上方
+  right: 50rpx; // 给返回按钮留出空间
+  bottom: 100rpx; // 调整原有按钮组位置
   z-index: 1001;
-  display: flex;
-  flex-direction: row;
   
-  // 适配不同屏幕尺寸
   @media (min-width: 768px) {
-    bottom: 160rpx;
-    left: 40rpx;
+    right: 120rpx;
+    bottom: 300rpx;
   }
 }
 
@@ -320,5 +308,4 @@ export default {
   right: 0;
   z-index: 999;
 }
-
 </style>

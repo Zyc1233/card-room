@@ -84,9 +84,6 @@
 				@cancel="showRoomPicker = false"
 			></u-picker>
 		</view>
-		<view class="bottom-nav-wrapper">
-		  <BottomNav activeIndex="2" />
-		</view>
 	</view>
 </template>
 
@@ -125,14 +122,23 @@
 				this.selectedRoom = e.value[0]
 				this.showRoomPicker = false
 			},
-			calculateFee() {	
-				// 加强输入验证
-				if (!this.inputMinutes || isNaN(this.inputMinutes) || this.inputMinutes.trim() === '') {
-					uni.showToast({ title: '请输入有效时间', icon: 'none' });
+			calculateFee() {
+				// 添加Android数字键盘兼容处理
+				this.inputMinutes = this.inputMinutes.replace(/[^0-9]/g, '');
+				
+				if (!this.inputMinutes || this.inputMinutes.trim() === '') {
+					uni.showToast({ 
+						title: '请输入有效时间',
+						icon: 'none',
+						position: 'bottom' // Android更适合底部显示
+					});
 					return;
 				}
-
-				const minutes = parseInt(this.inputMinutes);
+				
+				// 添加最大时间限制（Android需要更严格的输入控制）
+				const maxMinutes = 24 * 60; // 24小时
+				let minutes = Math.min(parseInt(this.inputMinutes), maxMinutes);
+				
 				if (minutes < 1) {
 					uni.showToast({ title: '时间需大于0分钟', icon: 'none' });
 					return;

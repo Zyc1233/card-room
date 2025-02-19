@@ -44,11 +44,11 @@
 				@confirm="confirmTimePicker"
 				@cancel="closeTimePicker"
 				:showCancelButton="true"
-				width="80%"
+				width="100%"
 			>
 				<view class="time-picker-content">
 					<view class="time-input-container">
-						<text class="time-label">开始时间</text>
+						<text class="time-label">开始时间：</text>
 						<u-input
 							v-model="startHour"
 							type="number"
@@ -71,7 +71,7 @@
 					</view>
 
 					<view class="time-input-container">
-						<text class="time-label">结束时间</text>
+						<text class="time-label">结束时间：</text>
 						<u-input
 							v-model="endHour"
 							type="number"
@@ -101,6 +101,7 @@
 							:showIcon="true"
 						></u-alert>
 						<u-text 
+							align="center"
 							v-else 
 							type="info" 
 							:text="`时长：${durationHours}小时${durationMinutes}分钟`"
@@ -267,19 +268,20 @@
 				this.nameError = this.name.trim() ? '' : '请输入预约人姓名';
 			},
 			validateTime(type) {
-				const validateField = (value, max, field) => {
+				// 增强Android数字输入处理
+				const sanitizeInput = (value, max) => {
+					value = value.replace(/[^0-9]/g, ''); // 过滤非数字字符
 					let num = parseInt(value) || 0;
-					num = Math.max(0, Math.min(max, num));
-					this[field] = num.toString().padStart(2, '0');
-					return num;
+					num = Math.min(num, max);
+					return num.toString().padStart(2, '0');
 				};
 
 				if (type === 'start') {
-					validateField(this.startHour, 23, 'startHour');
-					validateField(this.startMinute, 59, 'startMinute');
+					this.startHour = sanitizeInput(this.startHour, 23);
+					this.startMinute = sanitizeInput(this.startMinute, 59);
 				} else {
-					validateField(this.endHour, 23, 'endHour');
-					validateField(this.endMinute, 59, 'endMinute');
+					this.endHour = sanitizeInput(this.endHour, 23);
+					this.endMinute = sanitizeInput(this.endMinute, 59);
 				}
 				this.checkTimeValidation();
 			},
@@ -454,10 +456,6 @@
 		background: #009973;
 	}
 
-	/* 时间选择弹窗样式 */
-	.time-picker-content {
-		padding: 15px;
-	}
 
 	.time-input-container {
 		display: flex;
@@ -467,7 +465,7 @@
 
 	.time-label {
 		width: 80px;
-		font-size: 14px;
+		font-size: 16px;
 		color: #606266;
 	}
 
