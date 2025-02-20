@@ -149,38 +149,33 @@ export default {
         query: {
           id: reservation.id,
           roomType: reservation.roomType,
-          date: reservation.date,
+          date: dayjs(reservation.date, 'YYYY年MM月DD日').format('YYYY-MM-DD'),
           startTime: reservation.startTime,
           endTime: reservation.endTime,
-          name: reservation.user,
-          _t: Date.now()
+          name: reservation.user
         }
       });
     },
     goToRoom(index) {
       const reservation = this.reservations[index];
-      const startDateTime = new Date(`${reservation.date}T${reservation.startTime}`);
-      const endDateTime = new Date(`${reservation.date}T${reservation.endTime}`);
-      const now = new Date();
-      
-      if (now < startDateTime) {
-        this.showFeedback('还未到预约时间，无法进入房间', 'warning');
-        return;
+      try {
+        // 统一日期格式处理
+        const rawDate = reservation.date.replace(/[年月]/g, '-').replace(/日/g, '');
+        const formattedDate = dayjs(rawDate).format('YYYY-MM-DD');
+        
+        this.$router.push({
+          path: '/pages/room/room',
+          query: {
+            roomType: reservation.roomType,
+            date: formattedDate,
+            startTime: reservation.startTime.replace(/[：]/g, ':'),
+            endTime: reservation.endTime.replace(/[：]/g, ':')
+          }
+        });
+      } catch (error) {
+        Toast.fail('房间信息异常');
+        console.error('跳转参数错误:', error);
       }
-      if (now > endDateTime) {
-        this.showFeedback('预约时间已结束，无法进入房间', 'warning');
-        return;
-      }
-      
-      this.$router.push({
-        path: '/pages/room/room',
-        query: {
-          roomType: reservation.roomType,
-          date: reservation.date,
-          startTime: reservation.startTime,
-          endTime: reservation.endTime
-        }
-      });
     },
     async refresh() {
         try {

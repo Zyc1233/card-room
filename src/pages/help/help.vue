@@ -1,25 +1,35 @@
 <template>
-	<u-row class="call-container">
-		<u-col span="5">
-			
-			<u-col class="content" span="12">
-				<u-col v-for="(item,index) in helpList" :key="index" class="section">
-					<u-text type="title" :text="`${index+1}. ${item.title}`"></u-text>
-					<u-col class="details">
-						<u-text 
-							v-for="(detail,i) in item.details" 
+	<van-row class="call-container">
+		<van-col span="24">
+			<van-col class="content" span="24">
+				<van-col 
+					v-for="(item,index) in helpList" 
+					:key="index" 
+					class="section"
+				>
+					<van-cell 
+						:title="`${index+1}. ${item.title}`" 
+						title-class="custom-title"
+					/>
+					<van-col class="details">
+						<van-cell
+							v-for="(detail,i) in item.details"
 							:key="i"
-							:type="i===0 ? 'primary' : 'info'"
-							:text="detail"
+							:title="detail"
+							:title-class="i===0 ? 'primary-text' : 'info-text'"
 							class="detail-item"
-						></u-text>
-					</u-col>
-				</u-col>
+						/>
+					</van-col>
+				</van-col>
 				
-				<u-text class="contact" type="warning" text="有问题请联系：12345678912"></u-text>
-			</u-col>
-		</u-col>
-	</u-row>
+				<van-cell 
+					title="有问题请联系：12345678912" 
+					title-class="contact"
+					class="contact-cell"
+				/>
+			</van-col>
+		</van-col>
+	</van-row>
 </template>
 
 <script>
@@ -80,28 +90,46 @@
 <style scoped>
 	.call-container {
 		padding: 16px;
-		height: 100vh;
+		min-height: 100vh;
 	}
 
 	.content {
-		padding: 0 20rpx;
+		padding: 0 10px;
 	}
 
 	.section {
-		margin-bottom: 32rpx;
+		margin-bottom: 20px;
 	}
 
 	.details {
-		margin-left: 20rpx;
+		margin-left: 15px;
 	}
 
 	.detail-item {
-		margin-top: 8rpx;
-		display: block;
+		padding: 8px 0;
+	}
+
+	.contact-cell {
+		margin-top: 30px;
+		padding: 15px 0;
+	}
+
+	/* 新增自定义样式 */
+	.custom-title {
+		font-size: 16px;
+		font-weight: bold;
+	}
+
+	.primary-text {
+		color: #1989fa;
+	}
+
+	.info-text {
+		color: #969799;
 	}
 
 	.contact {
-		margin-top: 40rpx;
-		padding: 20rpx 0;
+		color: #ff976a;
+		font-size: 14px;
 	}
 </style>

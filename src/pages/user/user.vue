@@ -39,15 +39,17 @@
     </van-cell-group>
 
     <!-- 功能入口 -->
-    <van-grid :column-num="4" class="function-grid">
-      <van-grid-item
-        v-for="(item, index) in functions"
-        :key="index"
-        :icon="item.icon"
-        :text="item.title"
-        @click="item.handler"
-      />
-    </van-grid>
+    <van-cell-group class="function-card">
+      <van-grid :column-num="4" class="function-grid">
+        <van-grid-item
+          v-for="(item, index) in functions"
+          :key="index"
+          :icon="item.icon"
+          :text="item.title"
+          @click="item.handler"
+        />
+      </van-grid>
+    </van-cell-group>
 
     <!-- 服务列表 -->
     <van-cell-group title="常用服务" class="service-card">
@@ -351,12 +353,30 @@ export default {
   }
 }
 
+/* 功能卡片样式 */
+.function-card {
+  margin: 16px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  
+  &::before {
+    display: none; /* 移除vant默认的border */
+  }
+}
+
 /* 功能入口网格布局 */
 .function-grid {
   margin-bottom: 16px;
   
-  ::v-deep .van-grid-item__content {
-    padding: 16px 8px;
+  ::v-deep .van-grid-item {
+    flex-basis: 25%; /* 每行4个 */
+    max-width: 25%;  /* 防止溢出 */
+    
+    @media (max-width: 480px) {
+      flex-basis: 33.3%; /* 小屏幕时每行3个 */
+      max-width: 33.3%;
+    }
   }
 }
 

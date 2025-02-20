@@ -1,12 +1,28 @@
 <template>
-  <u-button @click="navigateBack" class="back-button">退出房间</u-button>
+  <van-button 
+    type="default" 
+    size="small"
+    round
+    class="back-button"
+    color="#ccc"
+    @click="navigateBack"
+  >
+    <van-icon name="arrow-left" />
+    退出房间
+  </van-button>
 </template>
 
 <script>
+import { Button, Icon } from 'vant';
+
 export default {
+  components: {
+    [Button.name]: Button,
+    [Icon.name]: Icon
+  },
   methods: {
     navigateBack() {
-       this.$router.push('/pages/reservation/reservation');
+      this.$router.push('/pages/reservation/reservation');
     }
   }
 };
@@ -14,13 +30,7 @@ export default {
 
 <style scoped>
 .back-button {
-  padding: 10px 15px;
-  background-color: #ccc;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-.back-button:hover {
-  background-color: #bbb;
+	width: 100px;
+  
 }
 </style> 

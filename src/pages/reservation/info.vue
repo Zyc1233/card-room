@@ -92,26 +92,21 @@ export default {
       };
     },
     goRoom() {
-      const startDateTime = new Date(`${this.reservation.date}T${this.reservation.startTime}`);
-      const endDateTime = new Date(`${this.reservation.date}T${this.reservation.endTime}`);
-      const now = new Date();
-      
-      if (now < startDateTime) {
-        alert('还未到预约时间，无法进入房间');
-        return;
-      }
-      if (now > endDateTime) {
-        alert('预约时间已结束，无法进入房间');
-        return;
-      }
-      
+      // 统一日期格式处理
+      const formatDate = (dateStr) => {
+        return dayjs(dateStr)
+          .format('YYYY-MM-DD')
+          .replace(/[年月]/g, '-')
+          .replace(/日/g, '');
+      };
+
       this.$router.push({
         path: '/pages/room/room',
         query: {
           roomType: this.reservation.roomType,
-          date: this.reservation.date,
-          startTime: this.reservation.startTime,
-          endTime: this.reservation.endTime
+          date: formatDate(this.reservation.date),
+          startTime: this.reservation.startTime.replace(/[^0-9:]/g, ''),
+          endTime: this.reservation.endTime.replace(/[^0-9:]/g, '')
         }
       });
     },

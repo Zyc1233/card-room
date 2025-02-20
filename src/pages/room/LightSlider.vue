@@ -1,30 +1,36 @@
 <template>
-  <u-row class="light-control" justify="space-between" align="center">
-    <u-col span="5">
-      <text class="u-font-sm">灯光亮度</text>
-    </u-col>
+  <van-row class="light-control" justify="space-between" align="center">
+    <van-col span="10">
+      <span class="label-text">灯光亮度</span>
+    </van-col>
     
-    <u-col span="6">
-      <u-slider
+    <van-col span="10">
+      <van-slider
         v-model="sliderValue"
         :min="0"
         :max="100"
         :step="5"
-        block-size="20"
+        bar-height="4px"
+        button-size="20px"
         active-color="#00b38a"
         inactive-color="#ebedf0"
         @change="handleChange"
-      ></u-slider>
-    </u-col>
+      />
+    </van-col>
 
-    <u-col span="3" class="u-text-right">
-      <text class="value-display">{{ sliderValue }}%</text>
-    </u-col>
-  </u-row>
+    <van-col span="4" class="text-right">
+      <span class="value-display">{{ sliderValue }}%</span>
+    </van-col>
+  </van-row>
 </template>
 
 <script>
+import { Slider, Toast } from 'vant';
+
 export default {
+  components: {
+    [Slider.name]: Slider,
+  },
   data() {
     return {
       sliderValue: 75
@@ -33,7 +39,7 @@ export default {
   methods: {
     handleChange(value) {
       // 可在此处添加亮度调节接口调用
-      console.log('当前亮度：', value)
+      Toast('当前亮度：'+ value)
     }
   }
 }
@@ -48,9 +54,19 @@ export default {
   box-shadow: 0 2px 12px rgba(0,0,0,0.05);
 }
 
+.label-text {
+    font-size: 15px;
+    font-weight: 500;
+    color: #303133;
+}
+
+.text-right {
+  text-align: right;
+}
+
 .value-display {
   font-size: 16px;
   color: #00b38a;
-  font-weight: bold;
+  font-weight: 500;
 }
 </style>

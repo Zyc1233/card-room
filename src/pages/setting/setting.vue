@@ -1,70 +1,75 @@
 <template>
-  <view class="setting-container" :class="{ 'night-mode': nightMode }">
-    <u-form class="custom-form">
+  <div class="setting-container" :class="{ 'night-mode': nightMode }">
+    <van-cell-group class="custom-form">
       <!-- 主题模式 -->
-      <u-form-item label="主题模式" label-width="160rpx" borderBottom>
-        <u-radio-group 
-          v-model="themeMode" 
+      <van-cell title="主题模式" class="form-item">
+        <van-radio-group 
+          v-model="themeMode"
           @change="handleThemeChange"
-          placement="column"
-          iconPlacement="right"
-          activeColor="#2b85e4"
+          direction="vertical"
         >
-          <u-radio 
+          <van-radio 
             v-for="item in themeOptions"
             :key="item.value"
-            :label="item.label"
             :name="item.value"
-            :icon="item.icon"
-            iconSize="20"
-          ></u-radio>
-        </u-radio-group>
-      </u-form-item>
+            icon-size="16px"
+          >
+            {{ item.label }}
+            <template #icon="props">
+              <van-icon 
+                :name="props.checked ? item.activeIcon : item.icon"
+                :color="nightMode ? '#fff' : '#2b85e4'"
+              />
+            </template>
+          </van-radio>
+        </van-radio-group>
+      </van-cell>
 
       <!-- 主题颜色 -->
-      <u-form-item label="主题颜色" label-width="160rpx" borderBottom>
-        <u-radio-group v-model="primaryColor" @change="applySettings">
-          <u-radio
-            v-for="color in colorOptions"
-            :key="color.value"
-            :name="color.value"
-          >
-            <template #icon>
-              <view 
+      <van-cell title="主题颜色" class="form-item">
+        <van-radio-group v-model="primaryColor" @change="applySettings">
+          <div class="color-options">
+            <van-radio
+              v-for="color in colorOptions"
+              :key="color.value"
+              :name="color.value"
+              class="color-option"
+            >
+              <div 
                 class="color-preview"
                 :style="{ backgroundColor: color.value }"
-              ></view>
-            </template>
-            <text class="color-label">{{ color.label }}</text>
-          </u-radio>
-        </u-radio-group>
-      </u-form-item>
+              ></div>
+              <span class="color-label">{{ color.label }}</span>
+            </van-radio>
+          </div>
+        </van-radio-group>
+      </van-cell>
 
       <!-- 字体设置 -->
-      <u-form-item label="字体样式" label-width="160rpx" borderBottom>
-        <u-input
-          v-model="fontLabel"
-          placeholder="请选择字体"
-          disabled
-          @click="showFontPicker = true"
-        />
-        <u-picker
-          :show="showFontPicker"
-          :columns="[fontOptions]"
-          keyName="label"
-          :singleColumn="true"
+      <van-cell 
+        title="字体样式"
+        :value="fontLabel"
+        is-link
+        @click="showFontPicker = true"
+        class="form-item"
+      />
+      <van-popup
+        v-model="showFontPicker"
+        position="bottom"
+        round
+      >
+        <van-picker
+          :columns="fontOptions"
           @confirm="handleFontConfirm"
           @cancel="showFontPicker = false"
-          title="选择字体"
-          confirmColor="#2b85e4"
-          cancelColor="#606266"
-          :itemHeight="50"
+          show-toolbar
+          value-key="label"
         />
-      </u-form-item>
+      </van-popup>
 
       <!-- 字号设置 -->
-      <u-form-item label="字体大小" label-width="160rpx" borderBottom>
-        <u-number-box 
+      <van-cell title="字体大小" class="form-item">
+        <van-stepper 
           v-model="fontSize"
           :min="12"
           :max="24"
@@ -72,344 +77,225 @@
           integer
           @change="applySettings"
         />
-      </u-form-item>
+      </van-cell>
 
       <!-- 夜间模式 -->
-      <u-form-item label="夜间模式" label-width="160rpx" borderBottom>
-        <u-switch
+      <van-cell title="夜间模式" class="form-item">
+        <van-switch
           v-model="nightMode"
-          activeColor="#2b85e4"
+          active-color="#2b85e4"
           @change="handleNightModeChange"
-        ></u-switch>
-      </u-form-item>
+          size="20px"
+        />
+      </van-cell>
 
       <!-- 自动夜间模式 -->
-      <u-form-item label="自动夜间模式" label-width="160rpx" borderBottom>
-        <u-switch
+      <van-cell title="自动夜间模式" class="form-item">
+        <van-switch
           v-model="autoNightMode"
-          activeColor="#2b85e4"
+          active-color="#2b85e4"
           @change="checkNightMode"
-        ></u-switch>
-      </u-form-item>
+          size="20px"
+        />
+      </van-cell>
 
       <!-- 操作按钮 -->
-      <u-button
-        type="primary"
-        shape="circle"
-        customStyle="margin-top: 60rpx"
-        @click="saveSettings"
-      >保存设置</u-button>
-      
-      <u-button
-        type="error"
-        shape="circle"
-        customStyle="margin-top: 30rpx"
-        @click="resetSettings"
-      >恢复默认</u-button>
-    </u-form>
-  </view>
+      <div class="action-buttons">
+        <van-button 
+          type="primary" 
+          block
+          round
+          @click="saveSettings"
+          class="submit-btn"
+        >保存设置</van-button>
+        <van-button 
+          type="danger" 
+          block
+          round
+          @click="resetSettings"
+          class="reset-btn"
+        >恢复默认</van-button>
+      </div>
+    </van-cell-group>
+  </div>
 </template>
 
 <script>
-// import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
-
-// export default {
-//   setup() {
-//     // 响应式状态
-//     const themeMode = ref('light');
-//     const fontFamily = ref('');
-//     const fontSize = ref(14);
-//     const nightMode = ref(false);
-//     const showFontPicker = ref(false);
-//     const primaryColor = ref('#2b85e4');
-//     const autoNightMode = ref(false);
-
-//     // 新增系统主题监听
-//     const systemThemeQuery = uni.getSystemTheme ? uni.getSystemTheme() : null;
-//     const systemTheme = ref('light');
-
-//     // 优化配置选项
-//     const themeOptions = [
-//       { label: '浅色模式', value: 'light', icon: 'sun' },
-//       { label: '深色模式', value: 'dark', icon: 'moon' },
-//       { label: '自动模式', value: 'auto', icon: 'auto' }
-//     ];
-
-//     const fontOptions = [
-//       { label: '系统默认', value: '' },
-//       { label: '思源黑体', value: 'Source Han Sans' },
-//       { label: '阿里巴巴普惠体', value: 'Alibaba PuHuiTi' },
-//       { label: '手写体', value: 'Zhi Mang Xing' }
-//     ];
-
-//     const colorOptions = [
-//       { label: '科技蓝', value: '#2b85e4' },
-//       { label: '活力橙', value: '#ff7900' },
-//       { label: '清新绿', value: '#19be6b' },
-//       { label: '浪漫紫', value: '#8a6de9' }
-//     ];
-
-//     // 计算属性
-//     const fontLabel = computed(() => {
-//       return fontOptions.find(item => item.value === fontFamily.value)?.label || '请选择字体';
-//     });
-
-//     // 新增主题相关变量
-//     const isAutoTheme = computed(() => themeMode.value === 'auto');
-//     const actualTheme = computed(() => {
-//       return isAutoTheme.value ? systemTheme.value : themeMode.value;
-//     });
-
-//     // 优化字体加载逻辑
-//     const fontLoading = ref(false);
-//     const fontLoadError = ref(null);
-
-//     // 应用设置
-//     const applySettings = () => {
-//       // 应用主题色
-//       applyColorTheme();
+export default {
+  data() {
+    return {
+      // 主题相关数据
+      nightMode: false,
+      themeMode: 'light',
+      themeOptions: [
+        { label: '浅色模式', value: 'light', icon: 'circle', activeIcon: 'checked' },
+        { label: '深色模式', value: 'dark', icon: 'circle', activeIcon: 'checked' }
+      ],
       
-//       // 应用字体
-//       if (fontFamily.value) {
-//         uni.loadFontFace({
-//           family: fontFamily.value,
-//           source: `url("/static/fonts/${fontFamily.value}.ttf")`,
-//           success: () => console.log('字体加载成功'),
-//           fail: (err) => console.error('字体加载失败:', err)
-//         });
-//       }
-
-//       // 应用字号
-//       document.documentElement.style.fontSize = `${fontSize.value}px`;
-
-//       // 应用夜间模式
-//       applyTheme();
-//     };
-
-//     // 完善主题应用逻辑
-//     const applyTheme = () => {
-//       const theme = actualTheme.value;
-//       document.documentElement.classList.toggle('dark-theme', theme === 'dark');
-//       document.documentElement.style.colorScheme = theme;
-//     };
-
-//     // 增强颜色处理
-//     const applyColorTheme = () => {
-//       const root = document.documentElement.style;
-//       root.setProperty('--primary-color', primaryColor.value);
-//       root.setProperty('--primary-hover', adjustColor(primaryColor.value, 20));
-//       root.setProperty('--primary-active', adjustColor(primaryColor.value, -20));
-//     };
-
-//     // 优化自动夜间模式检测
-//     const checkNightMode = () => {
-//       if (autoNightMode.value) {
-//         const isNight = checkIsNightTime();
-//         const shouldNightMode = isNight || (isAutoTheme.value && systemTheme.value === 'dark');
-        
-//         if (nightMode.value !== shouldNightMode) {
-//           nightMode.value = shouldNightMode;
-//           applySettings();
-//         }
-//       }
-//     };
-
-//     // 新增工具函数
-//     const adjustColor = (hex, percent) => {
-//       // 实现颜色调整逻辑
-//     };
-
-//     const checkIsNightTime = () => {
-//       const hours = new Date().getHours();
-//       return hours > 18 || hours < 6;
-//     };
-
-//     // 加载保存的设置
-//     const loadSettings = () => {
-//       try {
-//         const settings = uni.getStorageSync('appSettings') || {};
-//         themeMode.value = settings.theme || 'light';
-//         fontFamily.value = settings.font || '';
-//         fontSize.value = settings.size || 14;
-//         nightMode.value = settings.nightMode || false;
-//         primaryColor.value = settings.primaryColor || '#2b85e4';
-//         autoNightMode.value = settings.autoNightMode || false;
-//         applySettings();
-//       } catch (error) {
-//         console.error('加载设置失败:', error);
-//       }
-//     };
-
-//     // 保存设置
-//     const saveSettings = async () => {
-//       try {
-//         const settings = {
-//           theme: themeMode.value,
-//           font: fontFamily.value,
-//           size: fontSize.value,
-//           nightMode: nightMode.value,
-//           primaryColor: primaryColor.value,
-//           autoNightMode: autoNightMode.value
-//         };
-
-//         await uni.setStorage({ key: 'appSettings', data: settings });
-//         uni.$u.toast('设置保存成功');
-//       } catch (error) {
-//         uni.$u.toast('保存失败，请重试');
-//         console.error('保存失败:', error);
-//       }
-//     };
-
-//     // 恢复默认设置
-//     const resetSettings = () => {
-//       themeMode.value = 'light';
-//       fontFamily.value = '';
-//       fontSize.value = 14;
-//       nightMode.value = false;
-//       primaryColor.value = '#2b85e4';
-//       autoNightMode.value = false;
-//       applySettings();
-//       uni.$u.toast('已恢复默认设置');
-//     };
-
-//     // 生命周期钩子
-//     onMounted(() => {
-//       loadSettings();
-//       const timer = setInterval(checkNightMode, 300000); // 5分钟检测一次
+      // 颜色相关数据
+      primaryColor: '#2b85e4',
+      colorOptions: [
+        { label: '经典蓝', value: '#2b85e4' },
+        { label: '活力橙', value: '#ff976a' },
+        { label: '草木绿', value: '#07c160' }
+      ],
       
-//       if (systemThemeQuery) {
-//         systemThemeQuery.onChange(res => {
-//           systemTheme.value = res.theme;
-//           if (isAutoTheme.value) applyTheme();
-//         });
-//       }
-
-//       onBeforeUnmount(() => {
-//         clearInterval(timer);
-//         systemThemeQuery?.offChange();
-//       });
-//     });
-
-//     return {
-//       // 状态
-//       themeMode,
-//       fontFamily,
-//       fontSize,
-//       nightMode,
-//       showFontPicker,
-//       primaryColor,
-//       autoNightMode,
+      // 字体相关数据
+      fontLabel: '系统默认',
+      showFontPicker: false,
+      fontOptions: [
+        { label: '系统默认', value: 'default' },
+        { label: '思源黑体', value: 'NotoSans' },
+        { label: '阿里巴巴普惠体', value: 'Alibaba' }
+      ],
+      fontSize: 16,
       
-//       // 配置选项
-//       themeOptions,
-//       fontOptions,
-//       colorOptions,
-      
-//       // 计算属性
-//       fontLabel,
-//       actualTheme,
-//       fontLoading,
-//       fontLoadError,
-      
-//       // 方法
-//       handleThemeChange: applySettings,
-//       handleFontConfirm: (e) => {
-//         fontFamily.value = e.value[0].value;
-//         showFontPicker.value = false;
-//         applySettings();
-//       },
-//       handleNightModeChange: applySettings,
-//       checkNightMode,
-//       saveSettings,
-//       resetSettings
-//     };
-//   }
-// };
+      // 夜间模式相关
+      autoNightMode: false
+    };
+  },
+  methods: {
+    handleThemeChange(value) {
+      this.nightMode = value === 'dark';
+      this.applySettings();
+    },
+    
+    applySettings() {
+      // 应用样式设置的逻辑
+      document.documentElement.style.setProperty('--primary-color', this.primaryColor);
+      document.documentElement.style.fontSize = `${this.fontSize}px`;
+    },
+    
+    handleFontConfirm(font) {
+      this.fontLabel = font.label;
+      this.showFontPicker = false;
+      this.applySettings();
+    },
+    
+    handleNightModeChange(value) {
+      this.nightMode = value;
+      this.autoNightMode = false;
+    },
+    
+    checkNightMode() {
+      if (this.autoNightMode) {
+        // 自动夜间模式逻辑
+        const hour = new Date().getHours();
+        this.nightMode = hour >= 18 || hour <= 6;
+      }
+    },
+    
+    saveSettings() {
+      // 保存设置到本地存储
+      localStorage.setItem('userSettings', JSON.stringify({
+        theme: this.themeMode,
+        color: this.primaryColor,
+        font: this.fontLabel,
+        fontSize: this.fontSize,
+        nightMode: this.nightMode,
+        autoNight: this.autoNightMode
+      }));
+    },
+    
+    resetSettings() {
+      // 重置为默认设置
+      this.themeMode = 'light';
+      this.primaryColor = '#2b85e4';
+      this.fontLabel = '系统默认';
+      this.fontSize = 16;
+      this.nightMode = false;
+      this.autoNightMode = false;
+      this.applySettings();
+    }
+  },
+  mounted() {
+    // 加载保存的设置
+    const savedSettings = localStorage.getItem('userSettings');
+    if (savedSettings) {
+      const settings = JSON.parse(savedSettings);
+      Object.keys(settings).forEach(key => {
+        this[key] = settings[key];
+      });
+      this.applySettings();
+    }
+  }
+};
 </script>
 
 <style lang="scss" scoped>
 .setting-container {
-  padding: 30rpx;
+  padding: 15px;
   min-height: 100vh;
-  background-color: #f8f8f8;
-  transition: background-color 0.3s ease;
+  background: #f7f8fa;
 
   &.night-mode {
-    background-color: #1a1a1a;
-    color: #ffffff;
-
-    .custom-form {
-      background-color: #2a2a2a;
-    }
-
-    .u-form-item__body__right__content {
-      color: rgba(255,255,255,0.9);
-    }
+    background: #1a1a1a;
     
-    .color-preview {
-      border-color: #444;
-    }
-  }
-
-  &:not(.night-mode) {
-    .color-preview {
-      border-color: #ddd;
+    .custom-form {
+      background: #2a2a2a;
+      
+      ::v-deep .van-cell__title,
+      ::v-deep .van-cell__value,
+      .color-label {
+        color: rgba(255,255,255,0.9);
+      }
     }
   }
 }
 
 .custom-form {
-  background: #ffffff;
-  border-radius: 16rpx;
-  padding: 0 30rpx;
-  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.05);
-  transition: background-color 0.3s ease;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.color-preview {
-  width: 40rpx;
-  height: 40rpx;
-  border-radius: 50%;
-  margin-right: 20rpx;
-  border: 2rpx solid #eee;
-  box-shadow: 0 2rpx 6rpx rgba(0,0,0,0.1);
-  transition: transform 0.2s ease;
+.form-item {
+  ::v-deep .van-cell__title {
+    flex: 0 0 100px;
+  }
+}
+
+.color-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.color-option {
+  display: flex;
+  align-items: center;
+  padding: 0;
+  margin-right: 15px;
   
-  &:active {
-    transform: scale(1.1);
-  }
-}
-
-.color-label {
-  margin-left: 10rpx;
-  font-size: 28rpx;
-}
-
-::v-deep {
-  .u-form-item__body {
-    padding: 28rpx 0;
-  }
-
-  .u-radio__text {
+  ::v-deep .van-radio__label {
     display: flex;
     align-items: center;
   }
+}
 
-  .u-input--disabled {
-    color: #606266 !important;
+.color-preview {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  margin-right: 6px;
+  border: 1px solid #ebedf0;
+}
+
+.action-buttons {
+  padding: 20px 16px;
+  
+  .submit-btn {
+    margin-bottom: 12px;
+  }
+  
+  .reset-btn {
+    &::before {
+      background-color: var(--van-button-danger-border-color);
+    }
   }
 }
 
-// 新增过渡动画
-.u-radio-group,
-.u-form-item__body {
-  transition: all 0.3s ease;
-}
-
-// 新增错误提示
-.font-error {
-  color: #e54d42;
-  font-size: 24rpx;
-  margin-top: 10rpx;
+::v-deep .van-picker__toolbar {
+  background: var(--van-background-2);
 }
 </style>
