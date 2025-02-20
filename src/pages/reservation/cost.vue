@@ -1,99 +1,90 @@
 <template>
 	<view class="container">
-		<view class="calculator-card">
-			<u-form :model="formData" ref="uForm">
-				<!-- 房间选择 -->
-				<u-form-item
-				 label="房间类型:" 
-				 prop="room"  
-				 @click="showRoomPicker = true"
-				 label-width="160rpx">
-					<u--input
-						v-model="selectedRoom.name"
-						disabled
-						disabledColor="#ffffff"
-						placeholder="请选择房间类型"
-						border="none"
-					></u--input>
-					<u-icon name="arrow-down" slot="right"></u-icon>
-				</u-form-item>
+		<van-cell-group title="费用计算" class="calculator-card">
+			<!-- 房间选择 -->
+			<van-cell
+				title="房间类型:"
+				:value="selectedRoom.name"
+				is-link
+				@click="showRoomPicker = true"
+			/>
 
-				<!-- 时间输入 -->
-				<u-form-item 
-				 label="使用时间:" 
-				 prop="minutes"
-				 label-width="160rpx">
-					<u--input
-						v-model="inputMinutes"
-						placeholder="请输入使用时间（分钟）"
-						border="none"
-						type="number"
-					></u--input>
-				</u-form-item>
+			<!-- 时间输入 -->
+			<van-field
+				v-model="inputMinutes"
+				label="使用时间:"
+				placeholder="请输入分钟数"
+				type="number"
+				clearable
+			/>
+			<van-popup v-model="showRoomPicker" position="bottom">
+			  <van-picker
+			    title="请选择预约房间"
+			    :columns="rooms"
+			    value-key="name"
+			    show-toolbar
+			    @confirm="roomConfirm"
+			    @cancel="showRoomPicker = false"
+			  />
+			</van-popup>
 
-				<!-- VIP选择 -->
-				<u-form-item 
-				 label="VIP优惠:" 
-				 prop="vip"
-				 label-width="160rpx">
-					<u-checkbox-group
-						v-model="checkboxValue"
-						placement="row"
-						@change="checkboxChange"
-					>
-						<u-checkbox 
-							:name="true"
-							label="我是VIP（享受8折优惠）"
-							shape="circle"
-						></u-checkbox>
-					</u-checkbox-group>
-				</u-form-item>
-			</u-form>
+			<!-- VIP选择 -->
+			<van-cell center title="VIP会员（8折优惠）">
+				<van-switch
+					v-model="isVip"
+					size="24px"
+					active-color="#07c160"
+				/>
+			</van-cell>
 
-			<!-- 计算按钮 -->
-			<u-button
-				type="primary"
-				@click="calculateFee"
-				customStyle="margin-top: 30rpx"
-				shape="circle"
-			>立即计算</u-button>
-
-			<!-- 结果展示区域 -->
-			<view class="result-area" v-if="showResult">
-				<u--text 
-					:text="resultText" 
-					size="18" 
-					color="#2979ff"
-					bold
-					align="center"
-				></u--text>
-				<u-button 
-					type="primary" 
-					size="mini"
-					@click="showResult = false"
-					customStyle="margin-top: 20rpx;"
-				>关闭</u-button>
+			<!-- 操作按钮 -->
+			<view class="action-buttons">
+				<van-button
+					type="info"
+					block
+					@click="calculateFee"
+					custom-class="calculate-btn"
+				>
+					立即计算
+				</van-button>
 			</view>
 
-			<!-- 房间选择器 -->
-			<u-picker
-				:show="showRoomPicker"
-				:columns="[rooms]"
-				keyName="name"
+			<!-- 结果展示 -->
+			<van-collapse :value="showResult ? ['result'] : []">
+				<van-collapse-item name="result" title="计算结果">
+					<view class="result-content">
+						{{ resultText }}
+					</view>
+					<van-button
+						plain
+						type="info"
+						size="small"
+						@click="showResult = false"
+					>
+						关闭
+					</van-button>
+				</van-collapse-item>
+			</van-collapse>
+		</van-cell-group>
+
+		<!-- 房间选择器 -->
+		<van-popup
+			:show="showRoomPicker"
+			position="bottom"
+			@close="showRoomPicker = false"
+		>
+			<van-picker
+				:columns="rooms"
+				value-key="name"
 				@confirm="roomConfirm"
 				@cancel="showRoomPicker = false"
-			></u-picker>
-		</view>
+			/>
+		</van-popup>
 	</view>
 </template>
 
 <script>
-	import BottomNav from '@/pages/BottomNav/BottomNav.vue';
-
 	export default {
-		components: {
-			BottomNav
-		},
 		data() {
 			return {
 				rooms: [
@@ -104,17 +95,10 @@
 				],
 				selectedRoom: { name: '麻将室', price: 20 },
 				inputMinutes: '',
-				checkboxValue: [],
 				isVip: false,
 				showResult: false,
 				showRoomPicker: false,
-				isZoomed: false,
-				resultText: '总费用: 0元',
-				formData: {
-					room: '',
-					minutes: '',
-					vip: false
-				}
+				resultText: '总费用: 0元'
 			}
 		},
 		methods: {
@@ -122,23 +106,14 @@
 				this.selectedRoom = e.value[0]
 				this.showRoomPicker = false
 			},
-			calculateFee() {
-				// 添加Android数字键盘兼容处理
-				this.inputMinutes = this.inputMinutes.replace(/[^0-9]/g, '');
-				
-				if (!this.inputMinutes || this.inputMinutes.trim() === '') {
-					uni.showToast({ 
-						title: '请输入有效时间',
-						icon: 'none',
-						position: 'bottom' // Android更适合底部显示
-					});
+			calculateFee() {	
+				// 加强输入验证
+				if (!this.inputMinutes || isNaN(this.inputMinutes) || this.inputMinutes.trim() === '') {
+					uni.showToast({ title: '请输入有效时间', icon: 'none' });
 					return;
 				}
-				
-				// 添加最大时间限制（Android需要更严格的输入控制）
-				const maxMinutes = 24 * 60; // 24小时
-				let minutes = Math.min(parseInt(this.inputMinutes), maxMinutes);
-				
+
+				const minutes = parseInt(this.inputMinutes);
 				if (minutes < 1) {
 					uni.showToast({ title: '时间需大于0分钟', icon: 'none' });
 					return;
@@ -187,10 +162,6 @@
 					console.error('计算错误：', e);
 					uni.showToast({ title: '计算出现错误', icon: 'none' });
 				}
-			},
-			checkboxChange(e) {
-				this.isVip = e.includes(true)
-				this.formData.vip = this.isVip
 			}
 		}
 	}
@@ -200,82 +171,38 @@
 .container {
 	padding: 30rpx;
 	background: #f5f7fa;
+}
 
-	.calculator-card {
-		background: #fff;
-		border-radius: 24rpx;
-		padding: 20rpx;
-		box-shadow: 0 10rpx 30rpx rgba(0,0,0,0.05);
+.calculator-card {
+	margin: 16px;
+	border-radius: 8px;
+	overflow: hidden;
+	
+	::v-deep .van-cell__title {
+		flex: 0 0 80px;
 	}
 
-	.result-area {
-		margin-top: 40rpx;
-		padding: 40rpx;
-		background: linear-gradient(135deg, #f8f9ff 0%, #f1f4ff 100%);
-		border-radius: 20rpx;
-		border: none;
-		box-shadow: 0 4rpx 12rpx rgba(41,121,255,0.1);
+	.action-buttons {
+		padding: 16px;
 		
-		.u--text {
-			line-height: 1.8;
-			padding: 20rpx;
-			background: #fff;
-			border-radius: 12rpx;
-			box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.05);
-			white-space: pre-wrap;
-			text-align: left;
-			
-			&::before {
-				display: block;
-				font-size: 48rpx;
-				text-align: center;
-				margin-bottom: 20rpx;
-			}
-		}
-		
-		.u-button {
-			border-radius: 50rpx;
-			transition: all 0.3s;
-			&:active {
-				transform: scale(0.95);
-			}
+		.calculate-btn {
+			border-radius: 8px;
 		}
 	}
 
-	.u-form-item {
-		margin-bottom: 30rpx;
-		border-radius: 12rpx;
-		padding: 0 20rpx;
+	.result-content {
+		padding: 12px;
 		background: #f8f9fa;
-		
-		&__body {
-			padding: 25rpx 0;
-		}
-	}
-
-	.u-button {
-		height: 90rpx;
-		font-size: 32rpx;
-		letter-spacing: 2rpx;
-		box-shadow: 0 4rpx 12rpx rgba(41,121,255,0.3);
-	}
-
-	@keyframes fadeIn {
-		from { opacity: 0; transform: translateY(30rpx) scale(0.95); }
-		to { opacity: 1; transform: translateY(0) scale(1); }
+		border-radius: 6px;
+		margin: 12px 0;
+		white-space: pre-wrap;
+		line-height: 1.6;
 	}
 }
 
-
-.u-form-item__message {
+.van-form-item__message {
 	color: #fa3534;
 	font-size: 24rpx;
 	padding-top: 8rpx;
-}
-
-/* 强制弹窗层级 */
-::v-deep .u-popup__content {
-	z-index: 10086 !important;
-	box-shadow: 0 0 20rpx rgba(0,0,0,0.1);
 }
 </style>

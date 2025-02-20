@@ -4,182 +4,165 @@
     <!-- 顶部区域：包含logo、标题和登录方式选择 -->
     <view class="header">
       <!-- Logo图片 -->
-      <u-image class="login-logo" src="/static/login.png" width="160rpx" height="160rpx"></u-image>
+      <image 
+	  class="login-logo"
+	  src='/static/login.png'
+	  width="160rpx"
+	  height="160rpx">
+	  </image>
+	  
       <!-- 页面标题 -->
       <text class="title">用户登录</text>
       <!-- 登录方式选择区域 -->
-      <u-radio-group 
+      <van-radio-group 
         v-model="loginMethod" 
         @change="val => loginMethod = val"
         :wrap="true"
         class="login-method"
       >
-        <u-radio
+        <van-radio
           name="password"
           label="密码登录"
           active-color="#007aff"
           label-size="32rpx"
-          :custom-style="{ marginRight: '40rpx' }"
-        ></u-radio>
-        <u-radio
+        >密码登录</van-radio>
+        <van-radio
           name="code"
           label="验证码登录"
           active-color="#007aff"
           label-size="32rpx"
-        ></u-radio>
-      </u-radio-group>
+        >验证码登录
+        </van-radio>
+      </van-radio-group>
     </view>
 
     <!-- 密码登录表单 -->
-    <u-form 
+    <van-form 
       :model="form" 
       :rules="rules"
       ref="uForm" 
       v-if="loginMethod === 'password'"
       class="form-area"
     >
-      <u-form-item prop="phone" :border-bottom="false">
-        <u-input
-          v-model="form.phone"
-          placeholder="请输入手机号码"
-          type="number"
-          maxlength="11"
-          clearable
-          :custom-style="{ fontSize: '15px' }"
-        >
-          <template #prefix>
-            <u-icon name="phone" size="20" color="#999"></u-icon>
-          </template>
-        </u-input>
-      </u-form-item>
+      <van-field
+        v-model="form.phone"
+        name="phone"
+        placeholder="请输入手机号码"
+        type="tel"
+        maxlength="11"
+        clearable
+        :rules="rules.phone"
+      >
+        <template #left-icon>
+          <van-icon name="phone-o" size="20" color="#999" />
+        </template>
+      </van-field>
 
-      <u-form-item prop="password" :border-bottom="false">
-        <u-input
-          v-model="form.password"
-          :type="showPassword ? 'text' : 'password'"
-          placeholder="请输入密码"
-          clearable
-          :custom-style="{ fontSize: '15px' }"
-        >
-          <template #prefix>
-            <u-icon name="lock" size="20" color="#999"></u-icon>
-          </template>
-          <template #suffix>
-            <u-icon 
-              :name="showPassword ? 'eye-fill' : 'eye-off'" 
-              size="22" 
-              color="#999"
-              @click="toggleShowPassword"
-            ></u-icon>
-          </template>
-        </u-input>
-      </u-form-item>
-    </u-form>
+      <van-field
+        v-model="form.password"
+        name="password"
+        :type="showPassword ? 'text' : 'password'"
+        placeholder="请输入密码"
+        clearable
+        :rules="rules.password"
+      >
+        <template #left-icon>
+          <van-icon name="lock" size="20" color="#999" />
+        </template>
+        <template #right-icon>
+          <van-icon 
+            :name="showPassword ? 'eye-o' : 'closed-eye'"
+            @click="toggleShowPassword"
+            color="#999"
+          />
+        </template>
+      </van-field>
+    </van-form>
 
     <!-- 验证码登录表单 -->
-    <u-form 
+    <van-form 
       :model="form" 
       :rules="rules"
       ref="uForm" 
       v-else
       class="form-area"
     >
-      <u-form-item prop="phone" :border-bottom="false">
-        <u-input
-          v-model="form.phone"
-          placeholder="请输入手机号码"
-          type="number"
-          maxlength="11"
-          clearable
-          :custom-style="{ fontSize: '15px' }"
-        >
-          <template #prefix>
-            <u-icon name="phone" size="20" color="#999"></u-icon>
-          </template>
-        </u-input>
-      </u-form-item>
+      <van-field
+        v-model="form.phone"
+        name="phone"
+        placeholder="请输入手机号码"
+        type="tel"
+        maxlength="11"
+        clearable
+        :rules="rules.phone"
+      >
+        <template #left-icon>
+          <van-icon name="phone-o" size="20" color="#999" />
+        </template>
+      </van-field>
 
-      <u-form-item prop="code" :border-bottom="false">
-        <u-input
-          v-model="form.code"
-          placeholder="请输入验证码"
-          type="number"
-          maxlength="6"
-          clearable
-          :custom-style="{ fontSize: '15px' }"
-        >
-          <template #prefix>
-            <u-icon name="email" size="20" color="#999"></u-icon>
-          </template>
-          <template #suffix>
-            <u-button
-              @click="getVerificationCode"
-              :disabled="counting > 0"
-              size="mini"
-              :custom-style="{ 
-              width: '120px',
-              marginLeft: '10px',
-              backgroundColor: counting > 0 ? '#e0e0e0' : '#999',
-              color: counting > 0 ? '#999' : 'white',
-              borderRadius: '8px',
-              padding: '6px 12px',
-              display: 'flex',
-              alignItems: 'center'
-              }"
-            >
-			<u-icon
-			  name="chat-fill" 
-			  size="20" 
-			  color="white" 
-			  style="margin-right: 4px;"
-			/>
-              {{ counting > 0 ? `${counting}s` : '获取验证码' }}
-            </u-button>
-          </template>
-        </u-input>
-      </u-form-item>
-    </u-form>
+      <van-field
+        v-model="form.code"
+        name="code"
+        placeholder="请输入验证码"
+        type="digit"
+        maxlength="6"
+        clearable
+        :rules="rules.code"
+      >
+        <template #left-icon>
+          <van-icon name="comment-o" size="20" color="#999" />
+        </template>
+        <template #button>
+          <van-button
+            size="small"
+            :disabled="counting > 0"
+            @click="getVerificationCode"
+            custom-style="
+              width: 120px;
+              background-color: #{counting > 0 ? '#e0e0e0' : '#007aff'};
+              color: #{counting > 0 ? '#999' : 'white'};
+              border: none;
+            "
+          >
+            {{ counting > 0 ? `${counting}s` : '获取验证码' }}
+          </van-button>
+        </template>
+      </van-field>
+    </van-form>
 
     <!-- 记住密码和操作按钮 -->
     <view class="form-options">
-      <view class="remember-password">
-        <u-checkbox-group 
-          v-model="rememberPassword"
-          active-color="#007aff"
-        >
-          <u-checkbox
-            name="remember"
-            label="记住密码"
-            label-size="28rpx"
-          ></u-checkbox>
-        </u-checkbox-group>
-      </view>
+      <van-checkbox v-model="rememberPassword" checked-color="#007aff" shape="square">
+        记住密码
+      </van-checkbox>
       <text class="forgot-text" @click="forgotPassword">忘记密码？</text>
     </view>
 
-    <u-button 
+    <van-button 
       type="primary" 
-      shape="circle" 
+      block
+      round
       @click="login"
-      :custom-style="{ 
-        marginTop: '40rpx',
-        height: '80rpx',
-        fontSize: '32rpx'
-      }"
+      custom-class="login-btn"
     >
       立即登录
-    </u-button>
+    </van-button>
 
     <view class="register-tip">
       <text class="register-link" @click="goToRegister">没有账号？立即注册</text>
     </view>
+
+   
   </view>
 </template>
 
 <script>
-import Vue from 'vue'
-
+import { Image} from 'vant';
 export default {
+	components:{
+		[Image.name]: Image,
+	},
    data() {
      return {
        loginMethod: 'password',
@@ -234,21 +217,16 @@ export default {
 
     getVerificationCode() {
       if (this.counting > 0) return;
-	  const registeredUsers = JSON.parse(uni.getStorageSync('registeredUsers')) || [];
-      // const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+      const registeredUsers = JSON.parse(uni.getStorageSync('registeredUsers') || '[]');
       if (!registeredUsers.some(u => u.phone === this.form.phone)) {
         uni.showToast({ title: '该手机号未注册', icon: 'none' });
         return;
       }
       const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-      // localStorage.setItem('verificationCode', JSON.stringify({
-      //   code: verificationCode,
-      //   timestamp: Date.now()
-      // }));
-	  uni.setStorageSync('verificationCode', JSON.stringify({
-	  code: verificationCode,
-	  timestamp: Date.now()
-	  }));
+      localStorage.setItem('verificationCode', JSON.stringify({
+        code: verificationCode,
+        timestamp: Date.now()
+      }));
       uni.showModal({
         title: '验证码',
         content: `您的验证码是：${verificationCode}`,
@@ -263,8 +241,7 @@ export default {
     async validateLogin() {
       try {
         await this.$refs.uForm.validate();
-        const registeredUsers = JSON.parse(uni.getStorageSync('registeredUsers')) || [];
-        // const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+        const registeredUsers = JSON.parse(uni.getStorageSync('registeredUsers') || '[]');
         const currentUser = registeredUsers.find(u => u.phone === this.form.phone);
         if (!currentUser) {
           return {
@@ -282,8 +259,7 @@ export default {
             };
           }
         } else {
-          // const storedCode = JSON.parse(localStorage.getItem('verificationCode'));
-		  const storedCode = JSON.parse(uni.getStorageSync('verificationCode'));
+          const storedCode = JSON.parse(localStorage.getItem('verificationCode'));
           if (!storedCode || storedCode.code !== this.form.code) {
             return {
               valid: false,
@@ -310,37 +286,51 @@ export default {
     },
     async login() {
       try {
-        // 修改验证方式为await
-        const valid = await this.$refs.uForm.validate();
-        if (!valid) return;
+        // 添加表单验证日志
+        console.log('开始表单验证');
+        await this.$refs.uForm.validate();
+        console.log('表单验证通过');
 
+        // 添加登录验证日志
+        console.log('开始登录验证');
         const validationResult = await this.validateLogin();
+        console.log('登录验证结果:', validationResult);
+
         if (!validationResult.valid) {
-          uni.showToast({ title: validationResult.message, icon: 'none' });
-          if (validationResult.action === 'register') {
-            this.goToRegister();
-          }
+          uni.showToast({ 
+            title: validationResult.message, 
+            icon: 'none',
+            duration: 2000
+          });
+          // 添加失败原因日志
+          console.warn('登录验证失败原因:', validationResult.message);
           return;
         }
 
-        if (this.rememberPassword.includes('remember')) {
+        // 添加存储操作日志
+        console.log('记住密码状态:', this.rememberPassword);
+        if (this.rememberPassword) {
+          console.log('正在存储登录信息...');
           uni.setStorageSync('lastLoginPhone', this.form.phone);
           uni.setStorageSync('savedPassword', this.form.password);
           uni.setStorageSync('rememberPassword', true);
-        } else {
-          uni.removeStorageSync('lastLoginPhone');
-          uni.removeStorageSync('savedPassword');
-          uni.removeStorageSync('rememberPassword');
         }
+
+        // 添加跳转前最后日志
+        console.log('所有验证通过，准备跳转');
         uni.reLaunch({
-          url: '/pages/reservation/reservation' // 替换为实际的主页路由
+          url: '/pages/reservation/reservation',
+          success: () => console.log('登录跳转成功'),
+          fail: (err) => console.error('登录跳转失败:', err)
         });
+
       } catch (error) {
-        // 统一错误处理
-        console.error('登录失败:', error);
+        // 增强错误日志
+        console.error('完整错误信息:', error);
         uni.showToast({ 
-          title: error.message || '登录失败，请检查输入', 
-          icon: 'none' 
+          title: error.details?.[0]?.message || '登录流程异常', 
+          icon: 'none',
+          duration: 2000
         });
       }
     },
@@ -355,7 +345,7 @@ export default {
       uni.navigateTo({
         url: '/pages/login/register' // 修改为正确的路由路径
       });
-    }
+    },
   },
   onShow() {
     this.form.phone = uni.getStorageSync('lastLoginPhone') || '';
@@ -384,6 +374,7 @@ export default {
 
 /* Logo样式 */
 .login-logo {
+  display: block; 
   width: 160rpx;
   height: 160rpx;
   margin-bottom: 30rpx;
@@ -399,14 +390,9 @@ export default {
 
 /* 登录方式选择区域样式 */
 .login-method {
-  margin-bottom: 10rpx;
-}
-
-/* 单选按钮标签样式 */
-.radio-label {
-  margin: 0 20rpx;
-  font-size: 32rpx;
-  color: #666;
+  display: flex;
+  gap: 40rpx;
+  margin-bottom: 40rpx;
 }
 
 /* 表单区域样式 - 移除背景和阴影 */
@@ -463,15 +449,7 @@ input {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 20px 0;
-}
-
-/* 记住密码标签样式 */
-.remember-label {
-  font-size: 35rpx;
-  color: #666;
-  display: flex;
-  align-items: center;
+  margin: 30rpx 0;
 }
 
 /* 忘记密码文本样式 */
@@ -558,5 +536,11 @@ input {
   color: #007aff;
   font-size: 28rpx;
   margin-left: 10rpx; /* 调整间距 */
+}
+
+.login-btn {
+  margin-top: 40rpx;
+  height: 80rpx;
+  font-size: 32rpx;
 }
 </style>

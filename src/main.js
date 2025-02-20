@@ -2,15 +2,16 @@ import Vue from 'vue'
 import App from './App'
 import './uni.promisify.adaptor'
 import dayjs from 'dayjs'
-import uView from 'uview-ui'
-	
-Vue.use(uView)
+import 'vant/lib/index.css'
+import { Lazyload } from 'vant'
 
 Vue.config.productionTip = false
 Vue.prototype.$dayjs = dayjs
+Vue.use(Lazyload);
 
 App.mpType = 'app'
-uni.$u.config.unit = 'rpx'
+
+
 const app = new Vue({
   ...App
 })

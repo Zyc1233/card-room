@@ -1,99 +1,76 @@
 <template>
   <view class="container">
-    <u-form class="form-area">
-      <u-form-item prop="phone">
-        <u-input 
-          v-model="phone" 
-          type="number" 
-          placeholder="请输入手机号码"
-          maxlength="11"
-          border="none"
-          clearable
-          :custom-style="{ border: '1px solid #ccc', borderRadius: '8px', padding: '10px' }"
-        >
-          <template #prefix>
-            <u-icon name="phone-fill" size="20" color="#999"></u-icon>
-          </template>
-        </u-input>
-      </u-form-item>
+    <van-form class="form-area">
+      <van-field
+        v-model="phone"
+        name="phone"
+        placeholder="请输入手机号码"
+        type="tel"
+        maxlength="11"
+        :rules="[{ required: true, message: '请输入手机号码' }]"
+      >
+        <template #left-icon>
+          <van-icon name="phone-o" size="20" color="#999" />
+        </template>
+      </van-field>
 
-      <u-form-item prop="newPassword">
-        <u-input
-          v-model="newPassword"
-          :type="showPassword ? 'text' : 'password'"
-          placeholder="请输入新密码"
-          border="none"
-          clearable
-          :custom-style="{ border: '1px solid #ccc', borderRadius: '8px', padding: '10px' }"
-        >
-          <template #prefix>
-            <u-icon name="lock-fill" size="20" color="#999"></u-icon>
-          </template>
-          <template #suffix>
-            <u-icon 
-              :name="showPassword ? 'eye-fill' : 'eye-off'" 
-              @click="toggleShowPassword"
-              color="#999"
-            />
-          </template>
-        </u-input>
-      </u-form-item>
+      <van-field
+        v-model="newPassword"
+        name="newPassword"
+        :type="showPassword ? 'text' : 'password'"
+        placeholder="请输入新密码"
+        :rules="[{ required: true, message: '请输入新密码' }]"
+      >
+        <template #left-icon>
+          <van-icon name="lock" size="20" color="#999" />
+        </template>
+        <template #right-icon>
+          <van-icon 
+            :name="showPassword ? 'eye-o' : 'closed-eye'"
+            @click="toggleShowPassword"
+            color="#999"
+          />
+        </template>
+      </van-field>
 
-      <u-form-item prop="verificationCode">
-        <u-input
-          v-model="verificationCode"
-          type="number"
-          placeholder="请输入验证码"
-          maxlength="6"
-          border="none"
-          clearable
-          :custom-style="{ border: '1px solid #ccc', borderRadius: '8px', padding: '10px' }"
-        >
-          <template #prefix>
-            <u-icon name="coupon-fill" size="20" color="#999"></u-icon>
-          </template>
-          <template #suffix>
-            <u-button 
-              @click="getVerificationCode" 
-              :disabled="counting > 0"
-              size="mini"
-              :custom-style="{ 
-                width: '120px',
-                marginLeft: '10px',
-                backgroundColor: counting > 0 ? '#e0e0e0' : '#999',
-                color: counting > 0 ? '#999' : 'white',
-                borderRadius: '8px',
-                padding: '6px 12px',
-                display: 'flex',
-                alignItems: 'center'
-              }"
-            >
-              <u-icon 
-                name="chat-fill" 
-                size="20" 
-                color="white" 
-                style="margin-right: 4px;"
-              />
-              {{ counting > 0 ? `${counting}s` : '获取验证码' }}
-            </u-button>
-          </template>
-        </u-input>
-      </u-form-item>
+      <van-field
+        v-model="verificationCode"
+        name="verificationCode"
+        placeholder="请输入验证码"
+        type="digit"
+        maxlength="6"
+        :rules="[{ required: true, message: '请输入验证码' }]"
+      >
+        <template #left-icon>
+          <van-icon name="comment-o" size="20" color="#999" />
+        </template>
+        <template #button>
+          <van-button
+            size="small"
+            :disabled="counting > 0"
+            @click="getVerificationCode"
+            custom-style="
+              width: 120px;
+              background-color: #{counting > 0 ? '#e0e0e0' : '#007aff'};
+              color: #{counting > 0 ? '#999' : 'white'};
+              border: none;
+            "
+          >
+            {{ counting > 0 ? `${counting}s` : '获取验证码' }}
+          </van-button>
+        </template>
+      </van-field>
 
-      <u-button 
-        @click="resetPassword" 
+      <van-button 
         type="primary" 
-        shape="circle" 
-        :custom-style="{ 
-          marginTop: '40px',
-          height: '50px',
-          fontSize: '18px',
-          borderRadius: '25px'
-        }"
+        block
+        round
+        @click="resetPassword"
+        custom-class="reset-btn"
       >
         重置密码
-      </u-button>
-    </u-form>
+      </van-button>
+    </van-form>
   </view>
 </template>
 
@@ -119,7 +96,7 @@ export default {
     // 获取验证码逻辑
     getVerificationCode() {
       if (this.counting > 0) return;
-      const registeredUsers = JSON.parse(uni.getStorageSync('registeredUsers')) || [];
+      const registeredUsers = JSON.parse(uni.getStorageSync('registeredUsers') || '[]');
       if (!registeredUsers.some(u => u.phone === this.phone)) {
         uni.showToast({ title: '该手机号未注册', icon: 'none' });
         return;
@@ -155,7 +132,7 @@ export default {
         uni.showToast({ title: '验证码已过期', icon: 'none' });
         return;
       }
-      let registeredUsers = JSON.parse(uni.getStorageSync('registeredUsers')) || [];
+      let registeredUsers = JSON.parse(uni.getStorageSync('registeredUsers') || '[]');
       const targetUserIndex = registeredUsers.findIndex(user => user.phone === this.phone);
       if (targetUserIndex !== -1) {
         registeredUsers[targetUserIndex].password = btoa(this.newPassword);
@@ -169,17 +146,20 @@ export default {
 }
 </script>
 
-<style lang="scss">
-.container {
+<style>
+.form-area {
   padding: 20px;
-  background-color: #f7f8fa;
-  min-height: 100vh;
+  background: #fff;
+  border-radius: 12px;
 }
 
-.form-area {
-  background: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+.reset-btn {
+  margin-top: 40px;
+  height: 50px;
+  font-size: 18px;
+}
+
+.van-field__label {
+  width: 80px;
 }
 </style>

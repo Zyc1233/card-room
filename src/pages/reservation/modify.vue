@@ -1,163 +1,103 @@
 <template>
 	<view class="room-reservation">
-		<u-form class="form-container" ref="uForm">
+		<!-- 使用van-form重构表单 -->
+		<van-form class="form-container" @submit="submitForm">
 			<!-- 房间类型 -->
-			<u-form-item label-width="160rpx" label="房间类型:" prop="roomType" borderBottom @click="showRoomPicker = true">
-				<u--input
-					v-model="roomType"
-					disabled
-					disabledColor="#ffffff"
-					placeholder="请选择房间类型"
-					border="none"
-				></u--input>
-				<u-icon name="arrow-down" slot="right"></u-icon>
-			</u-form-item>
-
+			<van-field
+				readonly
+				clickable
+				name="roomType"
+				:value="roomType"
+				label="房间类型"
+				placeholder="请选择房间类型"
+				@click="showRoomPicker = true"
+			/>
+			
 			<!-- 预约日期 -->
-			<u-form-item label-width="160rpx" label="预约日期:" prop="date" borderBottom @click="showDatePicker = true">
-				<u--input
-					:value="formattedDate"
-					@click="showDatePicker = true"
-					disabled
-					disabledColor="#ffffff"
-					placeholder="请选择日期"
-					border="none"
-				></u--input>
-				<u-icon name="arrow-down" slot="right"></u-icon>
-			</u-form-item>
+			<van-field
+				readonly
+				clickable
+				name="date"
+				:value="formattedDate"
+				label="预约日期"
+				placeholder="请选择日期"
+				@click="showDatePicker = true"
+			/>
 
 			<!-- 时间选择 -->
-			<u-form-item label-width="160rpx" label="预约时间:" prop="time" borderBottom @click="openTimePicker">
-				<u--input
-					v-model="timeRange"
-					disabled
-					disabledColor="#ffffff"
-					placeholder="请选择时间"
-					border="none"
-				></u--input>
-			</u-form-item>
+			<van-field
+				readonly
+				clickable
+				name="startTime"
+				:value="startTime"
+				label="开始时间"
+				placeholder="选择开始时间"
+				@click="showStartPicker = true"
+			/>
+			<van-field
+				readonly
+				clickable
+				name="endTime"
+				:value="endTime"
+				label="结束时间"
+				placeholder="选择结束时间"
+				@click="showEndPicker = true"
+			/>
 
-			<!-- 修改时间选择弹窗为uview组件 -->
-			<u-modal 
-				:show="showTimePicker"
-				title="修改预约时间"
-				@confirm="confirmTimePicker"
-				@cancel="closeTimePicker"
-				:showCancelButton="true"
-				width="100%"
-			>
-				<view class="time-picker-content">
-					<view class="time-input-container">
-						<text class="time-label">开始时间：</text>
-						<u-input
-							v-model="startHour"
-							type="number"
-							placeholder="时"
-							:max="23"
-							:min="0"
-							border="bottom"
-							@input="validateTime('start')"
-						></u-input>
-						<text class="time-colon">:</text>
-						<u-input
-							v-model="startMinute"
-							type="number"
-							placeholder="分"
-							:max="59"
-							:min="0"
-							border="bottom"
-							@input="validateTime('start')"
-						></u-input>
-					</view>
-
-					<view class="time-input-container">
-						<text class="time-label">结束时间：</text>
-						<u-input
-							v-model="endHour"
-							type="number"
-							placeholder="时"
-							:max="23"
-							:min="0"
-							border="bottom"
-							@input="validateTime('end')"
-						></u-input>
-						<text class="time-colon">:</text>
-						<u-input
-							v-model="endMinute"
-							type="number"
-							placeholder="分"
-							:max="59"
-							:min="0"
-							border="bottom"
-							@input="validateTime('end')"
-						></u-input>
-					</view>
-
-					<view class="time-validation">
-						<u-alert 
-							v-if="timeError" 
-							:title="timeError" 
-							type="error"
-							:showIcon="true"
-						></u-alert>
-						<u-text 
-							align="center"
-							v-else 
-							type="info" 
-							:text="`时长：${durationHours}小时${durationMinutes}分钟`"
-						></u-text>
-					</view>
-				</view>
-			</u-modal>
-
-			<!-- 预约人信息 -->
-			<u-form-item label-width="160rpx" label="用户名称:" prop="name" borderBottom>
-				<u--input
-					v-model="name"
-					placeholder="请输入姓名"
-					border="none"
-					:customStyle="{ padding: '12px' }"
-				></u--input>
-			</u-form-item>
+			<!-- 用户名称 -->
+			<van-field
+				v-model="name"
+				name="name"
+				label="用户名称"
+				placeholder="请输入姓名"
+				:error-message="nameError"
+			/>
 
 			<!-- 操作按钮 -->
-			<u-button 
-				type="primary" 
-				@click="submitForm"
-				customStyle="margin-top:30px"
-			>确认修改</u-button>
-		</u-form>
+			<div class="button-group">
+				<van-button round block type="primary" native-type="submit">确认修改</van-button>
+			</div>
+		</van-form>
 
-		<!-- uView组件 -->
-		<u-picker
-			:show="showRoomPicker"
-			:columns="[roomOptions]"
-			keyName="name"
-			@confirm="roomConfirm"
-			@cancel="showRoomPicker = false"
-		></u-picker>
+		<!-- Vant组件 -->
+		<van-popup v-model="showRoomPicker" position="bottom">
+			<van-picker
+				title="选择房间类型"
+				:columns="roomOptions"
+				value-key="name"
+				show-toolbar
+				@confirm="roomConfirm"
+				@cancel="showRoomPicker = false"
+			/>
+		</van-popup>
 
-		<u-calendar
-			:show="showDatePicker"
-			mode="single"
-			:minDate="minDate"
-			:maxDate="maxDate"
+		<van-calendar
+			v-model:show="showDatePicker"
+			:min-date="minDate"
+			:max-date="maxDate"
 			@confirm="dateConfirm"
-			@close="showDatePicker = false"
-			:defaultDate="date"
-			title="选择预约日期"
-			color="#3c9cff"
-		></u-calendar>
-
-		<!-- 在模板底部添加alert -->
-		<u-alert
-			v-if="showAlert"
-			:title="alertMessage"
-			:type="alertType"
-			:closeAble="true"
-			@close="showAlert = false"
-			customStyle="position:fixed; top:20px; left:50%; transform:translateX(-50%); z-index:9999;"
+			:default-date="date"
 		/>
+
+		<!-- 开始时间选择器 -->
+		<van-popup v-model="showStartPicker" position="bottom">
+			<van-datetime-picker
+				v-model="startTimeValue"
+				type="time"
+				title="选择开始时间"
+				@confirm="handleStartConfirm"
+			/>
+		</van-popup>
+
+		<!-- 结束时间选择器 -->
+		<van-popup v-model="showEndPicker" position="bottom">
+			<van-datetime-picker
+				v-model="endTimeValue"
+				type="time"
+				title="选择结束时间"
+				@confirm="handleEndConfirm"
+			/>
+		</van-popup>
 	</view>
 </template>
 
@@ -170,14 +110,14 @@
 			return {
 				editingId: null,
 				roomType: '',
-				date: dayjs().format('YYYY-MM-DD'),
+				date: new Date(),
 				name: '',
-				startHour: '00',
-				startMinute: '00',
-				endHour: '00',
-				endMinute: '00',
-				timeRange: '',
-				showTimePicker: false,
+				startTime: '',
+				endTime: '',
+				startTimeValue: dayjs().format('HH:mm'),
+				endTimeValue: dayjs().add(1, 'hour').format('HH:mm'),
+				showStartPicker: false,
+				showEndPicker: false,
 				timeError: '',
 				nameError: '',
 				roomOptions: [
@@ -191,8 +131,8 @@
 					{ name: '桌游室2' }
 				],
 				showDatePicker: false,
-				minDate: dayjs().format('YYYY-MM-DD'),
-				maxDate: dayjs().add(365, 'day').format('YYYY-MM-DD'),
+				minDate: new Date(dayjs().format('YYYY-MM-DD')),
+				maxDate: new Date(dayjs().add(365, 'day').format('YYYY-MM-DD')),
 				showRoomPicker: false,
 				showAlert: false,
 				alertMessage: '',
@@ -203,16 +143,6 @@
 			formattedDate() {
 				return dayjs(this.date).format('YYYY年MM月DD日');
 			},
-			durationHours() {
-				const start = this.startHour * 60 + parseInt(this.startMinute);
-				const end = this.endHour * 60 + parseInt(this.endMinute);
-				return Math.floor((end - start) / 60);
-			},
-			durationMinutes() {
-				const start = this.startHour * 60 + parseInt(this.startMinute);
-				const end = this.endHour * 60 + parseInt(this.endMinute);
-				return (end - start) % 60;
-			}
 		},
 		created() {
 			this.initializeData();
@@ -229,10 +159,8 @@
 				// 清空旧数据
 				this.roomType = '';
 				this.name = '';
-				this.startHour = '00';
-				this.startMinute = '00';
-				this.endHour = '00';
-				this.endMinute = '00';
+				this.startTime = '';
+				this.endTime = '';
 
 				if (this.$route.query.id) {
 					// 使用nextTick确保DOM更新
@@ -241,80 +169,45 @@
 						this.roomType = this.$route.query.roomType;
 						this.name = this.$route.query.name;
 						
-						// 处理带前导零的时间格式（如09:05）
 						const parseTime = (timeString) => {
-							const time = String(timeString).padStart(4, '0'); // 转换为字符串并补零
-							const formatted = time.slice(0,2) + ':' + time.slice(2);
-							return {
-								hour: formatted.split(':')[0].padStart(2, '0'),
-								minute: formatted.split(':')[1].padStart(2, '0')
-							};
+							return dayjs(timeString, 'HH:mm').format('HH:mm');
 						};
 
-						const start = parseTime(this.$route.query.startTime);
-						const end = parseTime(this.$route.query.endTime);
+						this.startTime = parseTime(this.$route.query.startTime);
+						this.endTime = parseTime(this.$route.query.endTime);
 						
-						this.startHour = start.hour;
-						this.startMinute = start.minute;
-						this.endHour = end.hour;
-						this.endMinute = end.minute;
-						
-						this.updateTimeRange();
-						this.date = this.$route.query.date;
+						this.date = dayjs(this.$route.query.date).toDate();
 					});
 				}
 			},
 			validateName() {
 				this.nameError = this.name.trim() ? '' : '请输入预约人姓名';
 			},
-			validateTime(type) {
-				// 增强Android数字输入处理
-				const sanitizeInput = (value, max) => {
-					value = value.replace(/[^0-9]/g, ''); // 过滤非数字字符
-					let num = parseInt(value) || 0;
-					num = Math.min(num, max);
-					return num.toString().padStart(2, '0');
-				};
-
-				if (type === 'start') {
-					this.startHour = sanitizeInput(this.startHour, 23);
-					this.startMinute = sanitizeInput(this.startMinute, 59);
-				} else {
-					this.endHour = sanitizeInput(this.endHour, 23);
-					this.endMinute = sanitizeInput(this.endMinute, 59);
-				}
-				this.checkTimeValidation();
-			},
-			checkTimeValidation() {
-				const startTotal = parseInt(this.startHour) * 60 + parseInt(this.startMinute);
-				const endTotal = parseInt(this.endHour) * 60 + parseInt(this.endMinute);
+			validateTime() {
+				if (!this.startTime || !this.endTime) return;
 				
-				if (endTotal <= startTotal) {
-					this.timeError = '结束时间必须晚于开始时间';
-				} else if (endTotal - startTotal < 60) {
-					this.timeError = '预约时长至少1小时';
+				const start = dayjs(this.startTime, 'HH:mm');
+				const end = dayjs(this.endTime, 'HH:mm');
+				
+				if (end.isBefore(start)) {
+					this.timeError = '结束时间不能早于开始时间';
+				} else if (end.diff(start, 'minute') < 60) {
+					this.timeError = '预约时长至少需要60分钟';
 				} else {
 					this.timeError = '';
 				}
 			},
-			updateTimeRange() {
-				this.timeRange = `${this.startHour}:${this.startMinute} - ${this.endHour}:${this.endMinute}`;
+			handleStartConfirm(value) {
+				this.startTime = typeof value === 'string' ? value : dayjs(value).format('HH:mm');
+				this.startTimeValue = this.startTime;
+				this.showStartPicker = false;
+				this.validateTime();
 			},
-			openTimePicker() {
-				this.showTimePicker = true;
-			},
-			closeTimePicker() {
-				this.showTimePicker = false;
-				this.timeError = '';
-			},
-			confirmTimePicker() {
-				if (this.timeError) return;
-				this.updateTimeRange();
-				this.closeTimePicker();
-			},
-			dateConfirm(e) {
-				this.date = e[0];
-				this.showDatePicker = false;
+			handleEndConfirm(value) {
+				this.endTime = typeof value === 'string' ? value : dayjs(value).format('HH:mm');
+				this.endTimeValue = this.endTime;
+				this.showEndPicker = false;
+				this.validateTime();
 			},
 			showNotification(message, type = 'error') {
 				this.alertMessage = message;
@@ -328,7 +221,7 @@
 				this.validateName();
 				if (this.nameError) return;
 
-				if (!this.timeRange || this.timeError) {
+				if (this.timeError || !this.startTime || !this.endTime) {
 					this.showNotification('请选择有效的时间段');
 					return;
 				}
@@ -347,8 +240,8 @@
 						user: this.name.trim(),
 						roomType: this.roomType,
 						date: this.date,
-						startTime: `${String(this.startHour).padStart(2, '0')}:${String(this.startMinute).padStart(2, '0')}`,
-						endTime: `${String(this.endHour).padStart(2, '0')}:${String(this.endMinute).padStart(2, '0')}`,
+						startTime: this.startTime,
+						endTime: this.endTime,
 						timestamp: new Date().getTime()
 					});
 
@@ -363,130 +256,40 @@
 				}
 			},
 			checkTimeConflict(existing) {
-				const newStart = parseInt(this.startHour) * 60 + parseInt(this.startMinute);
-				const newEnd = parseInt(this.endHour) * 60 + parseInt(this.endMinute);
+				const newStart = dayjs(this.startTime, 'HH:mm');
+				const newEnd = dayjs(this.endTime, 'HH:mm');
 				
 				return existing.some(item => {
-					const [existStartH, existStartM] = item.startTime.split(':');
-					const [existEndH, existEndM] = item.endTime.split(':');
-					const existStart = parseInt(existStartH) * 60 + parseInt(existStartM);
-					const existEnd = parseInt(existEndH) * 60 + parseInt(existEndM);
-					
-					return (newStart < existEnd) && (newEnd > existStart);
+					const existStart = dayjs(item.startTime, 'HH:mm');
+					const existEnd = dayjs(item.endTime, 'HH:mm');
+					return (newStart.isBefore(existEnd) && newEnd.isAfter(existStart));
 				});
 			},
 			roomConfirm(e) {
 				this.roomType = e.value[0].name;
 				this.showRoomPicker = false;
 			},
+			dateConfirm(e) {
+				this.date = new Date(e);
+				this.showDatePicker = false;
+			},
 		}
 	}
 </script>
 
 <style scoped>
-	/* 优化后的样式 */
-	.room-reservation {
-		padding: 20px;
-		background: #f8f9fa;
-		min-height: 100vh;
-	}
-
+	/* 修改样式适配Vant */
 	.form-container {
-		max-width: 600px;
-		margin: 20px auto;
-		padding: 25px;
-		background: white;
-		border-radius: 12px;
-		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		padding: 20px;
 	}
 
-	.form-group {
-		margin-bottom: 25px;
-	}
-
-	label {
-		display: block;
-		margin-bottom: 8px;
-		font-size: 16px;
-		color: #333;
-		font-weight: 500;
-	}
-
-	input, select {
-		width: 100%;
-		padding: 12px;
-		border: 1px solid #ddd;
-		border-radius: 8px;
-		font-size: 15px;
-		transition: border-color 0.3s;
-	}
-
-	input:focus, select:focus {
-		border-color: #00b38a;
-		outline: none;
-	}
-
-	.input-error {
-		border-color: #ff4d4f;
-	}
-
-	.error-message {
-		color: #ff4d4f;
-		font-size: 13px;
-		margin-top: 5px;
+	.van-field {
+		margin-bottom: 15px;
 	}
 
 	.button-group {
-		margin-top: 30px;
+		margin: 30px 16px 0;
 	}
 
-	.submit-button {
-		width: 100%;
-		padding: 14px;
-		background: #00b38a;
-		color: white;
-		border: none;
-		border-radius: 8px;
-		font-size: 16px;
-		cursor: pointer;
-		transition: background 0.3s;
-	}
-
-	.submit-button:hover {
-		background: #009973;
-	}
-
-
-	.time-input-container {
-		display: flex;
-		align-items: center;
-		margin: 15px 0;
-	}
-
-	.time-label {
-		width: 80px;
-		font-size: 16px;
-		color: #606266;
-	}
-
-	.time-colon {
-		margin: 0 8px;
-		font-size: 16px;
-	}
-
-	.time-validation {
-		text-align: center;
-		margin: 15px 0;
-		font-size: 14px;
-		color: #666;
-	}
-
-	/* 优化uView组件样式 */
-	:deep(.u-form-item__body) {
-		padding: 12px 0;
-	}
-
-	:deep(.u-input__content) {
-		min-height: auto;
-	}
+	/* 保留原有其他样式 */
 </style>

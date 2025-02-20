@@ -1,51 +1,51 @@
 <template>
-  <view class="info-container">
-    <u-text 
-      type="primary" 
-      :bold="true" 
-      size="28" 
-      text="预约成功 🎉" 
-      align="center" 
-      margin="0 0 40px 0"
-    />
-    
-    <view class="custom-card">
-      <u-text
+  <div class="info-container">
+    <van-cell-group>
+      <text 
+        type="primary" 
+        :bold="true" 
+        size="28" 
+        text="预约成功 🎉" 
+        align="center" 
+        margin="0 0 40px 0"
+      />
+      
+      <van-cell 
         v-for="(item, index) in infoItems"
         :key="index"
-        :text="item.label + item.value"
-        size="16"
-        margin="15px 0"
-        padding="15px"
-        border-left="4px solid #00b38a"
-        bg-color="#f8f9fa"
-        :custom-style="{borderRadius: '6px'}"
+        :title="item.label"
+        :value="item.value"
+        :border="false"
+        class="custom-cell"
       />
-    </view>
+    </van-cell-group>
 
-    <u-row justify="center" gutter="20">
-      <u-col span="3">
-        <u-button 
-          type="error" 
-          text="取消预约"
+    <van-row class="btn-group">
+      <van-col span="11">
+        <van-button
+          type="danger"
+          block
+          round
           @click="cancel"
-          custom-style="min-width:80px;border-radius:25px"
-        />
-      </u-col>
-      <u-col span="3">
-        <u-button
+          class="action-btn"
+        >取消预约</van-button>
+      </van-col>
+      <van-col span="11" offset="2">
+        <van-button
           type="primary"
-          text="前往房间"
+          block
+          round
           @click="goRoom"
-          custom-style="min-width:80px;border-radius:25px"
-        />
-      </u-col>
-    </u-row>
-  </view>
+          class="action-btn"
+        >前往房间</van-button>
+      </van-col>
+    </van-row>
+  </div>
 </template>
 
 <script>
 import { deleteReservation } from '@/utils/db';
+import dayjs from 'dayjs';
 
 export default {
   name: 'Info',
@@ -64,11 +64,7 @@ export default {
   },
   computed: {
     formattedDate() {
-      return new Date(this.reservation.date).toLocaleDateString('zh-CN', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-      });
+      return dayjs(this.reservation.date).format('YYYY年MM月DD日');
     }
   },
   watch: {
@@ -76,7 +72,6 @@ export default {
       immediate: true,
       handler(newVal) {
         this.infoItems = [
-          // { label: '预约ID：', value: newVal.id || '加载中...' },
           { label: '用户名称：', value: newVal.user || '未知用户' },
           { label: '房间类型：', value: newVal.roomType || '未知类型' },
           { label: '预约日期：', value: this.formattedDate || '未选择日期' },
@@ -91,7 +86,7 @@ export default {
         id: this.$route.query.id,
         user: this.$route.query.user,
         roomType: this.$route.query.roomType,
-        date: this.$route.query.date,
+        date: dayjs(this.$route.query.date).format('YYYY-MM-DD'),
         startTime: this.$route.query.startTime,
         endTime: this.$route.query.endTime
       };
@@ -142,27 +137,36 @@ export default {
 
 <style lang="scss" scoped>
 .info-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 40px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  min-height: 100vh;
-  box-sizing: border-box;
+  padding: 16px;
+  background: #f7f8fa;
 
-  .custom-card {
-    margin: 0 0 30px 0;
-    padding: 20px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  .custom-cell {
+    margin: 8px 0;
+    border-left: 3px solid #07c160;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    
+    &::after {
+      border: none;
+    }
   }
 }
 
-::v-deep .u-btn {
-  transition: all 0.3s ease !important;
-  &:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 5px 15px rgba(0, 179, 138, 0.3) !important;
+.btn-group {
+  margin-top: 24px;
+  
+  .action-btn {
+    height: 44px;
+    font-size: 16px;
+  }
+}
+
+::v-deep .van-button {
+  transition: all 0.3s ease;
+  
+  &:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   }
 }
 </style>

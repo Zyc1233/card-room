@@ -1,9 +1,6 @@
 {	
-	"easycom": {
-		"autoscan": true,
-		"custom": {
-		  "^u-(.*)": "uview-ui/components/u-$1/u-$1.vue"
-		  }
+	"easycom":{
+		"^van-(.*)": "vant/lib/$1/index"
 		},
 	"pages": [ 
 		{
@@ -126,29 +123,29 @@
 	},
 	"tabBar": {
 		"color": "#7A7E83",
-		"selectedColor": "#2979FF",
-		"backgroundColor": "#FFFFFF",
+		"selectedColor": "#00aaff",
 		"borderStyle": "black",
+		"backgroundColor": "#ffffff",
 		"list": [
 			{
-				"pagePath": "pages/reservation/reservation",
-				"text": "房间预约",
-				"iconPath": "/static/reservation.png"
+			"pagePath": "pages/reservation/reservation",
+			"iconPath": "static/reservation.png",
+			"text": "房间预约"
+			}, 
+			{
+			"pagePath": "pages/reservation/check",
+			"iconPath": "static/check.png",
+			"text": "预约记录"
 			},
 			{
-				"pagePath": "pages/reservation/check",
-				"text": "预约记录",
-				"iconPath": "static/check.png"
+			"pagePath": "pages/reservation/cost",
+			"iconPath": "static/cost.png",
+			"text": "费用计算"
 			},
 			{
-				"pagePath": "pages/reservation/cost",
-				"text": "计算费用",
-				"iconPath": "static/cost.png"
-			},
-			{
-				"pagePath": "pages/user/user",
-				"text": "我的",
-				"iconPath": "static/user.png"
+			"pagePath": "pages/user/user",
+			"iconPath": "static/user.png",
+			"text": "个人中心"
 			}
 		]
 	}

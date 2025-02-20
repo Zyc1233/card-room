@@ -1,117 +1,84 @@
 <template>
   <view class="container">
-	<u-toast ref="uToast"></u-toast> 
     <!-- 新增操作按钮组 -->
-    <view class="left-button-group">
-      <u-button 
+    <view class="right-button-group">
+		<van-button
+		plain
+		icon="back-top"
+		type="primary"
+		size="small"
+		@click="backTop"
+		color="#0055ff"
+		>返回顶部</van-button>
+      <van-button 
+        plain
+        icon="replay"
         type="primary" 
-        icon="reload" 
         size="small"
         @click="refresh"
-        customStyle="margin-right: 8px"
-      >更新</u-button>
+      >更新</van-button>
     </view>
 
-    <u-list
-      ref="scrollContainer"
-      :scroll-top="scrollTop"
-      :lower-threshold="50"
-      :pre-load-screen="1.5"
-      enable-flex
-      @scrolltolower="loadMore"
-      @scroll="handleScroll"
+    <van-list
+      :loading="loading"
+      :finished="finished"
+      finished-text="没有更多了"
+      @load="loadMore"
       class="scroll-list"
     >
-      <u-list-item 
+      <van-cell 
         v-for="(reservation, index) in reservations"
         :key="index"
-        :anchor="index"
+        :title="`用户: ${reservation.user} 房间: ${reservation.roomType}`"
+        :label="`日期: ${reservation.date} ${reservation.startTime}-${reservation.endTime}`"
       >
-        <u-cell
-          :title="`用户: ${reservation.user} 房间: ${reservation.roomType}`"
-          :label="`日期: ${reservation.date} ${reservation.startTime}-${reservation.endTime}`"
-        >
-          <template #right-icon>
-            <view class="button-group">
-              <u-button 
-                text="取消"
-                size="small" 
-                type="error" 
-                @click="cancelReservation(index)"
-                customStyle="margin-left: 8px"
-              ></u-button>
-              <u-button
-                text="修改"
-                size="small"
-                type="warning"
-                @click="editReservation(index)"
-                customStyle="margin-left: 8px"
-              ></u-button>
-              <u-button
-                text="进入"
-                size="small"
-                type="primary"
-                @click="goToRoom(index)"
-                customStyle="margin-left: 8px"
-              ></u-button>
-            </view>
-          </template>
-        </u-cell>
-      </u-list-item>
-      
-	  <!-- 修改后的返回顶部组件 -->
-	  <u-back-top 
-	    :scroll-top="scrollTop"
-	    icon="arrow-upward"
-	    mode="circle"
-	    top="0"
-		duration="100"
-	    :bottom="100"
-	    :right="20"
-		z-index="9"
-	    @click="scrollToTop"
-		:iconStyle="iconStyle"
-	  ></u-back-top>
-	  
-      <u-loadmore 
-        :status="loadStatus"
-        :load-text="{
-          loadmore: '点击加载更多',
-          loading: '正在加载',
-          nomore: '没有更多了'
-        }"
-      />
-    </u-list>
+        <view class="button-group" slot="right-icon">
+          <van-button 
+            size="small" 
+            type="danger" 
+            @click="cancelReservation(index)"
+          >取消</van-button>
+          <van-button
+            size="small"
+            type="warning"
+            @click="editReservation(index)"
+          >修改</van-button>
+          <van-button
+            size="small"
+            type="primary"
+            @click="goToRoom(index)"
+          >进入</van-button>
+        </view>
+      </van-cell>
+    </van-list>
+
+    <van-toast ref="vanToast"></van-toast>
 
 
   </view>
 </template>
 
 <script>
-import BottomNav from '@/pages/BottomNav/BottomNav.vue';
+import dayjs from 'dayjs';
 import { getAllReservations, deleteReservation } from '@/utils/db';
+import { Toast, Dialog, Icon } from 'vant';
 
 export default {
   components: {
-    BottomNav
+    [Icon.name]: Icon
   },
   data: () => ({
     reservations: [],
     currentPage: 1,
     pageSize: 15,
-    loadStatus: 'loadmore',
+    loading: false,
+    finished: false,
     showScrollIndicator: false,
     operationFeedback: {
       show: false,
       message: '',
       type: 'success'
     },
-    scrollTop: 0,
-	mode: 'square',
-	iconStyle: {
-		fontSize: '32rpx',
-		color: '#2979ff'
-	}
   }),
   async created() {
     await this.loadReservations();
@@ -119,60 +86,60 @@ export default {
   methods: {
     async loadReservations(loadmore = false) {
       try {
-        this.loadStatus = 'loading';
+        this.loading = true;
         
-        const res = await getAllReservations();
-        const allData = res.sort((a, b) => b.timestamp - a.timestamp)
-          .map(item => ({
-            ...item,
-            date: item.date.replace(/\//g, '-') // 统一日期格式
-          }));
-        
-        // 模拟分页逻辑
+        const allData = await getAllReservations();
         const start = (this.currentPage - 1) * this.pageSize;
-        const newData = allData.slice(start, start + this.pageSize);
+        const newData = allData
+          .sort((a, b) => b.timestamp - a.timestamp)
+          .slice(start, start + this.pageSize)
+          .map(reservation => {
+            // 格式化日期和时间
+            return {
+              ...reservation,
+              date: dayjs(reservation.date).format('YYYY年MM月DD日'), 
+            };
+          });
 
         this.reservations = loadmore 
           ? [...this.reservations, ...newData]
           : newData;
 
-        this.loadStatus = newData.length >= this.pageSize ? 'loadmore' : 'nomore';
+        this.finished = newData.length < this.pageSize;
+        this.loading = false;
         
       } catch (error) {
-        this.showFeedback('加载失败: ' + error.errMsg, 'error');
-        this.loadStatus = 'loadmore';
+        Toast('加载失败，请检查网络');
+        this.loading = false;
+        throw error;
       }
     },
     loadMore() {
-      if (this.loadStatus === 'nomore') return;
+      if (this.finished) return;
       this.currentPage++;
       this.loadReservations(true);
     },
     async showConfirmModal(title, content) {
       try {
-        const res = await uni.showModal({
+        await Dialog.confirm({
           title,
-          content,
-          showCancel: true
+          message: content
         });
-        
-        return { confirm: res.confirm };
+        return true;
       } catch (error) {
-        console.error('弹窗错误:', error);
-        return { confirm: false };
+        return false;
       }
     },
     async cancelReservation(index) {
-      const { confirm } = await this.showConfirmModal('确认取消', '确定要取消该预约吗？');
+      const confirm = await this.showConfirmModal('确认取消', '确定要取消该预约吗？');
       if (!confirm) return;
 
       try {
         await deleteReservation(this.reservations[index].id);
         await this.loadReservations();
-        this.showFeedback('预约已取消');
+        Toast.success('预约已取消');
       } catch (error) {
-        this.showFeedback('取消预约失败', 'error');
-        console.error('取消预约错误:', error);
+        Toast.fail('取消预约失败');
       }
     },
     editReservation(index) {
@@ -215,36 +182,44 @@ export default {
         }
       });
     },
-    refresh() {
-      this.loadReservations();
-      this.$refs.uToast.show({
-        type: 'success',
-        message: '数据已更新'
-      })
+    async refresh() {
+        try {
+            await this.loadReservations();
+            Toast.success({
+                message: '数据已刷新',
+                duration: 1500
+            });
+        } catch (error) {
+            Toast.fail({
+                message: '刷新失败，请重试',
+                duration: 2000
+            });
+        }
     },
     showFeedback(message, type = 'success') {
-      if (this.$refs.uToast) {
-        this.$refs.uToast.show({
-          type,
-          message,
-          icon: type === 'success' ? 'checkmark-circle' : 'close-circle'
-        });
+      if (type === 'success') {
+        Toast.success(message);
+      } else if (type === 'error') {
+        Toast.fail(message);
       } else {
-        console.warn('uToast组件未初始化');
-        uni.showToast({
-          title: message,
-          icon: 'none'
-        });
+        Toast(message);
       }
     },
-    handleScroll(e) {
-      if (!e.detail) return;
-    },
-    scrollToTop() {
-      uni.pageScrollTo({
-        scrollTop: 0,
-        duration: 100
-      });
+    backTop() {
+        // 返回顶部功能
+        try {
+            // 微信小程序环境
+            uni.pageScrollTo({
+                scrollTop: 0,
+                duration: 100
+            });
+        } catch (e) {
+            // H5环境
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
     },
   },
   watch: {
@@ -254,9 +229,6 @@ export default {
         this.showFeedback('预约信息已更新', 'success');
       }
     }
-  },
-  onPageScroll(e) {
-    this.scrollTop = e.scrollTop;
   },
 };
 </script>
@@ -271,34 +243,35 @@ export default {
   overflow-y: auto;
 }
 
-.left-button-group {
+.right-button-group {
   position: fixed;
-  right: 50rpx; // 给返回按钮留出空间
-  bottom: 100rpx; // 调整原有按钮组位置
+  right: 1px;
+  width: 69px;
+  bottom: 100rpx; // 在底部导航上方
   z-index: 1001;
   
+  flex-direction: row;
+  
+  // 适配不同屏幕尺寸
   @media (min-width: 768px) {
-    right: 120rpx;
-    bottom: 300rpx;
+    bottom: 160rpx;
+    left: 40rpx;
+  }
+  .van-button {
+    margin-right: 8px;
   }
 }
 
 .scroll-list {
   height: calc(100vh - 160rpx);
-  ::v-deep .u-list {
-   	padding: 0;
-  }
 }
 
 .button-group {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  margin-right: -10rpx;
-}
-
-::v-deep .u-cell__body {
-  padding: 20rpx 0 !important;
+  .van-button {
+    min-width: 60px;
+  }
 }
 
 .bottom-nav-wrapper {
@@ -308,4 +281,5 @@ export default {
   right: 0;
   z-index: 999;
 }
+
 </style>
