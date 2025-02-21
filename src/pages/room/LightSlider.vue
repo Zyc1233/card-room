@@ -3,19 +3,10 @@
     <van-col span="10">
       <span class="label-text">灯光亮度</span>
     </van-col>
-    
+
     <van-col span="10">
-      <van-slider
-        v-model="sliderValue"
-        :min="0"
-        :max="100"
-        :step="5"
-        bar-height="4px"
-        button-size="20px"
-        active-color="#00b38a"
-        inactive-color="#ebedf0"
-        @change="handleChange"
-      />
+      <van-slider v-model="sliderValue" :min="0" :max="100" :step="5" bar-height="4px" button-size="20px"
+        active-color="#00b38a" inactive-color="#ebedf0" @change="handleChange" />
     </van-col>
 
     <van-col span="4" class="text-right">
@@ -39,7 +30,7 @@ export default {
   methods: {
     handleChange(value) {
       // 可在此处添加亮度调节接口调用
-      Toast('当前亮度：'+ value)
+      Toast('当前亮度：' + value)
     }
   }
 }
@@ -51,13 +42,13 @@ export default {
   margin: 10px 0;
   border-radius: 8px;
   background-color: #fff;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
 }
 
 .label-text {
-    font-size: 15px;
-    font-weight: 500;
-    color: #303133;
+  font-size: 15px;
+  font-weight: 500;
+  color: #303133;
 }
 
 .text-right {

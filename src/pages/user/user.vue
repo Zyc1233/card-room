@@ -9,28 +9,16 @@
       <van-cell :border="false">
         <template #icon>
           <div class="avatar-section">
-            <img
-              width="120rpx"
-              height="120rpx"
-              :src="userInfo.avatar || 'static/own.png'"
-              @click="showAvatarDialog = true"
-            />
-            <van-button
-              size="mini"
-              class="change-btn"
-              @click="showAvatarDialog = true"
-            >更换</van-button>
+            <img width="160rpx" height="160rpx" :src="userInfo.avatar || 'static/own.png'"
+              @click="showAvatarDialog = true" @error="handleAvatarError" class="avatar-image" />
+            <van-button size="mini" class="change-btn" @click="showAvatarDialog = true">更换</van-button>
           </div>
         </template>
         <template #title>
           <div class="user-info">
             <div class="nickname-wrapper">
               <span class="nickname">{{ userInfo.nickname }}</span>
-              <van-icon
-                name="edit"
-                size="16px"
-                @click="showNicknameDialog = true"
-              />
+              <van-icon name="edit" size="16px" @click="showNicknameDialog = true" />
             </div>
             <van-tag v-if="userInfo.isVip" type="warning" mark>VIP会员</van-tag>
           </div>
@@ -41,49 +29,24 @@
     <!-- 功能入口 -->
     <van-cell-group class="function-card">
       <van-grid :column-num="4" class="function-grid">
-        <van-grid-item
-          v-for="(item, index) in functions"
-          :key="index"
-          :icon="item.icon"
-          :text="item.title"
-          @click="item.handler"
-        />
+        <van-grid-item v-for="(item, index) in functions" :key="index" :icon="item.icon" :text="item.title"
+          @click="item.handler" />
       </van-grid>
     </van-cell-group>
 
     <!-- 服务列表 -->
     <van-cell-group title="常用服务" class="service-card">
-      <van-cell
-        v-for="(service, index) in services"
-        :key="index"
-        :title="service.name"
-        :icon="service.icon"
-        clickable
-        @click="service.handler"
-      >
+      <van-cell v-for="(service, index) in services" :key="index" :title="service.name" :icon="service.icon" clickable
+        @click="service.handler">
       </van-cell>
     </van-cell-group>
 
     <!-- 头像选择弹窗 -->
-    <van-popup
-      v-model="showAvatarDialog"
-      position="bottom"
-      round
-    >
+    <van-popup v-model="showAvatarDialog" position="bottom" round>
       <div class="avatar-popup">
         <van-grid :column-num="3" class="avatar-grid">
-          <van-grid-item
-            v-for="(url, index) in avatarUrls"
-            :key="index"
-            @click="selectAvatar(url)"
-          >
-            <van-image
-              round
-              width="80rpx"
-              height="80rpx"
-              :src="url"
-              :class="{ selected: selectedAvatar === url }"
-            />
+          <van-grid-item v-for="(url, index) in avatarUrls" :key="index" @click="selectAvatar(url)">
+            <img width="80rpx" height="80rpx" :src="url" :class="{ selected: selectedAvatar === url }" />
           </van-grid-item>
           <van-grid-item @click="uploadLocalImage">
             <van-icon name="plus" size="40rpx" />
@@ -98,27 +61,12 @@
     </van-popup>
 
     <!-- 昵称修改弹窗 -->
-    <van-popup
-      v-model="showNicknameDialog"
-      position="bottom"
-      round
-      :close-on-click-overlay="false"
-    >
+    <van-popup v-model="showNicknameDialog" position="bottom" round :close-on-click-overlay="false">
       <div class="nickname-popup">
-        <van-field
-          v-model="tempNickname"
-          label="新昵称"
-          placeholder="请输入2-12个字符"
-          maxlength="12"
-          clearable
-        />
+        <van-field v-model="tempNickname" label="新昵称" placeholder="请输入2-12个字符" maxlength="12" clearable />
         <div class="popup-buttons">
           <van-button plain @click="showNicknameDialog = false">取消</van-button>
-          <van-button
-            type="primary"
-            @click="saveNickname"
-            :disabled="!tempNickname.trim()"
-          >保存</van-button>
+          <van-button type="primary" @click="saveNickname" :disabled="!tempNickname.trim()">保存</van-button>
         </div>
       </div>
     </van-popup>
@@ -126,12 +74,12 @@
 </template>
 
 <script>
-import { Toast ,Image} from 'vant';
+import { Toast, Tag } from 'vant';
 
 export default {
-	components:{
-		 [Image.name]: Image,
-	},
+  components: {
+    [Tag.name]: Tag,
+  },
   data() {
     return {
       // 用户信息（从本地存储读取）
@@ -147,51 +95,51 @@ export default {
         '/static/people.png',
         '/static/image1.png',
         '/static/image2.png',
-		'/static/image3.png',
-		'/static/image4.png',
-		'/static/image8.png',
-		'/static/image9.png',
+        '/static/image3.png',
+        '/static/image4.png',
+        '/static/image8.png',
+        '/static/image9.png',
       ],
       selectedAvatar: '',
       // 功能入口配置
       functions: [
-        { 
-          icon: 'todo-list', 
-          title: '预约', 
+        {
+          icon: 'todo-list',
+          title: '预约',
           handler: this.goToReservation // 路由跳转方法
         },
-        { 
-          icon: 'clock', 
-          title: '记录', 
-          handler: this.goToRecords 
+        {
+          icon: 'clock',
+          title: '记录',
+          handler: this.goToRecords
         },
-        { 
-          icon: 'coupon', 
+        {
+          icon: 'coupon',
           title: '费用',
-          handler: this.goToCoupon 
+          handler: this.goToCoupon
         },
-        { 
-          icon: 'setting', 
-          title: '设置', 
-          handler: this.goToSettings 
+        {
+          icon: 'setting',
+          title: '设置',
+          handler: this.goToSettings
         }
       ],
       // 服务列表配置
       services: [
-        { 
-          icon: 'comment', 
-          name: '我的评价', 
+        {
+          icon: 'comment',
+          name: '我的评价',
           handler: this.goToComments // 路由跳转方法
         },
-        { 
-          icon: 'star', 
-          name: '我的收藏', 
-          handler: this.goToFavorites 
+        {
+          icon: 'star',
+          name: '我的收藏',
+          handler: this.goToFavorites
         },
-        { 
-          icon: 'service', 
-          name: '帮助中心', 
-          handler: this.goToHelp 
+        {
+          icon: 'service',
+          name: '帮助中心',
+          handler: this.goToHelp
         }
       ]
     };
@@ -230,17 +178,17 @@ export default {
         this.showFeedback('请先选择头像', 'warning');
         return;
       }
-      
+
       try {
         uni.showLoading({ title: '更新中...', mask: true });
-        
+
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
+
         this.userInfo.avatar = this.selectedAvatar;
         localStorage.setItem('userAvatar', this.selectedAvatar);
         this.showAvatarDialog = false;
         this.showFeedback('头像更换成功', 'success');
-        
+
       } catch (error) {
         this.showFeedback('头像更新失败', 'error');
       } finally {
@@ -255,7 +203,7 @@ export default {
           sizeType: ['compressed'],
           sourceType: ['album', 'camera']
         });
-        
+
         if (res.tempFilePaths.length > 0) {
           this.selectedAvatar = res.tempFilePaths[0];
           this.showFeedback('已选择本地图片', 'info');
@@ -270,7 +218,7 @@ export default {
         this.showFeedback('昵称至少需要2个字符', 'warning');
         return;
       }
-      
+
       if (this.tempNickname.trim().length > 12) {
         this.showFeedback('昵称不能超过12个字符', 'warning');
         return;
@@ -317,86 +265,127 @@ export default {
 <style lang="scss" scoped>
 /* 页面整体容器样式 */
 .profile-container {
-  padding: 16px;
-  background: #f7f8fa;
+  padding: 20rpx 30rpx;
+  background: linear-gradient(180deg, #f5f7fa 0%, #f0f2f5 100%);
+  min-height: 100vh;
 }
 
 /* 用户信息卡片样式 */
 .user-card {
-  margin-bottom: 16px;
-  
+  margin-bottom: 32rpx;
+  border-radius: 24rpx;
+  overflow: hidden;
+  box-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.06);
+  background: #fff;
+
   .avatar-section {
     position: relative;
-    margin-right: 20px;
-    
+    margin-right: 40rpx;
+
+    .avatar-image {
+      width: 160rpx;
+      height: 160rpx;
+      border-radius: 50%;
+      border: 4rpx solid #fff;
+      box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.1);
+    }
+
     .change-btn {
-      position: absolute;
-      bottom: -8px;
-      left: 50%;
-      transform: translateX(-50%);
-      min-width: 60px;
+      bottom: -16rpx;
+      min-width: 120rpx;
+      height: 56rpx;
+      font-size: 24rpx;
+      border-radius: 40rpx;
     }
   }
-  
+
   .user-info {
     .nickname-wrapper {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
-      
+      margin-bottom: 16rpx;
+
       .nickname {
-        font-size: 18px;
-        font-weight: 500;
+        font-size: 36rpx;
+        font-weight: 600;
+        color: #2c3e50;
+        letter-spacing: 0.5rpx;
       }
+
+      .van-icon-edit {
+        color: #3498db;
+        margin-left: 16rpx;
+      }
+    }
+
+    .van-tag {
+      padding: 8rpx 24rpx;
+      font-size: 24rpx;
+      border-radius: 40rpx;
     }
   }
 }
 
 /* 功能卡片样式 */
 .function-card {
-  margin: 16px 0;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
-  
-  &::before {
-    display: none; /* 移除vant默认的border */
-  }
-}
+  margin: 32rpx 0;
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.06);
 
-/* 功能入口网格布局 */
-.function-grid {
-  margin-bottom: 16px;
-  
-  ::v-deep .van-grid-item {
-    flex-basis: 25%; /* 每行4个 */
-    max-width: 25%;  /* 防止溢出 */
-    
-    @media (max-width: 480px) {
-      flex-basis: 33.3%; /* 小屏幕时每行3个 */
-      max-width: 33.3%;
+  .function-grid {
+    padding: 20rpx 0;
+
+    ::v-deep .van-grid-item__content {
+      padding: 32rpx 0;
+
+      .van-icon {
+        font-size: 64rpx;
+        margin-bottom: 16rpx;
+        color: #3498db;
+      }
+
+      &::after {
+        border: none;
+      }
     }
   }
 }
 
 /* 服务列表样式 */
 .service-card {
-  ::v-deep .van-cell__title {
-    flex: none;
-    width: 80px;
+  border-radius: 24rpx;
+  overflow: hidden;
+  box-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.06);
+
+  ::v-deep .van-cell {
+    padding: 32rpx;
+    transition: all 0.3s;
+
+    &:active {
+      background-color: #f8f9fa;
+    }
+
+    &::after {
+      left: 32rpx;
+      right: 32rpx;
+    }
+
+    .van-icon {
+      font-size: 40rpx;
+      margin-right: 24rpx;
+      color: #7f8c8d;
+    }
   }
 }
 
 /* 弹窗通用样式 */
-.avatar-popup, .nickname-popup {
+.avatar-popup,
+.nickname-popup {
   padding: 20px;
-  
+
   .popup-buttons {
     display: flex;
     gap: 16px;
     margin-top: 20px;
-    
+
     .van-button {
       flex: 1;
     }
@@ -409,8 +398,10 @@ export default {
   box-shadow: 0 2px 6px rgba(7, 193, 96, 0.3);
 }
 
-::v-deep .van-image__img {
+.avatar-image {
+  border-radius: 50%;
   display: block;
+
   &.selected {
     border: 2px solid #07c160;
     box-shadow: 0 2px 6px rgba(7, 193, 96, 0.3);

@@ -3,15 +3,10 @@
     <van-col span="10">
       <span class="label-text">窗帘控制</span>
     </van-col>
-    
+
     <van-col span="7" class="text-right">
-      <van-switch 
-        v-model="switchState"
-        :active-color="activeColor"
-        :inactive-color="inactiveColor"
-        size="24px"
-        @change="handleChange"
-      />
+      <van-switch v-model="switchState" :active-color="activeColor" :inactive-color="inactiveColor" size="24px"
+        @change="handleChange" />
     </van-col>
 
     <van-col span="7" class="text-right">
@@ -51,29 +46,29 @@ export default {
   margin: 16px 0;
   border-radius: 12px;
   background: white;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-  
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+
   .label-text {
     font-size: 15px;
     font-weight: 500;
     color: #303133;
   }
-  
+
   .state-text {
     font-size: 14px;
     font-weight: 600;
-    
+
     &.active {
       color: #1989fa;
     }
   }
-  
+
   .van-switch {
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   }
 }
 
 .text-right {
   text-align: right;
 }
-</style> 
+</style>

@@ -1,12 +1,7 @@
 <template>
   <div class="room-container">
     <!-- 使用Vant官方倒计时组件 -->
-    <van-count-down 
-      class="countdown-cell"
-      :time="timeDiff"
-      :auto-start="false"
-      :format="timeFormat"
-    >
+    <van-count-down class="countdown-cell" :time="timeDiff" :auto-start="false" :format="timeFormat">
       <template #default="timeData">
         <div class="countdown-box">
           <van-tag :type="timeStatus.type" class="status-tag">
@@ -18,7 +13,7 @@
         </div>
       </template>
     </van-count-down>
-    
+
     <!-- 房间信息使用卡片布局 -->
     <van-card class="info-card">
       <template #desc>
@@ -33,7 +28,7 @@
                 </div>
               </div>
             </van-col>
-            
+
             <van-col span="24" class="info-item">
               <div class="info-content">
                 <van-icon name="clock-o" class="info-icon" />
@@ -56,7 +51,7 @@
             <van-col span="12">温度：{{ temperature }}°C</van-col>
             <van-col span="12">湿度：{{ humidity }}%</van-col>
           </van-row>
-          
+
           <!-- 设备控制区域 -->
           <div class="device-panel">
             <DoorSwitch />
@@ -115,7 +110,7 @@ export default {
       const date = new Date(this.$route.query.date);
       return date.toLocaleDateString('zh-CN', {
         year: 'numeric',
-        month: '2-digit', 
+        month: '2-digit',
         day: '2-digit'
       });
     },
@@ -193,7 +188,7 @@ export default {
         this.startTime = startDayjs.valueOf();
         this.endTime = endDayjs.valueOf();
 
-        console.log('有效时间范围:', { 
+        console.log('有效时间范围:', {
           start: startDayjs.format('YYYY-MM-DD HH:mm'),
           end: endDayjs.format('YYYY-MM-DD HH:mm'),
           now: dayjs().format('YYYY-MM-DD HH:mm')
@@ -201,7 +196,7 @@ export default {
 
         // 初始化倒计时
         this.calculateTimeDiff();
-        
+
         // 启动定时器
         this.timer = setInterval(() => {
           this.calculateTimeDiff();
@@ -215,7 +210,7 @@ export default {
     },
     calculateTimeDiff() {
       const now = Date.now();
-      
+
       // 验证时间有效性
       if (isNaN(this.startTime) || isNaN(this.endTime)) {
         console.error('无效的时间参数:', {
@@ -234,7 +229,7 @@ export default {
         this.timeDiff = 0;
         clearInterval(this.timer);
       }
-      
+
       if (this.timeDiff <= 0) {
         clearInterval(this.timer);
         this.handleTimeFinish();
@@ -264,15 +259,16 @@ export default {
 .countdown-cell {
   margin: 0 0 20px;
   border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(25,137,250,0.1);
+  box-shadow: 0 4px 16px rgba(25, 137, 250, 0.1);
   background: white;
+
   ::v-deep .van-count-down {
     font-size: 16px;
     color: #1989fa;
     font-weight: 600;
     padding: 14px 16px;
   }
-  
+
   .countdown-text {
     display: flex;
     align-items: center;
@@ -280,16 +276,17 @@ export default {
   }
 }
 
-.info-card, .status-card {
+.info-card,
+.status-card {
   margin: 20px 0;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-  
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+
   ::v-deep .van-card__content {
     padding: 24px;
     position: relative;
-    
+
     &::before {
       content: '';
       position: absolute;
@@ -306,16 +303,16 @@ export default {
   font-size: 15px;
   color: #303133;
   line-height: 1.7;
-  
+
   .van-row {
     margin: 12px -8px;
-    
+
     .van-col {
       padding: 8px;
       display: flex;
       align-items: center;
       font-weight: 500;
-      
+
       &::before {
         content: '';
         width: 6px;
@@ -333,12 +330,12 @@ export default {
   background: white;
   padding: 8px 16px;
   border-radius: 14px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.05);
-  
-  > * {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+
+  >* {
     margin: 16px 0;
     transition: transform 0.2s;
-    
+
     &:active {
       transform: scale(0.98);
     }
@@ -352,19 +349,19 @@ export default {
   transform: translateX(-50%);
   width: 86%;
   max-width: 360px;
-  
+
   ::v-deep .van-button {
     width: 100%;
     height: 48px;
     font-size: 16px;
     font-weight: 500;
     letter-spacing: 0.5px;
-    box-shadow: 0 6px 20px rgba(25,137,250,0.2);
+    box-shadow: 0 6px 20px rgba(25, 137, 250, 0.2);
     transition: all 0.2s;
-    
+
     &:active {
       transform: translateY(2px);
-      box-shadow: 0 3px 12px rgba(25,137,250,0.2);
+      box-shadow: 0 3px 12px rgba(25, 137, 250, 0.2);
     }
   }
 }
@@ -385,7 +382,7 @@ export default {
   .info-item {
     padding: 16px 0;
     position: relative;
-    
+
     &:not(:last-child)::after {
       content: '';
       position: absolute;

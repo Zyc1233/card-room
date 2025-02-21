@@ -1,73 +1,41 @@
 <template>
   <view class="container">
     <van-form class="form-area">
-      <van-field
-        v-model="phone"
-        name="phone"
-        placeholder="请输入手机号码"
-        type="tel"
-        maxlength="11"
-        :rules="[{ required: true, message: '请输入手机号码' }]"
-      >
+      <van-field v-model="phone" name="phone" placeholder="请输入手机号码" type="tel" maxlength="11"
+        :rules="[{ required: true, message: '请输入手机号码' }]">
         <template #left-icon>
           <van-icon name="phone-o" size="20" color="#999" />
         </template>
       </van-field>
 
-      <van-field
-        v-model="newPassword"
-        name="newPassword"
-        :type="showPassword ? 'text' : 'password'"
-        placeholder="请输入新密码"
-        :rules="[{ required: true, message: '请输入新密码' }]"
-      >
+      <van-field v-model="newPassword" name="newPassword" :type="showPassword ? 'text' : 'password'"
+        placeholder="请输入新密码" :rules="[{ required: true, message: '请输入新密码' }]">
         <template #left-icon>
           <van-icon name="lock" size="20" color="#999" />
         </template>
         <template #right-icon>
-          <van-icon 
-            :name="showPassword ? 'eye-o' : 'closed-eye'"
-            @click="toggleShowPassword"
-            color="#999"
-          />
+          <van-icon :name="showPassword ? 'eye-o' : 'closed-eye'" @click="toggleShowPassword" color="#999" />
         </template>
       </van-field>
 
-      <van-field
-        v-model="verificationCode"
-        name="verificationCode"
-        placeholder="请输入验证码"
-        type="digit"
-        maxlength="6"
-        :rules="[{ required: true, message: '请输入验证码' }]"
-      >
+      <van-field v-model="verificationCode" name="verificationCode" placeholder="请输入验证码" type="digit" maxlength="6"
+        :rules="[{ required: true, message: '请输入验证码' }]">
         <template #left-icon>
           <van-icon name="comment-o" size="20" color="#999" />
         </template>
         <template #button>
-          <van-button
-            size="small"
-            :disabled="counting > 0"
-            @click="getVerificationCode"
-            custom-style="
+          <van-button size="small" :disabled="counting > 0" @click="getVerificationCode" custom-style="
               width: 120px;
               background-color: #{counting > 0 ? '#e0e0e0' : '#007aff'};
               color: #{counting > 0 ? '#999' : 'white'};
               border: none;
-            "
-          >
+            ">
             {{ counting > 0 ? `${counting}s` : '获取验证码' }}
           </van-button>
         </template>
       </van-field>
 
-      <van-button 
-        type="primary" 
-        block
-        round
-        @click="resetPassword"
-        custom-class="reset-btn"
-      >
+      <van-button type="primary" block round @click="resetPassword" custom-class="reset-btn">
         重置密码
       </van-button>
     </van-form>

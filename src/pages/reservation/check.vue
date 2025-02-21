@@ -2,52 +2,19 @@
   <view class="container">
     <!-- 新增操作按钮组 -->
     <view class="right-button-group">
-		<van-button
-		plain
-		icon="back-top"
-		type="primary"
-		size="small"
-		@click="backTop"
-		color="#0055ff"
-		>返回顶部</van-button>
-      <van-button 
-        plain
-        icon="replay"
-        type="primary" 
-        size="small"
-        @click="refresh"
-      >更新</van-button>
+      <van-button round plain icon="back-top" type="primary" size="small" @click="backTop"
+        color="#0055ff">返回顶部</van-button>
+      <van-button round plain icon="replay" type="primary" size="small" @click="refresh">更新</van-button>
     </view>
 
-    <van-list
-      :loading="loading"
-      :finished="finished"
-      finished-text="没有更多了"
-      @load="loadMore"
-      class="scroll-list"
-    >
-      <van-cell 
-        v-for="(reservation, index) in reservations"
-        :key="index"
+    <van-list :loading="loading" :finished="finished" finished-text="没有更多了" @load="loadMore" class="scroll-list">
+      <van-cell v-for="(reservation, index) in reservations" :key="index"
         :title="`用户: ${reservation.user} 房间: ${reservation.roomType}`"
-        :label="`日期: ${reservation.date} ${reservation.startTime}-${reservation.endTime}`"
-      >
+        :label="`日期: ${reservation.date} ${reservation.startTime}-${reservation.endTime}`">
         <view class="button-group" slot="right-icon">
-          <van-button 
-            size="small" 
-            type="danger" 
-            @click="cancelReservation(index)"
-          >取消</van-button>
-          <van-button
-            size="small"
-            type="warning"
-            @click="editReservation(index)"
-          >修改</van-button>
-          <van-button
-            size="small"
-            type="primary"
-            @click="goToRoom(index)"
-          >进入</van-button>
+          <van-button round size="small" type="danger" @click="cancelReservation(index)">取消</van-button>
+          <van-button round size="small" type="warning" @click="editReservation(index)">修改</van-button>
+          <van-button round size="small" type="primary" @click="goToRoom(index)">进入</van-button>
         </view>
       </van-cell>
     </van-list>
@@ -87,7 +54,7 @@ export default {
     async loadReservations(loadmore = false) {
       try {
         this.loading = true;
-        
+
         const allData = await getAllReservations();
         const start = (this.currentPage - 1) * this.pageSize;
         const newData = allData
@@ -97,17 +64,17 @@ export default {
             // 格式化日期和时间
             return {
               ...reservation,
-              date: dayjs(reservation.date).format('YYYY年MM月DD日'), 
+              date: dayjs(reservation.date).format('YYYY年MM月DD日'),
             };
           });
 
-        this.reservations = loadmore 
+        this.reservations = loadmore
           ? [...this.reservations, ...newData]
           : newData;
 
         this.finished = newData.length < this.pageSize;
         this.loading = false;
-        
+
       } catch (error) {
         Toast('加载失败，请检查网络');
         this.loading = false;
@@ -162,7 +129,7 @@ export default {
         // 统一日期格式处理
         const rawDate = reservation.date.replace(/[年月]/g, '-').replace(/日/g, '');
         const formattedDate = dayjs(rawDate).format('YYYY-MM-DD');
-        
+
         this.$router.push({
           path: '/pages/room/room',
           query: {
@@ -178,18 +145,18 @@ export default {
       }
     },
     async refresh() {
-        try {
-            await this.loadReservations();
-            Toast.success({
-                message: '数据已刷新',
-                duration: 1500
-            });
-        } catch (error) {
-            Toast.fail({
-                message: '刷新失败，请重试',
-                duration: 2000
-            });
-        }
+      try {
+        await this.loadReservations();
+        Toast.success({
+          message: '数据已刷新',
+          duration: 1500
+        });
+      } catch (error) {
+        Toast.fail({
+          message: '刷新失败，请重试',
+          duration: 2000
+        });
+      }
     },
     showFeedback(message, type = 'success') {
       if (type === 'success') {
@@ -201,20 +168,20 @@ export default {
       }
     },
     backTop() {
-        // 返回顶部功能
-        try {
-            // 微信小程序环境
-            uni.pageScrollTo({
-                scrollTop: 0,
-                duration: 100
-            });
-        } catch (e) {
-            // H5环境
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        }
+      // 返回顶部功能
+      try {
+        // 微信小程序环境
+        uni.pageScrollTo({
+          scrollTop: 0,
+          duration: 100
+        });
+      } catch (e) {
+        // H5环境
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }
     },
   },
   watch: {
@@ -244,14 +211,15 @@ export default {
   width: 69px;
   bottom: 100rpx; // 在底部导航上方
   z-index: 1001;
-  
+
   flex-direction: row;
-  
+
   // 适配不同屏幕尺寸
   @media (min-width: 768px) {
     bottom: 160rpx;
     left: 40rpx;
   }
+
   .van-button {
     margin-right: 8px;
   }
@@ -264,6 +232,7 @@ export default {
 .button-group {
   display: flex;
   align-items: center;
+
   .van-button {
     min-width: 60px;
   }
@@ -276,5 +245,4 @@ export default {
   right: 0;
   z-index: 999;
 }
-
 </style>

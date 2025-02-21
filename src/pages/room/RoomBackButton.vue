@@ -1,12 +1,5 @@
 <template>
-  <van-button 
-    type="default" 
-    size="small"
-    round
-    class="back-button"
-    color="#ccc"
-    @click="navigateBack"
-  >
+  <van-button type="default" size="small" round class="back-button" color="#ccc" @click="navigateBack">
     <van-icon name="arrow-left" />
     退出房间
   </van-button>
@@ -30,7 +23,7 @@ export default {
 
 <style scoped>
 .back-button {
-	width: 100px;
-  
+  width: 100px;
+
 }
-</style> 
+</style>

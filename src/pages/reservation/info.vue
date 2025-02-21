@@ -1,43 +1,18 @@
 <template>
   <div class="info-container">
     <van-cell-group>
-      <text 
-        type="primary" 
-        :bold="true" 
-        size="28" 
-        text="预约成功 🎉" 
-        align="center" 
-        margin="0 0 40px 0"
-      />
-      
-      <van-cell 
-        v-for="(item, index) in infoItems"
-        :key="index"
-        :title="item.label"
-        :value="item.value"
-        :border="false"
-        class="custom-cell"
-      />
+      <text type="primary" :bold="true" size="28" text="预约成功 🎉" align="center" margin="0 0 40px 0" />
+
+      <van-cell v-for="(item, index) in infoItems" :key="index" :title="item.label" :value="item.value" :border="false"
+        class="custom-cell" />
     </van-cell-group>
 
     <van-row class="btn-group">
       <van-col span="11">
-        <van-button
-          type="danger"
-          block
-          round
-          @click="cancel"
-          class="action-btn"
-        >取消预约</van-button>
+        <van-button type="danger" block round @click="cancel" class="action-btn">取消预约</van-button>
       </van-col>
       <van-col span="11" offset="2">
-        <van-button
-          type="primary"
-          block
-          round
-          @click="goRoom"
-          class="action-btn"
-        >前往房间</van-button>
+        <van-button type="primary" block round @click="goRoom" class="action-btn">前往房间</van-button>
       </van-col>
     </van-row>
   </div>
@@ -115,7 +90,7 @@ export default {
         await deleteReservation(this.reservation.id);
         this.$router.push({
           path: '/pages/reservation/reservation',
-          query: { 
+          query: {
             refresh: true,
             message: '预约已取消',
             type: 'success'
@@ -139,8 +114,8 @@ export default {
     margin: 8px 0;
     border-left: 3px solid #07c160;
     background: #fff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
     &::after {
       border: none;
     }
@@ -149,7 +124,7 @@ export default {
 
 .btn-group {
   margin-top: 24px;
-  
+
   .action-btn {
     height: 44px;
     font-size: 16px;
@@ -158,10 +133,10 @@ export default {
 
 ::v-deep .van-button {
   transition: all 0.3s ease;
-  
+
   &:active {
     transform: translateY(2px);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
 }
 </style>

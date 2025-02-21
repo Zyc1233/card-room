@@ -4,127 +4,60 @@
     <!-- 顶部区域：包含logo、标题和登录方式选择 -->
     <view class="header">
       <!-- Logo图片 -->
-      <image 
-	  class="login-logo"
-	  src='/static/login.png'
-	  width="160rpx"
-	  height="160rpx">
-	  </image>
-	  
+      <image class="login-logo" src='/static/login.png' width="160rpx" height="160rpx">
+      </image>
+
       <!-- 页面标题 -->
       <text class="title">用户登录</text>
       <!-- 登录方式选择区域 -->
-      <van-radio-group 
-        v-model="loginMethod" 
-        @change="val => loginMethod = val"
-        :wrap="true"
-        class="login-method"
-      >
-        <van-radio
-          name="password"
-          label="密码登录"
-          active-color="#007aff"
-          label-size="32rpx"
-        >密码登录</van-radio>
-        <van-radio
-          name="code"
-          label="验证码登录"
-          active-color="#007aff"
-          label-size="32rpx"
-        >验证码登录
+      <van-radio-group v-model="loginMethod" @change="val => loginMethod = val" :wrap="true" class="login-method">
+        <van-radio name="password" label="密码登录" active-color="#007aff" label-size="32rpx">密码登录</van-radio>
+        <van-radio name="code" label="验证码登录" active-color="#007aff" label-size="32rpx">验证码登录
         </van-radio>
       </van-radio-group>
     </view>
 
     <!-- 密码登录表单 -->
-    <van-form 
-      :model="form" 
-      :rules="rules"
-      ref="uForm" 
-      v-if="loginMethod === 'password'"
-      class="form-area"
-    >
-      <van-field
-        v-model="form.phone"
-        name="phone"
-        placeholder="请输入手机号码"
-        type="tel"
-        maxlength="11"
-        clearable
-        :rules="rules.phone"
-      >
+    <van-form :model="form" :rules="rules" ref="uForm" v-if="loginMethod === 'password'" class="form-area">
+      <van-field v-model="form.phone" name="phone" placeholder="请输入手机号码" type="tel" maxlength="11" clearable
+        :rules="rules.phone">
         <template #left-icon>
           <van-icon name="phone-o" size="20" color="#999" />
         </template>
       </van-field>
 
-      <van-field
-        v-model="form.password"
-        name="password"
-        :type="showPassword ? 'text' : 'password'"
-        placeholder="请输入密码"
-        clearable
-        :rules="rules.password"
-      >
+      <van-field v-model="form.password" name="password" :type="showPassword ? 'text' : 'password'" placeholder="请输入密码"
+        clearable :rules="rules.password">
         <template #left-icon>
           <van-icon name="lock" size="20" color="#999" />
         </template>
         <template #right-icon>
-          <van-icon 
-            :name="showPassword ? 'eye-o' : 'closed-eye'"
-            @click="toggleShowPassword"
-            color="#999"
-          />
+          <van-icon :name="showPassword ? 'eye-o' : 'closed-eye'" @click="toggleShowPassword" color="#999" />
         </template>
       </van-field>
     </van-form>
 
     <!-- 验证码登录表单 -->
-    <van-form 
-      :model="form" 
-      :rules="rules"
-      ref="uForm" 
-      v-else
-      class="form-area"
-    >
-      <van-field
-        v-model="form.phone"
-        name="phone"
-        placeholder="请输入手机号码"
-        type="tel"
-        maxlength="11"
-        clearable
-        :rules="rules.phone"
-      >
+    <van-form :model="form" :rules="rules" ref="uForm" v-else class="form-area">
+      <van-field v-model="form.phone" name="phone" placeholder="请输入手机号码" type="tel" maxlength="11" clearable
+        :rules="rules.phone">
         <template #left-icon>
           <van-icon name="phone-o" size="20" color="#999" />
         </template>
       </van-field>
 
-      <van-field
-        v-model="form.code"
-        name="code"
-        placeholder="请输入验证码"
-        type="digit"
-        maxlength="6"
-        clearable
-        :rules="rules.code"
-      >
+      <van-field v-model="form.code" name="code" placeholder="请输入验证码" type="digit" maxlength="6" clearable
+        :rules="rules.code">
         <template #left-icon>
           <van-icon name="comment-o" size="20" color="#999" />
         </template>
         <template #button>
-          <van-button
-            size="small"
-            :disabled="counting > 0"
-            @click="getVerificationCode"
-            custom-style="
+          <van-button size="small" :disabled="counting > 0" @click="getVerificationCode" custom-style="
               width: 120px;
               background-color: #{counting > 0 ? '#e0e0e0' : '#007aff'};
               color: #{counting > 0 ? '#999' : 'white'};
               border: none;
-            "
-          >
+            ">
             {{ counting > 0 ? `${counting}s` : '获取验证码' }}
           </van-button>
         </template>
@@ -139,13 +72,7 @@
       <text class="forgot-text" @click="forgotPassword">忘记密码？</text>
     </view>
 
-    <van-button 
-      type="primary" 
-      block
-      round
-      @click="login"
-      custom-class="login-btn"
-    >
+    <van-button type="primary" block round @click="login" custom-class="login-btn">
       立即登录
     </van-button>
 
@@ -153,57 +80,53 @@
       <text class="register-link" @click="goToRegister">没有账号？立即注册</text>
     </view>
 
-   
+
   </view>
 </template>
 
 <script>
-import { Image} from 'vant';
 export default {
-	components:{
-		[Image.name]: Image,
-	},
-   data() {
-     return {
-       loginMethod: 'password',
-       form: {
-         phone: uni.getStorageSync('lastLoginPhone') || '',
-         password: uni.getStorageSync('savedPassword') || '',
-         code: ''
-       },
-       rememberPassword: uni.getStorageSync('rememberPassword') ? ['remember'] : [],
-       showPassword: false,
-       counting: 0,
-       rules: {
-         phone: [
-           { 
-             required: true, 
-             message: '请输入手机号码',
-             trigger: ['blur', 'change']
-           },
-           {
-             pattern: /^1[3-9]\d{9}$/,
-             message: '手机号格式不正确',
-             trigger: ['blur','change']
-           }
-         ],
-         password: [
-           { 
-             required: true, 
-             message: '请输入密码',
-             trigger: ['blur', 'change']
-           }
-         ],
-         code: [
-           { 
-             required: true, 
-             message: '请输入验证码',
-             trigger: ['blur', 'change']
-           }
-         ]
-       }
-     }
-   },
+  data() {
+    return {
+      loginMethod: 'password',
+      form: {
+        phone: uni.getStorageSync('lastLoginPhone') || '',
+        password: uni.getStorageSync('savedPassword') || '',
+        code: ''
+      },
+      rememberPassword: uni.getStorageSync('rememberPassword') ? ['remember'] : [],
+      showPassword: false,
+      counting: 0,
+      rules: {
+        phone: [
+          {
+            required: true,
+            message: '请输入手机号码',
+            trigger: ['blur', 'change']
+          },
+          {
+            pattern: /^1[3-9]\d{9}$/,
+            message: '手机号格式不正确',
+            trigger: ['blur', 'change']
+          }
+        ],
+        password: [
+          {
+            required: true,
+            message: '请输入密码',
+            trigger: ['blur', 'change']
+          }
+        ],
+        code: [
+          {
+            required: true,
+            message: '请输入验证码',
+            trigger: ['blur', 'change']
+          }
+        ]
+      }
+    }
+  },
   methods: {
     // 切换登录方式
     toggleLoginMethod(event) {
@@ -297,8 +220,8 @@ export default {
         console.log('登录验证结果:', validationResult);
 
         if (!validationResult.valid) {
-          uni.showToast({ 
-            title: validationResult.message, 
+          uni.showToast({
+            title: validationResult.message,
             icon: 'none',
             duration: 2000
           });
@@ -327,8 +250,8 @@ export default {
       } catch (error) {
         // 增强错误日志
         console.error('完整错误信息:', error);
-        uni.showToast({ 
-          title: error.details?.[0]?.message || '登录流程异常', 
+        uni.showToast({
+          title: error.details?.[0]?.message || '登录流程异常',
           icon: 'none',
           duration: 2000
         });
@@ -361,7 +284,8 @@ export default {
 .container {
   min-height: 100vh;
   padding: 40rpx;
-  background: linear-gradient(to bottom, #f6f7f9, #ffffff); /* 渐变背景 */
+  background: linear-gradient(to bottom, #f6f7f9, #ffffff);
+  /* 渐变背景 */
 }
 
 /* 顶部区域样式 */
@@ -374,7 +298,7 @@ export default {
 
 /* Logo样式 */
 .login-logo {
-  display: block; 
+  display: block;
   width: 160rpx;
   height: 160rpx;
   margin-bottom: 30rpx;
@@ -397,10 +321,14 @@ export default {
 
 /* 表单区域样式 - 移除背景和阴影 */
 .form-area {
-  padding: 20px 0;  /* 只保留上下内边距 */
-  background: transparent;  /* 移除白色背景 */
-  box-shadow: none;  /* 移除阴影 */
-  border-radius: 2;  /* 移除圆角 */
+  padding: 20px 0;
+  /* 只保留上下内边距 */
+  background: transparent;
+  /* 移除白色背景 */
+  box-shadow: none;
+  /* 移除阴影 */
+  border-radius: 2;
+  /* 移除圆角 */
 }
 
 /* 表单项样式 */
@@ -408,7 +336,8 @@ export default {
   position: relative;
   margin-bottom: 10px;
   padding: 12px 0;
-  height: 48px; /* 增加高度 */
+  height: 48px;
+  /* 增加高度 */
   display: flex;
   align-items: center;
   border-bottom: 1px solid #eee;
@@ -426,19 +355,22 @@ export default {
 /* 输入框样式 */
 input {
   flex: 1;
-  height: 44px; /* 增加高度 */
+  height: 44px;
+  /* 增加高度 */
   font-size: 15px;
   border: none;
   outline: none;
   background: transparent;
   color: #333;
-  padding: 0 10px; /* 增加内边距 */
+  padding: 0 10px;
+  /* 增加内边距 */
 }
 
 /* 密码显示/隐藏图标样式 */
 .eye-icon {
   position: absolute;
-  right: 20px; /* 调整位置 */
+  right: 20px;
+  /* 调整位置 */
   color: #999;
   padding: 4px;
   font-size: 30px;
@@ -527,7 +459,8 @@ input {
 }
 
 .register-tip {
-  text-align: right; /* 文本右对齐 */
+  text-align: right;
+  /* 文本右对齐 */
   margin-top: 40rpx;
   padding-right: 30rpx;
 }
@@ -535,7 +468,8 @@ input {
 .register-link {
   color: #007aff;
   font-size: 28rpx;
-  margin-left: 10rpx; /* 调整间距 */
+  margin-left: 10rpx;
+  /* 调整间距 */
 }
 
 .login-btn {

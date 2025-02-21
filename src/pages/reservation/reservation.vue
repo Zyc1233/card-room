@@ -1,14 +1,8 @@
 <template>
   <div class="room-reservation">
     <!-- 轮播图改用van-swipe -->
-    <van-swipe 
-      class="my-swipe"
-      :autoplay="3000"
-      @change="handleSwiperChange"
-      :loop="true"
-      :show-indicators="true"
-      indicator-color="#3c9cff"
-    >
+    <van-swipe class="my-swipe" :autoplay="3000" @change="handleSwiperChange" :loop="true" :show-indicators="true"
+      indicator-color="#3c9cff">
       <van-swipe-item v-for="(item, index) in swiperList" :key="index">
         <img :src="item.image" class="swipe-image" />
         <div class="swipe-title">{{ item.title }}</div>
@@ -18,90 +12,39 @@
     <!-- 表单容器 -->
     <van-form @submit="submitForm" class="form-container">
       <!-- 房间类型选择 -->
-      <van-field
-        readonly
-        clickable
-        name="picker"
-        :value="roomType"
-        label="房间类型"
-        placeholder="请选择房间类型"
-        @click="showRoomPicker = true"
-      />
+      <van-field readonly clickable name="picker" :value="roomType" label="房间类型" placeholder="请选择房间类型"
+        @click="showRoomPicker = true">
+        <template #right-icon>
+          <van-icon name="arrow-down" />
+        </template>
+      </van-field>
       <van-popup v-model="showRoomPicker" position="bottom">
-        <van-picker
-          title="请选择预约房间"
-          :columns="roomOptions"
-          value-key="name"
-          show-toolbar
-          @confirm="roomConfirm"
-          @cancel="showRoomPicker = false"
-        />
+        <van-picker title="请选择预约房间" :columns="roomOptions" value-key="name" show-toolbar @confirm="roomConfirm"
+          @cancel="showRoomPicker = false" />
       </van-popup>
 
       <!-- 日期选择 -->
-      <van-field
-        readonly
-        clickable
-        name="date"
-        :value="formattedDate"
-        label="预约日期"
-        placeholder="请选择日期"
-        @click="showDatePicker = true"
-      />
-      <van-calendar 
-        v-model:show="showDatePicker"
-        :min-date="minDate"
-        :max-date="maxDate"
-        @confirm="dateConfirm"
-        :round="false"
-        title="选择预约日期"
-        :show-title="true"
-        :default-date="date"
-        :poppable="true"
-      />
+      <van-field readonly clickable name="date" :value="formattedDate" label="预约日期" placeholder="请选择日期"
+        @click="showDatePicker = true" />
+      <van-calendar v-model:show="showDatePicker" :min-date="minDate" :max-date="maxDate" @confirm="dateConfirm"
+        :round="false" title="选择预约日期" :show-title="true" :default-date="date" :poppable="true" />
 
       <!-- 拆分时间选择字段 -->
-      <van-field
-        readonly
-        clickable
-        name="startTime"
-        :value="startTime"
-        label="开始时间"
-        placeholder="选择开始时间"
-        @click="showStartPicker = true"
-      />
-      <van-field
-        readonly
-        clickable
-        name="endTime"
-        :value="endTime"
-        label="结束时间"
-        placeholder="选择结束时间"
-        @click="showEndPicker = true"
-      />
-      
+      <van-field readonly clickable name="startTime" :value="startTime" label="开始时间" placeholder="选择开始时间"
+        @click="showStartPicker = true" />
+      <van-field readonly clickable name="endTime" :value="endTime" label="结束时间" placeholder="选择结束时间"
+        @click="showEndPicker = true" />
+
       <!-- 开始时间弹窗 -->
       <van-popup v-model="showStartPicker" position="bottom">
-        <van-datetime-picker
-          v-model="startTimeValue"
-          type="time"
-          title="选择开始时间"
-          :min-hour="0"
-          :max-hour="23"
-          @confirm="handleStartConfirm"
-        />
+        <van-datetime-picker v-model="startTimeValue" type="time" title="选择开始时间" :min-hour="0" :max-hour="23"
+          @confirm="handleStartConfirm" />
       </van-popup>
 
       <!-- 结束时间弹窗 -->
       <van-popup v-model="showEndPicker" position="bottom">
-        <van-datetime-picker
-          v-model="endTimeValue"
-          type="time"
-          title="选择结束时间"
-          :min-hour="0"
-          :max-hour="23"
-          @confirm="handleEndConfirm"
-        />
+        <van-datetime-picker v-model="endTimeValue" type="time" title="选择结束时间" :min-hour="0" :max-hour="23"
+          @confirm="handleEndConfirm" />
       </van-popup>
 
       <!-- 时间验证提示 -->
@@ -110,12 +53,7 @@
       </view>
 
       <!-- 姓名输入 -->
-      <van-field
-        v-model="name"
-        name="name"
-        label="用户名称"
-        placeholder="请输入姓名"
-      />
+      <van-field v-model="name" name="name" label="用户名称" placeholder="请输入姓名" />
 
       <!-- 操作按钮 -->
       <div class="button-group">
@@ -130,17 +68,17 @@
 // 引入依赖组件和工具库
 import { addReservation, getReservationsByRoomAndDate, getAllReservations, checkDuplicateReservation } from '@/utils/db';
 import dayjs from 'dayjs';  // 日期处理库
-import { 
-  Swipe, 
+import {
+  Swipe,
   showToast,
-  SwipeItem, 
-  Calendar, 
-  Picker, 
-  Popup, 
-  Field, 
-  Button, 
+  SwipeItem,
+  Calendar,
+  Picker,
+  Popup,
+  Field,
+  Button,
   Toast,
-  Dialog, 
+  Dialog,
   Image,
   DatetimePicker
 } from 'vant';
@@ -163,29 +101,29 @@ export default {
     return {
       // 修改轮播图数据结构
       swiperList: [
-        { 
+        {
           image: '/static/puke.png',
-          title: '扑克室 15 元/小时 1 小时起,每半小时加 5 元'
+          title: '扑克室 20 元/小时 1 小时起,每半小时加 5 元'
         },
-        { 
+        {
           image: '/static/majiang.png',
           title: '麻将室 20 元/小时 2 小时起,每半小时加 5 元'
         },
-        { 
+        {
           image: '/static/xiangqi.png',
           title: '象棋室 15 元/小时 1 小时起,每半小时加 5 元'
         },
-        { 
+        {
           image: '/static/zhuoyou.png',
           title: '桌游室 40 元/小时 1 小时起,每半小时加 5 元'
         }
       ],
       currentPrice: 0,
-      
+
       // 表单数据
       roomType: '',  // 选择的房间类型
       name: '',             // 预约人姓名
-      
+
       // 时间选择相关状态
       startTime: '',        // 格式化后的开始时间
       endTime: '',          // 格式化后的结束时间
@@ -194,12 +132,12 @@ export default {
       showStartPicker: false,
       showEndPicker: false,
       timeError: '',        // 时间验证错误信息
-      
+
       // 组件显示控制
       showDatePicker: false, // 日期选择器显示状态
       showTimePicker: false, // 时间选择弹窗显示状态
       showRoomPicker: false, // 房间选择器显示状态
-      
+
       // 静态数据
       roomOptions: [
         { name: '扑克室1' },
@@ -212,8 +150,8 @@ export default {
         { name: '桌游室2' }
       ],
       timeColumns: [
-        Array.from({length:24}, (_,i) => `${i}时`),
-        Array.from({length:60}, (_,i) => `${i}分`)
+        Array.from({ length: 24 }, (_, i) => `${i}时`),
+        Array.from({ length: 60 }, (_, i) => `${i}分`)
       ],
       minDate: new Date(dayjs().subtract(7, 'day').format('YYYY-MM-DD')),
       maxDate: new Date(dayjs().add(30, 'day').format('YYYY-MM-DD')),
@@ -233,10 +171,10 @@ export default {
       const start = dayjs(this.startTime, 'HH:mm');
       const end = dayjs(this.endTime, 'HH:mm');
       const duration = end.diff(start, 'minute');
-      return `${Math.floor(duration/60)}小时${duration%60}分钟`;
+      return `${Math.floor(duration / 60)}小时${duration % 60}分钟`;
     },
     timeRange() {
-      return this.startTime && this.endTime 
+      return this.startTime && this.endTime
         ? `${this.startTime} - ${this.endTime}`
         : '';
     }
@@ -281,7 +219,7 @@ export default {
           startTime: this.startTime,
           endTime: this.endTime
         });
-        
+
         if (isDuplicate) {
           Toast.fail({
             message: '该时间段您已存在完全相同的预约记录',
@@ -294,7 +232,7 @@ export default {
         const now = new Date();
         const startDateTime = new Date(`${this.date}T${this.startTime}`);
         const endDateTime = new Date(`${this.date}T${this.endTime}`);
-        
+
         // 仅保留过期时间检查
         if (now > endDateTime) {
           Toast.fail({
@@ -308,7 +246,7 @@ export default {
         const checkConflict = (existing) => {
           const newStart = startDateTime.getTime();
           const newEnd = endDateTime.getTime();
-          
+
           return existing.some(reservation => {
             const existStart = new Date(reservation.startTime).getTime();
             const existEnd = new Date(reservation.endTime).getTime();
@@ -325,7 +263,7 @@ export default {
           });
           return;
         }
-        
+
         const reservation = {
           user: this.name,
           roomType: this.roomType,
@@ -340,7 +278,7 @@ export default {
           message: '预约提交成功',
           duration: 1500
         });
-        
+
         this.$router.push({
           path: '/pages/reservation/info',
           query: {
@@ -352,7 +290,7 @@ export default {
             user: this.name
           }
         });
-        
+
       } catch (error) {
         Toast.fail('预约保存失败');
       } finally {
@@ -361,7 +299,7 @@ export default {
     },
     viewReservation() {
       console.log('查看预约情况');
-	   this.$router.push('/pages/reservation/check');
+      this.$router.push('/pages/reservation/check');
     },
     handleSwiperChange(e) {
       this.currentPrice = e.current;
@@ -463,10 +401,10 @@ export default {
     },
     validateTime() {
       if (!this.startTime || !this.endTime) return;
-      
+
       const start = dayjs(this.startTime, 'HH:mm');
       const end = dayjs(this.endTime, 'HH:mm');
-      
+
       if (end.isBefore(start)) {
         Toast.fail('结束时间不能早于开始时间');
       } else if (end.diff(start, 'minute') < 60) {
@@ -506,7 +444,7 @@ export default {
     '$route'(to, from) {
       if (to.query.refresh) {
         this.loadReservations(); // 刷新预约数据
-        
+
         if (to.query.message) {
           if (this.showFeedback) {
             this.showFeedback(to.query.message, to.query.type || 'success');
@@ -532,13 +470,13 @@ export default {
   border-radius: 16rpx;
   padding: 30rpx;
   margin-top: 40rpx;
-  box-shadow: 0 4rpx 24rpx rgba(0,0,0,0.04);
+  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.04);
 }
 
 
-.swipe-image{
-	height: 200px;
-	width: 100%;
+.swipe-image {
+  height: 200px;
+  width: 100%;
 }
 
 .van-field {
@@ -554,19 +492,19 @@ export default {
   align-items: center;
   margin: 30rpx 0;
   padding: 0 20rpx;
-  
+
   .time-label {
-    width: 140r	px;
+    width: 140r px;
     font-size: 28rpx;
     color: #333;
   }
-  
+
   .van-field {
     flex: 1;
     margin: 0 10rpx;
     text-align: center;
   }
-  
+
   .time-colon {
     color: #666;
     margin: 0 10rpx;
@@ -593,7 +531,7 @@ export default {
   right: 0;
   z-index: 1000;
   background: #fff;
-  box-shadow: 0 -4rpx 20rpx rgba(0,0,0,0.06);
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.06);
 }
 
 .van-swipe-item {
@@ -606,7 +544,7 @@ export default {
   bottom: 0;
   width: 100%;
   padding: 8px 16px;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.6);
   color: white;
 }
 </style>
