@@ -4,8 +4,8 @@
       <span class="label-text">灯光亮度</span>
     </van-col>
 
-    <van-col span="10">
-      <van-slider v-model="sliderValue" :min="0" :max="100" :step="5" bar-height="4px" button-size="20px"
+    <van-col span="10" class="slider">
+      <van-slider v-model="sliderValue" :min="0" :max="100" :step="5" bar-height="3px" button-size="20px"
         active-color="#00b38a" inactive-color="#ebedf0" @change="handleChange" />
     </van-col>
 
@@ -49,6 +49,10 @@ export default {
   font-size: 15px;
   font-weight: 500;
   color: #303133;
+}
+
+.slider{
+	padding-top: 10px;
 }
 
 .text-right {

@@ -67,21 +67,13 @@ export default {
       };
     },
     goRoom() {
-      // 统一日期格式处理
-      const formatDate = (dateStr) => {
-        return dayjs(dateStr)
-          .format('YYYY-MM-DD')
-          .replace(/[年月]/g, '-')
-          .replace(/日/g, '');
-      };
-
       this.$router.push({
         path: '/pages/room/room',
         query: {
           roomType: this.reservation.roomType,
-          date: formatDate(this.reservation.date),
-          startTime: this.reservation.startTime.replace(/[^0-9:]/g, ''),
-          endTime: this.reservation.endTime.replace(/[^0-9:]/g, '')
+          date: dayjs(this.reservation.date).format('YYYY年MM月DD日'),
+          startTime: this.reservation.startTime,
+          endTime: this.reservation.endTime
         }
       });
     },

@@ -125,24 +125,18 @@ export default {
     },
     goToRoom(index) {
       const reservation = this.reservations[index];
-      try {
-        // 统一日期格式处理
-        const rawDate = reservation.date.replace(/[年月]/g, '-').replace(/日/g, '');
-        const formattedDate = dayjs(rawDate).format('YYYY-MM-DD');
-
-        this.$router.push({
-          path: '/pages/room/room',
-          query: {
-            roomType: reservation.roomType,
-            date: formattedDate,
-            startTime: reservation.startTime.replace(/[：]/g, ':'),
-            endTime: reservation.endTime.replace(/[：]/g, ':')
-          }
-        });
-      } catch (error) {
-        Toast.fail('房间信息异常');
-        console.error('跳转参数错误:', error);
-      }
+      
+      // 使用预约记录中的原始时间
+      this.$router.push({
+        path: '/pages/room/room',
+        query: {
+          roomType: reservation.roomType,
+          date: reservation.date, // 直接使用已格式化的日期
+          startTime: reservation.startTime,
+          endTime: reservation.endTime,
+          _t: Date.now()
+        }
+      });
     },
     async refresh() {
       try {
