@@ -58,12 +58,15 @@ export default {
     },
     // 注册逻辑
     register() {
+      console.log('开始注册验证');
       const phoneRegex = /^1[3-9]\d{9}$/;
       if (!phoneRegex.test(this.form.phone)) {
+        console.warn('手机号格式不正确');
         uni.showToast({ title: '请输入正确的手机号码', icon: 'none' });
         return;
       }
       if (this.form.password !== this.form.confirmPassword) {
+        console.warn('两次输入的密码不一致');
         uni.showToast({ title: '两次输入的密码不一致', icon: 'none' });
         return;
       }
@@ -71,6 +74,7 @@ export default {
       let registeredUsers = JSON.parse(uni.getStorageSync('registeredUsers') || '[]');
 
       if (registeredUsers?.some(user => user.phone === this.form.phone)) {
+        console.warn('该手机号已注册');
         uni.showToast({ title: '该手机号已注册', icon: 'none' });
         return;
       }
@@ -82,6 +86,7 @@ export default {
       registeredUsers.push(encryptedUser);
 
       uni.setStorageSync('registeredUsers', JSON.stringify(registeredUsers));
+      console.log('注册成功，跳转到登录页面');
 
       uni.reLaunch({
         url: '/pages/login/login'

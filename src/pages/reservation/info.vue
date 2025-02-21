@@ -67,6 +67,7 @@ export default {
       };
     },
     goRoom() {
+      console.log('[房间跳转] 开始处理跳转逻辑', this.reservation);
       try {
         // 统一时间格式处理
         const dateStr = this.reservation.date.replace(/[年月]/g, '-').replace(/日/g, '');
@@ -98,6 +99,13 @@ export default {
           return;
         }
 
+        // 跳转参数日志
+        console.log('[跳转参数]', {
+          roomType: this.reservation.roomType,
+          startTimestamp: startTime.valueOf(),
+          endTimestamp: endTime.valueOf()
+        });
+
         // 跳转参数处理
         this.$router.push({
           path: '/pages/room/room',
@@ -110,6 +118,7 @@ export default {
         });
 
       } catch (error) {
+        console.error('[跳转异常]', error);
         console.error('跳转失败:', {
           error,
           date: this.reservation.date,

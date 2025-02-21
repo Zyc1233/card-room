@@ -52,16 +52,19 @@ export default {
   },
   methods: {
     async loadReservations(loadmore = false) {
+      console.log(`[加载预约] 第${this.currentPage}页 每页${this.pageSize}条`);
       try {
         this.loading = true;
 
         const allData = await getAllReservations();
+        console.log(`[数据加载] 共获取${allData.length}条原始数据`);
+        
         const start = (this.currentPage - 1) * this.pageSize;
         const newData = allData
           .sort((a, b) => b.timestamp - a.timestamp)
           .slice(start, start + this.pageSize)
           .map(reservation => {
-            // 格式化日期和时间
+            console.log('[数据格式化] 处理预约:', reservation);
             return {
               ...reservation,
               date: dayjs(reservation.date).format('YYYY年MM月DD日'),
@@ -76,6 +79,7 @@ export default {
         this.loading = false;
 
       } catch (error) {
+        console.error('[加载异常] 获取预约失败:', error);
         Toast('加载失败，请检查网络');
         this.loading = false;
         throw error;
@@ -98,14 +102,17 @@ export default {
       }
     },
     async cancelReservation(index) {
+      const target = this.reservations[index];
+      console.log('[取消预约] 开始处理:', target);
       const confirm = await this.showConfirmModal('确认取消', '确定要取消该预约吗？');
       if (!confirm) return;
 
       try {
-        await deleteReservation(this.reservations[index].id);
+        await deleteReservation(target.id);
         await this.loadReservations();
         Toast.success('预约已取消');
       } catch (error) {
+        console.error('[取消异常] 取消预约失败:', error);
         Toast.fail('取消预约失败');
       }
     },
@@ -166,6 +173,7 @@ export default {
           duration: 1500
         });
       } catch (error) {
+        console.error('[刷新异常] 刷新失败:', error);
         Toast.fail({
           message: '刷新失败，请重试',
           duration: 2000

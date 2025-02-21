@@ -78,19 +78,25 @@ export default {
       this.showRoomPicker = false;
     },
     calculateFee() {
-      // 加强输入验证
-      if (!this.inputMinutes || isNaN(this.inputMinutes) || this.inputMinutes.trim() === '') {
-        uni.showToast({ title: '请输入有效时间', icon: 'none' });
-        return;
-      }
-
-      const minutes = parseInt(this.inputMinutes);
-      if (minutes < 1) {
-        uni.showToast({ title: '时间需大于0分钟', icon: 'none' });
-        return;
-      }
-
+      console.log('[费用计算] 开始计算', {
+        room: this.selectedRoom,
+        minutes: this.inputMinutes,
+        isVip: this.isVip
+      });
+      
       try {
+        // 加强输入验证
+        if (!this.inputMinutes || isNaN(this.inputMinutes) || this.inputMinutes.trim() === '') {
+          uni.showToast({ title: '请输入有效时间', icon: 'none' });
+          return;
+        }
+
+        const minutes = parseInt(this.inputMinutes);
+        if (minutes < 1) {
+          uni.showToast({ title: '时间需大于0分钟', icon: 'none' });
+          return;
+        }
+
         let total = 0;
         const baseMinutes = Math.max(minutes, 60);
         const hours = Math.floor(baseMinutes / 60);
@@ -125,8 +131,15 @@ export default {
         `;
 
         this.showResult = true;
+
+        // 计费过程日志
+        console.log(`[计费规则] 基础时间:${baseMinutes}分钟 单价:${this.selectedRoom.price}元`);
+        console.log(`[附加费用] 额外分钟:${extraMinutes} 计费段数:${Math.ceil(extraMinutes/30)}`);
+        
+        // 结果生成日志
+        console.log('[计算结果] 最终费用:', total);
       } catch (e) {
-        console.error('计算错误：', e);
+        console.error('[计算异常]', e);
         uni.showToast({ title: '计算出现错误', icon: 'none' });
       }
     }

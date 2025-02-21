@@ -9,7 +9,7 @@
       <van-cell :border="false">
         <template #icon>
           <div class="avatar-section">
-            <img width="160rpx" height="160rpx" :src="userInfo.avatar || 'static/own.png'"
+            <img width="160rpx" height="160rpx" :src="userInfo.avatar || '/static/user.png'"
               @click="showAvatarDialog = true" @error="handleAvatarError" class="avatar-image" />
             <van-button size="mini" class="change-btn" @click="showAvatarDialog = true">更换</van-button>
           </div>
@@ -20,7 +20,6 @@
               <span class="nickname">{{ userInfo.nickname }}</span>
               <van-icon name="edit" size="16px" @click="showNicknameDialog = true" />
             </div>
-            <van-tag v-if="userInfo.isVip" type="warning" mark>VIP会员</van-tag>
           </div>
         </template>
       </van-cell>

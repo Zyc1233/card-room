@@ -209,47 +209,41 @@ export default {
     },
     async login() {
       try {
-        // 添加表单验证日志
-        console.log('开始表单验证');
+        console.log('开始表单验证'); // 添加日志输出
         await this.$refs.uForm.validate();
-        console.log('表单验证通过');
+        console.log('表单验证通过'); // 添加日志输出
 
-        // 添加登录验证日志
-        console.log('开始登录验证');
+        console.log('开始登录验证'); // 添加日志输出
         const validationResult = await this.validateLogin();
-        console.log('登录验证结果:', validationResult);
+        console.log('登录验证结果:', validationResult); // 添加日志输出
 
         if (!validationResult.valid) {
+          console.warn('登录验证失败原因:', validationResult.message); // 添加日志输出
           uni.showToast({
             title: validationResult.message,
             icon: 'none',
             duration: 2000
           });
-          // 添加失败原因日志
-          console.warn('登录验证失败原因:', validationResult.message);
           return;
         }
 
-        // 添加存储操作日志
-        console.log('记住密码状态:', this.rememberPassword);
+        console.log('记住密码状态:', this.rememberPassword); // 添加日志输出
         if (this.rememberPassword) {
-          console.log('正在存储登录信息...');
+          console.log('正在存储登录信息...'); // 添加日志输出
           uni.setStorageSync('lastLoginPhone', this.form.phone);
           uni.setStorageSync('savedPassword', this.form.password);
           uni.setStorageSync('rememberPassword', true);
         }
 
-        // 添加跳转前最后日志
-        console.log('所有验证通过，准备跳转');
+        console.log('所有验证通过，准备跳转'); // 添加日志输出
         uni.reLaunch({
           url: '/pages/reservation/reservation',
-          success: () => console.log('登录跳转成功'),
-          fail: (err) => console.error('登录跳转失败:', err)
+          success: () => console.log('登录跳转成功'), // 添加日志输出
+          fail: (err) => console.error('登录跳转失败:', err) // 添加日志输出
         });
 
       } catch (error) {
-        // 增强错误日志
-        console.error('完整错误信息:', error);
+        console.error('完整错误信息:', error); // 添加日志输出
         uni.showToast({
           title: error.details?.[0]?.message || '登录流程异常',
           icon: 'none',

@@ -214,6 +214,7 @@ export default {
 			});
 		},
 		async submitForm() {
+			console.log('[修改预约] 开始处理ID:', this.editingId);
 			if (!this.roomType) {
 				Toast.fail('请选择房间类型');
 				return;
@@ -232,11 +233,13 @@ export default {
 			};
 
 			try {
-				// 添加完整的时间冲突检查
+				// 冲突检查日志
+				console.log('[修改检查] 检查房间:', this.roomType, '日期:', this.date);
 				const existing = await getReservationsByRoomAndDate(
 					this.roomType,
 					dayjs(this.date).toDate()
 				);
+				console.log(`[冲突检查] 找到${existing.length}条相关预约`);
 
 				const otherReservations = existing.filter(
 					item => item.id !== this.editingId
@@ -248,9 +251,10 @@ export default {
 				}
 
 				await updateReservation(this.editingId, payload);
-				Toast.success('修改成功');
+				console.log('[修改成功] 更新后的数据:', payload);
 				this.$router.replace('/pages/reservation/check?refresh=1');
 			} catch (error) {
+				console.error('[修改异常]', error);
 				Toast.fail(`修改失败: ${error.message}`);
 			}
 		},

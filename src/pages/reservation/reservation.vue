@@ -99,7 +99,7 @@ export default {
   },
   data() {
     return {
-      // 修改轮播图数据结构
+      // 轮播图配置数据
       swiperList: [
         {
           image: '/static/puke.png',
@@ -120,25 +120,7 @@ export default {
       ],
       currentPrice: 0,
 
-      // 表单数据
-      roomType: '',  // 选择的房间类型
-      name: '',             // 预约人姓名
-
-      // 时间选择相关状态
-      startTime: '',        // 格式化后的开始时间
-      endTime: '',          // 格式化后的结束时间
-      startTimeValue: dayjs().format('HH:mm'), // 改为字符串初始值
-      endTimeValue: dayjs().add(1, 'hour').format('HH:mm'), // 改为字符串初始值
-      showStartPicker: false,
-      showEndPicker: false,
-      timeError: '',        // 时间验证错误信息
-
-      // 组件显示控制
-      showDatePicker: false, // 日期选择器显示状态
-      showTimePicker: false, // 时间选择弹窗显示状态
-      showRoomPicker: false, // 房间选择器显示状态
-
-      // 静态数据
+      // 房间类型选项（需要与后台同步）
       roomOptions: [
         { name: '扑克室1' },
         { name: '扑克室2' },
@@ -149,13 +131,27 @@ export default {
         { name: '桌游室1' },
         { name: '桌游室2' }
       ],
-      timeColumns: [
-        Array.from({ length: 24 }, (_, i) => `${i}时`),
-        Array.from({ length: 60 }, (_, i) => `${i}分`)
-      ],
+      // 表单数据
+      roomType: '',  
+      name: '',
+      // 时间相关状态
+      startTime: '',
+      endTime: '',
+      // 日期选择范围（最近7天到未来30天）
       minDate: new Date(dayjs().subtract(7, 'day').format('YYYY-MM-DD')),
       maxDate: new Date(dayjs().add(30, 'day').format('YYYY-MM-DD')),
-      date: new Date(),  // 直接使用Date实例
+      date: new Date(),
+      // 组件显示控制
+      showDatePicker: false, // 日期选择器显示状态
+      showTimePicker: false, // 时间选择弹窗显示状态
+      showRoomPicker: false, // 房间选择器显示状态
+
+      // 时间选择相关状态
+      startTimeValue: dayjs().format('HH:mm'), // 改为字符串初始值
+      endTimeValue: dayjs().add(1, 'hour').format('HH:mm'), // 改为字符串初始值
+      showStartPicker: false,
+      showEndPicker: false,
+      timeError: '',        // 时间验证错误信息
     };
   },
   computed: {
@@ -185,6 +181,12 @@ export default {
   methods: {
     // 表单提交处理
     async submitForm() {
+      console.log('[预约提交] 开始处理表单提交', {
+        user: this.name,
+        room: this.roomType,
+        date: this.date
+      });
+      
       // 统一使用Toast组件提示
       if (!this.roomType) {
         Toast.fail('请选择房间类型');
@@ -255,7 +257,7 @@ export default {
         };
 
         const existing = await getReservationsByRoomAndDate(this.roomType, this.date);
-        console.log('现有预约记录：', existing); // 添加数据库查询日志
+        console.log(`[冲突检查] 找到${existing.length}条现有预约记录`, existing);
         if (checkConflict(existing)) {
           Toast.fail({
             message: '该时间段已被预约',
@@ -274,6 +276,7 @@ export default {
         };
 
         const id = await addReservation(reservation);
+        console.log('[预约成功] 生成预约ID:', id, reservation);
         Toast.success({
           message: '预约提交成功',
           duration: 1500
@@ -292,6 +295,7 @@ export default {
         });
 
       } catch (error) {
+        console.error('[预约异常] 提交失败:', error);
         Toast.fail('预约保存失败');
       } finally {
         Toast.clear();
@@ -400,6 +404,7 @@ export default {
       this.validateTime();
     },
     validateTime() {
+      console.log('[时间验证] 开始时间:', this.startTime, '结束时间:', this.endTime);
       if (!this.startTime || !this.endTime) return;
 
       const start = dayjs(this.startTime, 'HH:mm');

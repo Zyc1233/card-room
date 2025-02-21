@@ -91,12 +91,15 @@ export default {
       });
     },
     resetPassword() {
+      console.log('开始重置密码验证'); // 添加日志输出
       const storedCode = JSON.parse(uni.getStorageSync('verificationCode'));
       if (!storedCode || storedCode.code !== this.verificationCode) {
+        console.warn('验证码错误'); // 添加日志输出
         uni.showToast({ title: '验证码错误', icon: 'none' });
         return;
       }
       if (Date.now() - storedCode.timestamp > 300000) {
+        console.warn('验证码已过期'); // 添加日志输出
         uni.showToast({ title: '验证码已过期', icon: 'none' });
         return;
       }
@@ -105,6 +108,8 @@ export default {
       if (targetUserIndex !== -1) {
         registeredUsers[targetUserIndex].password = btoa(this.newPassword);
         uni.setStorageSync('registeredUsers', JSON.stringify(registeredUsers));
+        console.log('密码重置成功，跳转到登录页面'); // 添加日志输出
+
         uni.reLaunch({
           url: '/pages/login/login'
         });
