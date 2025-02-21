@@ -9,16 +9,25 @@
       <van-cell :border="false">
         <template #icon>
           <div class="avatar-section">
-            <img width="160rpx" height="160rpx" :src="userInfo.avatar || '/static/user.png'"
-              @click="showAvatarDialog = true" @error="handleAvatarError" class="avatar-image" />
-            <van-button size="mini" class="change-btn" @click="showAvatarDialog = true">更换</van-button>
+            <div class="avatar-wrapper">
+              <img :src="userInfo.avatar || '/static/user.png'" 
+                   class="avatar-image"
+                   @click="showAvatarDialog = true"
+                   @error="handleAvatarError"/>
+              <van-tag v-if="userInfo.isVip" type="danger" class="vip-tag">VIP</van-tag>
+            </div>
           </div>
         </template>
         <template #title>
           <div class="user-info">
             <div class="nickname-wrapper">
               <span class="nickname">{{ userInfo.nickname }}</span>
-              <van-icon name="edit" size="16px" @click="showNicknameDialog = true" />
+              <van-icon name="edit" class="edit-icon" @click="showNicknameDialog = true"/>
+            </div>
+            <div class="user-meta">
+              <span class="meta-item">ID: 10086</span>
+              <span class="meta-divider">|</span>
+              <span class="meta-item">注册2年</span>
             </div>
           </div>
         </template>
@@ -272,53 +281,86 @@ export default {
 /* 用户信息卡片样式 */
 .user-card {
   margin-bottom: 32rpx;
-  border-radius: 24rpx;
+  border-radius: 16rpx;
   overflow: hidden;
-  box-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.06);
+  box-shadow: 0 12rpx 24rpx rgba(0, 0, 0, 0.08);
   background: #fff;
-
+  
   .avatar-section {
     position: relative;
     margin-right: 40rpx;
-
-    .avatar-image {
-      width: 160rpx;
-      height: 160rpx;
-      border-radius: 50%;
-      border: 4rpx solid #fff;
-      box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.1);
+    
+    .avatar-wrapper {
+      position: relative;
+      width: 180rpx;
+      height: 180rpx;
+      
+      .avatar-image {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 4rpx solid #fff;
+        box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+        
+        &:active {
+          transform: scale(0.95);
+        }
+      }
+      
+      .vip-tag {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        transform: translate(30%, -30%);
+      }
     }
-
+    
     .change-btn {
+      position: absolute;
       bottom: -16rpx;
-      min-width: 120rpx;
+      right: 0;
+      min-width: 140rpx;
       height: 56rpx;
       font-size: 24rpx;
       border-radius: 40rpx;
+      background: linear-gradient(45deg, #3498db, #67a2e0);
+      color: white;
+      box-shadow: 0 4rpx 12rpx rgba(52, 152, 219, 0.3);
     }
   }
 
   .user-info {
     .nickname-wrapper {
+      display: flex;
+      align-items: center;
       margin-bottom: 16rpx;
-
+      
       .nickname {
-        font-size: 36rpx;
+        font-size: 40rpx;
         font-weight: 600;
         color: #2c3e50;
-        letter-spacing: 0.5rpx;
+        margin-right: 20rpx;
       }
-
-      .van-icon-edit {
+      
+      .edit-icon {
         color: #3498db;
-        margin-left: 16rpx;
+        padding: 8rpx;
+        border-radius: 50%;
+        background: rgba(52, 152, 219, 0.1);
       }
     }
-
-    .van-tag {
-      padding: 8rpx 24rpx;
+    
+    .user-meta {
+      display: flex;
+      align-items: center;
+      color: #7f8c8d;
       font-size: 24rpx;
-      border-radius: 40rpx;
+      
+      .meta-divider {
+        margin: 0 20rpx;
+        color: #ddd;
+      }
     }
   }
 }

@@ -3,8 +3,8 @@
     <!-- 新增操作按钮组 -->
     <view class="right-button-group">
       <van-button round plain icon="back-top" type="primary" size="small" @click="backTop"
-        color="#0055ff">返回顶部</van-button>
-      <van-button round plain icon="replay" type="primary" size="small" @click="refresh">更新</van-button>
+        color="#0055ff"></van-button>
+      <van-button round plain icon="replay" type="primary" size="small" @click="refresh"></van-button>
     </view>
 
     <van-list :loading="loading" :finished="finished" finished-text="没有更多了" @load="loadMore" class="scroll-list">
@@ -169,7 +169,7 @@ export default {
       try {
         await this.loadReservations();
         Toast.success({
-          message: '数据已刷新',
+          message: '刷新成功',
           duration: 1500
         });
       } catch (error) {
@@ -230,7 +230,7 @@ export default {
 .right-button-group {
   position: fixed;
   right: 1px;
-  width: 69px;
+  width: 35px;
   bottom: 100rpx; // 在底部导航上方
   z-index: 1001;
 
