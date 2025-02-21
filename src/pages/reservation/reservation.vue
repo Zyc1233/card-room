@@ -432,7 +432,22 @@ export default {
         theme: 'round-button',
         className: `custom-dialog ${type}-dialog`
       });
-    }
+    },
+    formatReservationTime(date, start, end) {
+      try {
+        const startTime = dayjs(`${date} ${start}`, 'YYYY年MM月DD日 HH:mm');
+        const endTime = dayjs(`${date} ${end}`, 'YYYY年MM月DD日 HH:mm');
+        
+        if (!startTime.isValid() || !endTime.isValid()) {
+          return '时间格式错误';
+        }
+        
+        return `${startTime.format('HH:mm')} - ${endTime.format('HH:mm')}`;
+      } catch (e) {
+        console.error('时间格式化错误:', e);
+        return '时间显示异常';
+      }
+    },
   },
   mounted() {
     // 保留自动轮播功能

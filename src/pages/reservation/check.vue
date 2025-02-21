@@ -126,14 +126,34 @@ export default {
     goToRoom(index) {
       const reservation = this.reservations[index];
       
-      // 使用预约记录中的原始时间
+      // 严格处理日期格式
+      const dateStr = reservation.date.replace(/[年月]/g, '-').replace(/日/g, '');
+      const startTime = dayjs(`${dateStr} ${reservation.startTime}`);
+      const endTime = dayjs(`${dateStr} ${reservation.endTime}`);
+
+      // 有效性检查
+      if (!startTime.isValid() || !endTime.isValid()) {
+        this.showFeedback('预约时间格式错误', 'error');
+        return;
+      }
+
+      // 时间校验
+      const now = dayjs();
+      if (now.isBefore(startTime)) {
+        this.showFeedback('预约未开始，无法进入房间', 'warning');
+        return;
+      }
+      if (now.isAfter(endTime)) {
+        this.showFeedback('预约已结束，无法进入房间', 'warning');
+        return;
+      }
+
       this.$router.push({
         path: '/pages/room/room',
         query: {
           roomType: reservation.roomType,
-          date: reservation.date, // 直接使用已格式化的日期
-          startTime: reservation.startTime,
-          endTime: reservation.endTime,
+          startTimestamp: startTime.valueOf(),
+          endTimestamp: endTime.valueOf(),
           _t: Date.now()
         }
       });

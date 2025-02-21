@@ -97,11 +97,12 @@ export default {
       formattedTime: '',
       timeDiff: 0,
       endTime: 0,
-      currentRoom: this.$route.query.roomType || '未知房间',
+      currentRoom: decodeURIComponent(this.$route.query.roomType) || '未知房间',
       timer: null,
       temperature: 16,
       humidity: 75,
       startTime: 0,
+      timeStatus: { type: 'primary', text: '等待开始' },
     };
   },
   computed: {
@@ -114,77 +115,23 @@ export default {
         day: '2-digit'
       });
     },
-    timeStatus() {
-      const now = Date.now();
-      if (now < this.startTime) {
-        return { type: 'primary', text: '等待开始' };
-      } else if (now <= this.endTime) {
-        return { type: 'success', text: '使用中' };
-      }
-      return { type: 'danger', text: '已结束' };
-    },
     timeFormat() {
       return this.timeStatus.type === 'primary' ? 'HH时mm分ss秒' : 'HH时mm分ss秒';
     },
     reservationTime() {
       try {
-        console.log('[调试] 原始路由参数:', JSON.parse(JSON.stringify(this.$route.query)));
-
-        // 统一日期处理（支持中英文格式）
-        const parseChineseDate = (dateStr) => {
-          return dayjs(dateStr.replace(/[年月]/g, '-').replace(/日/g, ''), 'YYYY-MM-DD');
-        };
-
-        // 统一时间处理（支持无冒号格式）
-        const parseTime = (timeStr) => {
-          // 加强时间清洗逻辑
-          const cleaned = String(timeStr)
-            .replace(/[^0-9]/g, '')    // 移除非数字字符
-            .padStart(4, '0')          // 确保4位数字
-            .slice(0, 4);              // 截取前4位
-          
-          console.log('清洗后的时间:', cleaned); // 添加调试日志
-          
-          // 使用dayjs对象直接设置时间
-          const timeObj = dayjs()
-            .hour(cleaned.slice(0, 2))
-            .minute(cleaned.slice(2, 4))
-            .second(0);
-
-          console.log('解析时间结果:', {
-            input: timeStr,
-            cleaned,
-            formatted: timeObj.format('HH:mm'),
-            valid: timeObj.isValid()
-          });
-
-          return timeObj;
-        };
-
-        // 解析参数
-        const date = parseChineseDate(this.$route.query.date);
-        const start = parseTime(this.$route.query.startTime);
-        const end = parseTime(this.$route.query.endTime);
-
-        console.log('[调试] 解析结果:', {
-          date: date.format(),
-          start: start.format(),
-          end: end.format(),
-          dateValid: date.isValid(),
-          startValid: start.isValid(),
-          endValid: end.isValid()
-        });
-
-        if (!date.isValid() || !start.isValid() || !end.isValid()) {
-          throw new Error('时间参数解析失败');
+        const start = dayjs(parseInt(this.$route.query.startTimestamp));
+        const end = dayjs(parseInt(this.$route.query.endTimestamp));
+        
+        if (!start.isValid() || !end.isValid()) {
+          throw new Error('无效的时间戳');
         }
 
-        // 统一格式输出
-        return `${date.format('YYYY年MM月DD日')} ${start.format('HH:mm')} - ${end.format('HH:mm')}`;
+        return `${start.format('YYYY年MM月DD日 HH:mm')} - ${end.format('HH:mm')}`;
         
       } catch (e) {
-        console.error('时间处理错误:', e);
-        return '时间显示异常';
+        console.error('时间显示异常:', e);
+        return '时间显示异常，请联系管理员';
       }
     }
   },
@@ -192,14 +139,13 @@ export default {
     '$route.query': {
       immediate: true,
       handler() {
-        this.currentRoom = this.$route.query.roomType || '未知房间';
-        this.initCountdown(); // 路由参数变化时重新初始化倒计时
+        this.currentRoom = decodeURIComponent(this.$route.query.roomType) || '未知房间';
+        this.initCountdown();
       }
     }
   },
   mounted() {
     this.initCountdown();
-    this.connectWebSocket();
   },
   beforeDestroy() {
     clearInterval(this.timer); // 清理定时器
@@ -207,67 +153,50 @@ export default {
   methods: {
     initCountdown() {
       try {
-        const decodedDate = decodeURIComponent(this.$route.query.date);
-        const decodedStart = decodeURIComponent(this.$route.query.startTime);
-        const decodedEnd = decodeURIComponent(this.$route.query.endTime);
+        // 获取并解码路由参数
+        const startTimestamp = parseInt(decodeURIComponent(this.$route.query.startTimestamp));
+        const endTimestamp = parseInt(decodeURIComponent(this.$route.query.endTimestamp));
+        const now = dayjs().valueOf();
 
-        // 适配中文日期格式（YYYY年MM月DD日）
-        const dateObj = dayjs(decodedDate, 'YYYY年MM月DD日');
-        
-        // 处理时间格式（支持HH:mm或HH时mm分）
-        const parseTime = (timeStr) => {
-          const [hours, minutes] = timeStr.replace(/[^0-9]/g, ':').split(':');
-          return dateObj.hour(hours).minute(minutes || 0);
-        };
+        // 增强参数验证
+        if (isNaN(startTimestamp) || isNaN(endTimestamp) || startTimestamp >= endTimestamp) {
+          throw new Error('无效的时间参数，请检查预约时间');
+        }
 
-        this.startTime = parseTime(decodedStart);
-        this.endTime = parseTime(decodedEnd);
+        // 时间状态判断
+        if (now < startTimestamp) {
+          this.timeStatus = { type: 'primary', text: '等待开始' };
+          this.timeDiff = startTimestamp - now;
+        } else if (now <= endTimestamp) {
+          this.timeStatus = { type: 'success', text: '使用中' };
+          this.timeDiff = endTimestamp - now;
+        } else {
+          this.timeStatus = { type: 'danger', text: '已结束' };
+          this.timeDiff = 0;
+        }
 
-        // 初始化倒计时
-        this.calculateTimeDiff();
-
-        // 启动定时器
-        this.timer = setInterval(() => {
-          this.calculateTimeDiff();
-        }, 1000);
-
-        console.log('接收的时间参数:', {
-          date: this.$route.query.date,
-          startTime: this.$route.query.startTime,
-          endTime: this.$route.query.endTime
-        });
+        // 启动倒计时
+        this.startCountdown();
 
       } catch (error) {
         console.error('倒计时初始化失败:', error);
-        Toast.fail('时间参数错误，无法启动倒计时');
+        Toast.fail(error.message || '时间参数错误');
+        setTimeout(() => this.exitRoom(), 2000);
       }
     },
-    calculateTimeDiff() {
-      const now = Date.now();
-
-      // 验证时间有效性
-      if (isNaN(this.startTime) || isNaN(this.endTime)) {
-        console.error('无效的时间参数:', {
-          start: this.startTime,
-          end: this.endTime
-        });
-        this.timeDiff = 0;
-        return;
-      }
-
-      if (now < this.startTime) {
-        this.timeDiff = this.startTime - now;
-      } else if (now <= this.endTime) {
-        this.timeDiff = this.endTime - now;
-      } else {
-        this.timeDiff = 0;
-        clearInterval(this.timer);
-      }
-
-      if (this.timeDiff <= 0) {
-        clearInterval(this.timer);
-        this.handleTimeFinish();
-      }
+    startCountdown() {
+      // 清除旧定时器
+      if (this.timer) clearInterval(this.timer);
+      
+      // 每秒更新一次
+      this.timer = setInterval(() => {
+        this.timeDiff -= 1000;
+        
+        if (this.timeDiff <= 0) {
+          clearInterval(this.timer);
+          this.handleTimeFinish();
+        }
+      }, 1000);
     },
     handleTimeFinish() {
       Toast({
@@ -285,18 +214,6 @@ export default {
         .replace(/[^0-9:：]/g, '')  
         .replace(/[：]/g, ':')     
         .replace(/(\d{1,2})(\d{2})$/, '$1:$2');
-    },
-    connectWebSocket() {
-      const ws = new WebSocket('wss://your-api/env');
-      ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-        this.temperature = data.temperature;
-        this.humidity = data.humidity;
-      };
-      ws.onerror = (error) => {
-        console.error('WebSocket错误:', error);
-        Toast('环境状态连接异常');
-      };
     },
   }
 };

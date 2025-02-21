@@ -67,15 +67,57 @@ export default {
       };
     },
     goRoom() {
-      this.$router.push({
-        path: '/pages/room/room',
-        query: {
-          roomType: this.reservation.roomType,
-          date: dayjs(this.reservation.date).format('YYYY年MM月DD日'),
-          startTime: this.reservation.startTime,
-          endTime: this.reservation.endTime
+      try {
+        // 统一时间格式处理
+        const dateStr = this.reservation.date.replace(/[年月]/g, '-').replace(/日/g, '');
+        const timeFormat = 'YYYY-MM-DD HH:mm';
+        
+        // 严格校验时间格式
+        const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
+        if (!timeRegex.test(this.reservation.startTime) || !timeRegex.test(this.reservation.endTime)) {
+          throw new Error('时间格式应为HH:mm（如09:00）');
         }
-      });
+
+        // 构造完整时间对象
+        const startTime = dayjs(`${dateStr} ${this.reservation.startTime}`, timeFormat);
+        const endTime = dayjs(`${dateStr} ${this.reservation.endTime}`, timeFormat);
+        const now = dayjs();
+
+        // 增强有效性检查
+        if (!startTime.isValid()) throw new Error(`开始时间无效：${dateStr} ${this.reservation.startTime}`);
+        if (!endTime.isValid()) throw new Error(`结束时间无效：${dateStr} ${this.reservation.endTime}`);
+        if (startTime.isAfter(endTime)) throw new Error('开始时间不能晚于结束时间');
+
+        // 时间状态检查
+        if (now.isBefore(startTime)) {
+          this.$toast(`预约将于${startTime.format('HH:mm')}开始`);
+          return;
+        }
+        if (now.isAfter(endTime)) {
+          this.$toast(`预约已于${endTime.format('HH:mm')}结束`);
+          return;
+        }
+
+        // 跳转参数处理
+        this.$router.push({
+          path: '/pages/room/room',
+          query: {
+            roomType: encodeURIComponent(this.reservation.roomType),
+            startTimestamp: startTime.valueOf(),
+            endTimestamp: endTime.valueOf(),
+            _t: Date.now()
+          }
+        });
+
+      } catch (error) {
+        console.error('跳转失败:', {
+          error,
+          date: this.reservation.date,
+          start: this.reservation.startTime,
+          end: this.reservation.endTime
+        });
+        this.$toast(error.message || '房间进入失败');
+      }
     },
     async cancel() {
       try {
