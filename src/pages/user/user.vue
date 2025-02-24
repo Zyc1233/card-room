@@ -10,10 +10,8 @@
         <template #icon>
           <div class="avatar-section">
             <div class="avatar-wrapper">
-              <img :src="userInfo.avatar || '/static/user.png'" 
-                   class="avatar-image"
-                   @click="showAvatarDialog = true"
-                   @error="handleAvatarError"/>
+              <img :src="userInfo.avatar || '/static/user.png'" class="avatar-image" @click="showAvatarDialog = true"
+                @error="handleAvatarError" />
               <van-tag v-if="userInfo.isVip" type="danger" class="vip-tag">VIP</van-tag>
             </div>
           </div>
@@ -22,7 +20,7 @@
           <div class="user-info">
             <div class="nickname-wrapper">
               <span class="nickname">{{ userInfo.nickname }}</span>
-              <van-icon name="edit" class="edit-icon" @click="showNicknameDialog = true"/>
+              <van-icon name="edit" class="edit-icon" @click="showNicknameDialog = true" />
             </div>
             <div class="user-meta">
               <span class="meta-item">ID: 10086</span>
@@ -50,7 +48,7 @@
     </van-cell-group>
 
     <!-- 头像选择弹窗 -->
-    <van-popup v-model="showAvatarDialog" position="bottom" round>
+    <van-popup v-model="showAvatarDialog" position="left" round>
       <div class="avatar-popup">
         <van-grid :column-num="3" class="avatar-grid">
           <van-grid-item v-for="(url, index) in avatarUrls" :key="index" @click="selectAvatar(url)">
@@ -69,7 +67,7 @@
     </van-popup>
 
     <!-- 昵称修改弹窗 -->
-    <van-popup v-model="showNicknameDialog" position="bottom" round :close-on-click-overlay="false">
+    <van-popup v-model="showNicknameDialog" position="right" round :close-on-click-overlay="false">
       <div class="nickname-popup">
         <van-field v-model="tempNickname" label="新昵称" placeholder="请输入2-12个字符" maxlength="12" clearable />
         <div class="popup-buttons">
@@ -78,13 +76,8 @@
         </div>
       </div>
     </van-popup>
-	
-	<van-share-sheet
-	  v-model="showShare"
-	  title="立即分享给好友"
-	  :options="options"
-	  @select="onSelect"
-	/>
+
+    <van-share-sheet v-model="showShare" title="立即分享给好友" :options="options" @select="onSelect" />
   </view>
 </template>
 
@@ -94,7 +87,7 @@ import { Toast, Tag, ShareSheet } from 'vant';
 export default {
   components: {
     [Tag.name]: Tag,
-	[ShareSheet.name]: ShareSheet
+    [ShareSheet.name]: ShareSheet
   },
   data() {
     return {
@@ -118,18 +111,18 @@ export default {
       ],
       showShare: false, // 控制分享面板显示
       options: [
-        { 
-          name: '微信', 
+        {
+          name: '微信',
           icon: 'https://img.yzcdn.cn/vant/share-sheet-wechat.png',
-          openType: 'share' 
+          openType: 'share'
         },
-        { 
-          name: '微博', 
+        {
+          name: '微博',
           icon: 'https://img.yzcdn.cn/vant/share-sheet-weibo.png',
           callback: () => Toast('微博分享')
         },
-        { 
-          name: '复制链接', 
+        {
+          name: '复制链接',
           icon: 'link',
           callback: () => {
             uni.setClipboardData({
@@ -138,15 +131,15 @@ export default {
             })
           }
         },
-        { 
-          name: '分享海报', 
+        {
+          name: '分享海报',
           icon: 'https://img.yzcdn.cn/vant/share-sheet-poster.png',
-          callback: this.generatePoster 
+          callback: this.generatePoster
         },
-        { 
-          name: '二维码', 
+        {
+          name: '二维码',
           icon: 'https://img.yzcdn.cn/vant/share-sheet-qrcode.png',
-          callback: this.showQrcode 
+          callback: this.showQrcode
         }
       ],
       selectedAvatar: '',
@@ -354,16 +347,16 @@ export default {
   overflow: hidden;
   box-shadow: 0 12rpx 24rpx rgba(0, 0, 0, 0.08);
   background: var(--card-bg);
-  
+
   .avatar-section {
     position: relative;
     margin-right: 40rpx;
-    
+
     .avatar-wrapper {
       position: relative;
       width: 180rpx;
       height: 180rpx;
-      
+
       .avatar-image {
         width: 100%;
         height: 100%;
@@ -371,12 +364,12 @@ export default {
         border: 4rpx solid #fff;
         box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.1);
         transition: transform 0.3s;
-        
+
         &:active {
           transform: scale(0.95);
         }
       }
-      
+
       .vip-tag {
         position: absolute;
         bottom: 0;
@@ -384,7 +377,7 @@ export default {
         transform: translate(30%, -30%);
       }
     }
-    
+
     .change-btn {
       position: absolute;
       bottom: -16rpx;
@@ -404,14 +397,14 @@ export default {
       display: flex;
       align-items: center;
       margin-bottom: 16rpx;
-      
+
       .nickname {
         font-size: 40rpx;
         font-weight: 600;
         color: var(--text-primary);
         margin-right: 20rpx;
       }
-      
+
       .edit-icon {
         color: #3498db;
         padding: 8rpx;
@@ -419,13 +412,13 @@ export default {
         background: rgba(52, 152, 219, 0.1);
       }
     }
-    
+
     .user-meta {
       display: flex;
       align-items: center;
       color: var(--text-secondary);
       font-size: 24rpx;
-      
+
       .meta-divider {
         margin: 0 20rpx;
         color: #ddd;
@@ -438,15 +431,17 @@ export default {
 .function-card {
   margin: 32rpx 0;
   border-radius: 24rpx;
-  box-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.05);
   background: var(--card-bg);
   border: 1px solid var(--border-color);
 
   .function-grid {
     padding: 20rpx 0;
+	background: var(--background);
 
     ::v-deep .van-grid-item__content {
       padding: 32rpx 0;
+	  background: var(--border-color);
 
       .van-icon {
         font-size: 64rpx;
@@ -527,6 +522,7 @@ export default {
 
   &:not([src]) {
     background: var(--button-hover);
+
     &::after {
       content: "头像加载失败";
       color: var(--text-secondary);
@@ -538,7 +534,7 @@ export default {
   background: var(--primary-color);
   color: var(--text-inverse) !important;
   border-color: var(--primary-color);
-  
+
   &:active {
     filter: brightness(0.8);
   }
@@ -546,11 +542,11 @@ export default {
 
 .user-header {
   background: var(--card-bg);
-  
+
   .avatar {
     border: 2px solid var(--primary-color);
   }
-  
+
   .user-name {
     color: var(--text-primary);
   }
@@ -558,11 +554,11 @@ export default {
 
 .van-cell-group {
   background: transparent;
-  
+
   .van-cell {
     background: var(--card-bg);
     color: var(--text-primary);
-    
+
     &__label {
       color: var(--text-secondary);
     }

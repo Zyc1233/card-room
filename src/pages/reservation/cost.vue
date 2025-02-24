@@ -20,9 +20,9 @@
         <van-field label="使用时间:" v-model="inputMinutes" type="number" placeholder="请输入使用时间（分钟）" />
 
         <!-- VIP选择 -->
-        <van-field label="VIP优惠:">
+        <van-field label="VIP优惠" colon>
           <template #input>
-            <van-checkbox v-model="isVip" shape="round">我是VIP（享受8折优惠）</van-checkbox>
+            <van-checkbox v-model="isVip" shape="round" >我是VIP（享受8折优惠）</van-checkbox>
           </template>
         </van-field>
       </form>
@@ -39,8 +39,6 @@
           关闭
         </van-button>
       </view>
-
-
     </view>
   </view>
 </template>
@@ -233,6 +231,8 @@ export default {
   .van-checkbox__label {
     color: var(--text-primary);
   }
+
+
 
   @keyframes fadeIn {
     from {

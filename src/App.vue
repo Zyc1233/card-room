@@ -139,6 +139,7 @@ body {
 /* 增强输入框可见性 */
 .van-field__control {
   color: var(--text-primary) !important;
+  font-size: var(--font-size) !important;
 }
 
 /* 统一图标颜色 */
@@ -169,6 +170,11 @@ body {
   &--error {
     --van-field-border-color: var(--error-border);
   }
+}
+
+/* 统一图标大小比例 */
+.van-icon {
+  font-size: calc(var(--font-size) * 1.2);
 }
 
 </style>

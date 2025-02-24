@@ -58,7 +58,7 @@
       <!-- 操作按钮 -->
       <div class="button-group">
         <van-button round block type="primary" native-type="submit">立即预约</van-button>
-        <van-button round block plain type="primary" @click="viewReservation">查看预约</van-button>
+        <van-button round block  type="primary" @click="viewReservation">查看预约</van-button>
       </div>
     </van-form>
   </div>
@@ -578,14 +578,4 @@ export default {
   color: var(--placeholder-color) !important;
 }
 
-/* 改为通过Vant主题变量控制 */
-:deep(.van-calendar) {
-  --van-calendar-background: var(--card-bg);
-  --van-calendar-header-title-color: var(--text-primary);
-  --van-calendar-month-title-color: var(--text-primary);
-  --van-calendar-day-color: var(--text);
-  --van-calendar-selected-day-background: var(--primary-color);
-  --van-calendar-selected-day-color: var(--text-inverse);
-  --van-calendar-disabled-day-color: var(--text-secondary);
-}
 </style>

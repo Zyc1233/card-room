@@ -3,7 +3,10 @@
     <!-- 头部 -->
     <div class="header">
       <h1>个性化设置</h1>
-      <van-switch v-model="isDark" size="24px" @change="toggleTheme" />
+      <div class="theme-switch">
+        <span class="switch-label">{{ isDark ? '深色主题' : '浅色主题' }}</span>
+        <van-switch v-model="isDark" size="24px" @change="toggleTheme" />
+      </div>
     </div>
 
     <!-- 主题颜色 -->
@@ -97,14 +100,26 @@
         <van-icon name="success" size="20px" />
         应用设置
       </van-button>
+      <van-button 
+        round 
+        type="danger" 
+        style="margin-top: 12px;"
+        @click="logout"
+      >
+        <van-icon name="clear" size="20px" />
+        退出登录
+      </van-button>
     </div>
   </div>
 </template>
 
 <script>
-import { Toast } from 'vant';
+import { Toast, Dialog } from 'vant';
 
 export default {
+	components:{
+		[Dialog.name] : Dialog
+	},
   data() {
     return {
       isDark: false,
@@ -200,6 +215,29 @@ export default {
     updateFontSize() {
       this.fontSize = this.sizeOptions[this.sliderValue].value
       this.applyGlobalStyles()
+    },
+	async showConfirmModal(title, content) {
+	  try {
+	    await Dialog.confirm({
+	      title,
+	      message: content
+	    });
+	    return true;
+	  } catch (error) {
+	    return false;
+	  }
+	},
+    async logout() {
+      const confirm = await this.showConfirmModal('退出确认', '确定要退出当前账号吗？')
+      if (!confirm) return
+      
+      localStorage.removeItem('userToken')
+      Toast({
+        message: '已退出登录',
+        type: 'success',
+        duration: 1000
+      })
+      this.$router.replace('/pages/login/login')
     }
   },
   mounted() {
@@ -442,6 +480,21 @@ export default {
     padding: 14px;
     font-size: 16px;
     box-shadow: 0 4px 12px rgba(58, 122, 254, 0.3);
+    & + button {
+      margin-top: 12px;
+    }
+  }
+}
+
+.theme-switch {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  
+  .switch-label {
+    color: var(--text-primary);
+    font-size: 14px;
+    margin-right: 8px;
   }
 }
 </style>
