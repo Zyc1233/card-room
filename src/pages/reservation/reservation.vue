@@ -138,8 +138,8 @@ export default {
       startTime: '',
       endTime: '',
       // 日期选择范围（最近7天到未来30天）
-      minDate: new Date(dayjs().subtract(7, 'day').format('YYYY-MM-DD')),
-      maxDate: new Date(dayjs().add(30, 'day').format('YYYY-MM-DD')),
+      minDate: new Date(),
+      maxDate: dayjs().add(3, 'month').toDate(),
       date: new Date(),
       // 组件显示控制
       showDatePicker: false, // 日期选择器显示状态
@@ -176,6 +176,8 @@ export default {
     }
   },
   created() {
+    this.minDate = new Date();
+    this.maxDate = dayjs().add(3, 'month').toDate();
     this.loadReservations(); // 初始化加载预约记录
   },
   methods: {
@@ -554,17 +556,11 @@ export default {
 }
 
 .van-swipe-item {
-  height: 200px;
-  position: relative;
   background: var(--card-bg);
-  border: 1px solid var(--border-color);
+  border-color: var(--border-color);
 }
 
 .swipe-title {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  padding: 8px 16px;
   background: rgba(0, 0, 0, 0.6);
   color: var(--text-inverse);
 }
@@ -572,5 +568,24 @@ export default {
 .van-cell {
   background: var(--card-bg);
   color: var(--text);
+}
+
+.van-button--primary {
+  background: var(--primary-color);
+}
+
+.van-field__control::placeholder {
+  color: var(--placeholder-color) !important;
+}
+
+/* 改为通过Vant主题变量控制 */
+:deep(.van-calendar) {
+  --van-calendar-background: var(--card-bg);
+  --van-calendar-header-title-color: var(--text-primary);
+  --van-calendar-month-title-color: var(--text-primary);
+  --van-calendar-day-color: var(--text);
+  --van-calendar-selected-day-background: var(--primary-color);
+  --van-calendar-selected-day-color: var(--text-inverse);
+  --van-calendar-disabled-day-color: var(--text-secondary);
 }
 </style>

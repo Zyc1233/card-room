@@ -20,7 +20,7 @@
           :class="{ active: activeColor === color }"
           :style="{ backgroundColor: color }"
           @click="selectColor(color)"
-        >
+        > 
           <van-icon v-show="activeColor === color" name="success" color="white" />
         </div>
       </div>
@@ -282,6 +282,7 @@ export default {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 12px;
+  border: 1px solid var(--border-color);
   .color-item {
     width: 44px;
     height: 44px;
@@ -376,7 +377,7 @@ export default {
   .miui-slider-button {
     width: 24px;
     height: 24px;
-    background: #fff;
+    background: var(--primary-color);
     border: 2px solid #007dff;
     border-radius: 50%;
     box-shadow: 0 2px 8px rgba(0, 125, 255, 0.2);

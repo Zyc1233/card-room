@@ -150,10 +150,10 @@ export default {
 <style lang="scss" scoped>
 .container {
   padding: 30rpx;
-  background: #f5f7fa;
+  background: var(--background);
 
   .calculator-card {
-    background: #fff;
+	background: var(--button-hover);
     border-radius: 24rpx;
     padding: 40rpx 30rpx;
     box-shadow: 0 10rpx 30rpx rgba(0, 0, 0, 0.05);
@@ -164,12 +164,12 @@ export default {
     margin-bottom: 30rpx;
     border-radius: 16rpx;
     padding: 24rpx 30rpx;
-    background: #f8f9fa;
+    background: var(--button-hover);
     transition: all 0.3s;
 
     &__label {
       font-weight: 500;
-      color: #606266;
+      color: var(--text);
     }
 
     &:active {
@@ -198,8 +198,10 @@ export default {
 
     .result-text {
       font-size: 28rpx;
-      color: #303133;
+      color: var(--text-primary);
       line-height: 1.6;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
 
       p {
         margin: 15rpx 0;
@@ -229,8 +231,7 @@ export default {
 
   // VIP复选框样式
   .van-checkbox__label {
-    color: #409EFF;
-    font-weight: 500;
+    color: var(--text-primary);
   }
 
   @keyframes fadeIn {
@@ -243,6 +244,14 @@ export default {
       opacity: 1;
       transform: translateY(0) scale(1);
     }
+  }
+
+  .van-picker-column__item {
+    color: var(--text-primary) !important;
+  }
+
+  .van-picker__confirm {
+    color: var(--primary-color) !important;
   }
 }
 </style>

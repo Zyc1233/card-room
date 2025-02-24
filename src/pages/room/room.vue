@@ -240,9 +240,9 @@ export default {
   }
 
   .countdown-text {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    color: var(--text-primary);
+    font-weight: 500;
+    text-shadow: 0 2px 4px var(--shadow-color);
   }
 }
 
@@ -271,8 +271,10 @@ export default {
 
 .info-card {
   background: var(--card-bg);
+  border: 1px solid var(--border-color);
   .info-value {
     color: var(--text-primary);
+    font-weight: 600;
   }
 }
 
@@ -283,7 +285,7 @@ export default {
 
 .card-content {
   font-size: 15px;
-  color: #303133;
+  color: var(--text);
   line-height: 1.7;
 
   .van-row {
@@ -309,10 +311,10 @@ export default {
 
 .device-panel {
   margin-top: 28px;
-  background: white;
+  background: var(--card-bg);
   padding: 8px 16px;
   border-radius: 14px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px var(--shadow-color);
 
   >* {
     margin: 16px 0;
@@ -326,6 +328,10 @@ export default {
   .device-row {
     background: var(--card-bg);
     color: var(--text);
+  }
+
+  .control-label {
+    color: var(--text-secondary);
   }
 }
 
@@ -358,16 +364,12 @@ export default {
   align-items: center;
   gap: 8px;
   transition: all 0.3s ease;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
   
-  // 不同状态下的样式
-  &[data-status="waiting"] .status-tag {
-    background: #1989fa;
-  }
-  &[data-status="using"] .status-tag {
-    background: #07c160;
-  }
-  &[data-status="ended"] .status-tag {
-    background: #ee0a24;
+  .status-tag {
+    background: var(--primary-color);
+    color: var(--text-inverse);
   }
 }
 
@@ -418,8 +420,8 @@ export default {
 
   .info-value {
     font-size: 15px;
-    color: #303133;
-    font-weight: 500;
+    color: var(--text-primary);
+    font-weight: 600;
     white-space: nowrap; // 防止换行
     transition: all 0.3s ease;
     

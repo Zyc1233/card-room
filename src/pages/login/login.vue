@@ -80,6 +80,9 @@
       <text class="register-link" @click="goToRegister">没有账号？立即注册</text>
     </view>
 
+    <div class="error-tip">
+      {{ errorMessage }}
+    </div>
 
   </view>
 </template>
@@ -124,7 +127,8 @@ export default {
             trigger: ['blur', 'change']
           }
         ]
-      }
+      },
+      errorMessage: ''
     }
   },
   methods: {
@@ -219,11 +223,7 @@ export default {
 
         if (!validationResult.valid) {
           console.warn('登录验证失败原因:', validationResult.message); // 添加日志输出
-          uni.showToast({
-            title: validationResult.message,
-            icon: 'none',
-            duration: 2000
-          });
+          this.errorMessage = validationResult.message;
           return;
         }
 
@@ -244,11 +244,7 @@ export default {
 
       } catch (error) {
         console.error('完整错误信息:', error); // 添加日志输出
-        uni.showToast({
-          title: error.details?.[0]?.message || '登录流程异常',
-          icon: 'none',
-          duration: 2000
-        });
+        this.errorMessage = error.details?.[0]?.message || '登录流程异常';
       }
     },
     // 跳转到忘记密码页面
@@ -278,7 +274,7 @@ export default {
 .container {
   min-height: 100vh;
   padding: 40rpx;
-  background: linear-gradient(to bottom, #f6f7f9, #ffffff);
+  background: var(--background);
   /* 渐变背景 */
 }
 
@@ -296,12 +292,14 @@ export default {
   width: 160rpx;
   height: 160rpx;
   margin-bottom: 30rpx;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
 }
 
 /* 标题样式 */
 .title {
   font-size: 48rpx;
-  color: #333;
+  color: var(--text-primary);
   font-weight: bold;
   margin-bottom: 40rpx;
 }
@@ -317,9 +315,9 @@ export default {
 .form-area {
   padding: 20px 0;
   /* 只保留上下内边距 */
-  background: transparent;
+  background: var(--card-bg);
   /* 移除白色背景 */
-  box-shadow: none;
+  box-shadow: 0 4px 12px var(--shadow-color);
   /* 移除阴影 */
   border-radius: 2;
   /* 移除圆角 */
@@ -354,8 +352,8 @@ input {
   font-size: 15px;
   border: none;
   outline: none;
-  background: transparent;
-  color: #333;
+  background: var(--border-color);
+  color: var(--border-color);
   padding: 0 10px;
   /* 增加内边距 */
 }
@@ -391,7 +389,7 @@ input {
   right: 0;
   height: 32px;
   padding: 0 16px;
-  background: #007aff;
+  background: var(--border-color);
   color: white;
   border: none;
   border-radius: 16px;
@@ -470,5 +468,96 @@ input {
   margin-top: 40rpx;
   height: 80rpx;
   font-size: 32rpx;
+  background: var(--primary-color);
+  color: var(--text-inverse);
+  
+  &:active {
+    filter: brightness(0.9);
+  }
+}
+
+.van-radio__label {
+  color: var(--text);
+}
+
+.van-field__control {
+  color: var(--text-primary) !important;
+}
+
+.van-field__left-icon {
+  color: var(--text-secondary);
+}
+
+.error-tip {
+  background: var(--error-bg);
+  color: var(--error-text);
+  border: 1px solid var(--error-border);
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 20px;
+}
+
+/* 在App.vue中定义错误颜色变量 */
+:root {
+  --error-bg: #fee;
+  --error-text: #f56c6c;
+  --error-border: #f56c6c;
+}
+
+.dark-theme {
+  --error-bg: #3a1d1d;
+  --error-text: #ff7875;
+  --error-border: #ff7875;
+}
+
+/* 强制覆盖Vant输入框样式 */
+.van-field {
+  background: var(--card-bg) !important;
+  border-radius: 8px;
+  border: 1px solid var(--border-color) !important;
+  margin: 12px 0;
+  transition: all 0.3s ease;
+
+  &__control {
+    color: var(--text-primary) !important;
+    font-family: var(--font-family);
+    font-size: var(--font-size);
+    
+    &::placeholder {
+      color: var(--text-secondary) !important;
+      font-size: calc(var(--font-size) - 2px);
+    }
+  }
+
+  &__left-icon {
+    margin-right: 8px;
+    .van-icon {
+      color: var(--text-secondary) !important;
+      font-size: 18px;
+    }
+  }
+
+  &--error {
+    border-color: var(--error-border) !important;
+    background: var(--error-bg) !important;
+    
+    .van-field__control {
+      color: var(--error-text) !important;
+    }
+  }
+
+  &:focus-within {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.15);
+  }
+}
+
+/* 在App.vue中定义RGB颜色变量 */
+:root {
+  --primary-color-rgb: 58, 122, 254;
+}
+
+.dark-theme {
+  --primary-color-rgb: 88, 152, 254;
 }
 </style>

@@ -38,17 +38,17 @@ export default {
 
 <style scoped lang="scss">
 .light-control {
-  padding: 10px;
+  padding: 16px;
   margin: 10px 0;
   border-radius: 8px;
-  background-color: #fff;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  background: var(--card-bg);
+  box-shadow: 0 2px 12px var(--shadow-color);
 }
 
 .label-text {
   font-size: 15px;
   font-weight: 500;
-  color: #303133;
+  color: var(--text-primary);
 }
 
 .slider{
@@ -61,7 +61,28 @@ export default {
 
 .value-display {
   font-size: 16px;
-  color: #00b38a;
+  color: var(--primary-color);
   font-weight: 500;
+  filter: brightness(1.2);
+}
+
+// 修改时间输入样式
+[type="number"] {
+  color: var(--text-primary);
+}
+
+.van-slider {
+  --van-slider-inactive-background: var(--border-color);
+  --van-slider-button-background: var(--primary-color);
+  
+  &__bar {
+    background: var(--primary-color);
+  }
+}
+
+.slider {
+  background: var(--button-bg);
+  border-radius: 20px;
+  padding: 8px 12px;
 }
 </style>

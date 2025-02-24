@@ -14,13 +14,15 @@
 				</span>
 			</div>
 			<div class="storageSearchParams">
-				<div v-for="(item, index) in searchHistory" :key="index" class="item" @click="onHistorySearch(item)">{{ item
-					}}
+				<div v-for="(item, index) in searchHistory" :key="index" class="item" @click="onHistorySearch(item)">{{
+					item
+				}}
 				</div>
 			</div>
 		</div>
 		<view class="result-container">
-			<van-cell v-for="item in searchResult" :key="item.id" :title="`${item.roomType} - ${formatChineseDate(item.date)}`"
+			<van-cell v-for="item in searchResult" :key="item.id"
+				:title="`${item.roomType} - ${formatChineseDate(item.date)}`"
 				:label="`${item.startTime}-${item.endTime} | ${item.user}（${item.purpose}）`" />
 			<van-empty v-if="searchResult.length === 0" description="暂无相关预约记录" />
 		</view>
@@ -57,7 +59,7 @@ export default {
 
 			try {
 				this.saveSearchHistory(this.value.trim());
-				
+
 				const results = await searchReservations(this.value);
 				this.searchResult = results.sort((a, b) =>
 					new Date(b.date) - new Date(a.date)
@@ -68,16 +70,16 @@ export default {
 		},
 		saveSearchHistory(value) {
 			let history = JSON.parse(localStorage.getItem('searchHistory') || '[]');
-			
+
 			const index = history.indexOf(value);
 			if (index > -1) {
 				history.splice(index, 1);
 			}
-			
+
 			history.unshift(value);
-			
-			if(history.length > 10) history = history.slice(0,10);
-			
+
+			if (history.length > 10) history = history.slice(0, 10);
+
 			localStorage.setItem('searchHistory', JSON.stringify(history));
 			this.searchHistory = history;
 		},
@@ -108,13 +110,13 @@ export default {
 				if (date instanceof Date) {
 					dateStr = date.toISOString().split('T')[0];
 				}
-				
+
 				// 处理可能存在的非标准分隔符
 				const cleanDate = dateStr.replace(/[^0-9]/g, '');
-				const year = cleanDate.slice(0,4);
-				const month = cleanDate.slice(4,6);
-				const day = cleanDate.slice(6,8);
-				
+				const year = cleanDate.slice(0, 4);
+				const month = cleanDate.slice(4, 6);
+				const day = cleanDate.slice(6, 8);
+
 				return `${year}年${month}月${day}日`;
 			} catch (e) {
 				console.error('日期处理异常:', date);
@@ -132,6 +134,7 @@ export default {
 
 .van-cell__title {
 	font-weight: bold;
+	color: var(--text-primary) !important;
 }
 
 .van-cell__label {
@@ -165,9 +168,27 @@ export default {
 
 .item {
 	padding: 10rpx 20rpx;
-	background: #f7f8fa;
+	background: var(--button-bg);
 	border-radius: 8rpx;
 	font-size: 24rpx;
-	color: #666;
+	color: var(--text-secondary);
+	border: 1px solid var(--border-color);
+}
+
+.van-search {
+	--van-search-background: var(--card-bg);
+	--van-search-label-color: var(--text-primary);
+
+	&__content {
+		background: var(--button-bg);
+	}
+
+	&__action {
+		color: var(--primary-color);
+	}
+}
+
+.van-empty__description {
+	color: var(--text-secondary) !important;
 }
 </style>

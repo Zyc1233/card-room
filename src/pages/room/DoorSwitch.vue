@@ -40,30 +40,43 @@ export default {
   padding: 16px;
   margin: 16px 0;
   border-radius: 12px;
-  background: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  background: var(--card-bg);
+  box-shadow: 0 4px 12px var(--shadow-color);
 
   .label-text {
     font-size: 15px;
     font-weight: 500;
-    color: #303133;
+    color: var(--text-primary);
   }
 
   .state-text {
     font-size: 14px;
     font-weight: 600;
+    color: var(--text-secondary);
 
     &.active {
-      color: #1989fa;
+      color: var(--primary-color);
+      filter: brightness(1.2);
     }
   }
 
   .van-switch {
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    &--on {
+      background: var(--primary-color);
+    }
+    
+    &--off {
+      background: var(--button-bg);
+    }
   }
 }
 
 .text-right {
   text-align: right;
+}
+
+.state-text.inactive {
+  color: var(--text-secondary);
+  opacity: 0.8;
 }
 </style>

@@ -40,21 +40,22 @@ export default {
   padding: 16px;
   margin: 16px 0;
   border-radius: 12px;
-  background: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  background: var(--card-bg);
+  box-shadow: 0 4px 12px var(--shadow-color);
 
   .label-text {
     font-size: 15px;
     font-weight: 500;
-    color: #303133;
+    color: var(--text-primary);
   }
 
   .state-text {
     font-size: 14px;
     font-weight: 600;
+    color: var(--text);
 
     &.active {
-      color: #1989fa;
+      color: var(--primary-color);
     }
   }
 

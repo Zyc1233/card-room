@@ -158,7 +158,7 @@ export default {
     border-left: 3px solid #07c160;
     background: var(--card-bg);
     color: var(--text);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 4px var(--shadow-color);
 
     &::after {
       border: none;

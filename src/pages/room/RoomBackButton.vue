@@ -24,6 +24,11 @@ export default {
 <style scoped>
 .back-button {
   width: 100px;
-
+  background: var(--button-bg);
+  color: var(--text);
+  
+  &:active {
+    background: var(--button-hover);
+  }
 }
 </style>

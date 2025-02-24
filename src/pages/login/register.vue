@@ -27,7 +27,7 @@
         </template>
       </van-field>
 
-      <van-button type="primary" block round @click="register" custom-style="margin-top: 40px">
+      <van-button type="primary" block round @click="register" custom-style="margin-top: 40px" class="register-btn">
         注册
       </van-button>
     </van-form>
@@ -99,24 +99,65 @@ export default {
 <style lang="scss">
 .container {
   padding: 20px;
-  background-color: #f7f8fa;
+  background: var(--background);
 }
 
 .form-area {
-  background: #fff;
+  background: var(--card-bg);
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px var(--shadow-color);
 
   .van-cell {
     padding: 10px 0;
     margin-bottom: 20px;
-    background: #f5f7fa;
+    background: var(--card-bg);
     border-radius: 8px;
+    border: 1px solid var(--border-color);
   }
 
   .van-field__left-icon {
     margin-right: 8px;
   }
+}
+
+.register-btn {
+  background: var(--primary-color);
+  color: var(--text-inverse);
+  
+  &:active {
+    filter: brightness(0.9);
+  }
+}
+
+.protocol-text {
+  color: var(--text-secondary);
+  
+  a {
+    color: var(--primary-color);
+    text-decoration: underline;
+  }
+}
+
+.van-field {
+  border: 1px solid var(--border-color);
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+  
+  &--disabled {
+    opacity: 0.7;
+    background: var(--button-bg);
+  }
+  
+  &__right-icon {
+    color: var(--text-secondary);
+  }
+}
+
+.error-message {
+  background: var(--error-bg);
+  color: var(--error-text);
+  border: 1px solid var(--error-border);
+  transition: all 0.3s ease;
 }
 </style>

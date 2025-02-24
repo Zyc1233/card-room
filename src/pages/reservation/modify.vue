@@ -404,7 +404,7 @@ select:focus {
 .time-label {
 	width: 80px;
 	font-size: 14px;
-	color: #606266;
+	color: var(--text-secondary);
 }
 
 .time-colon {
@@ -459,5 +459,45 @@ select:focus {
 
 .van-button--disabled {
 	background: var(--disabled-bg) !important;
+}
+
+.van-cell {
+	background: var(--card-bg);
+	color: var(--text);
+}
+
+.van-button--primary {
+	background: var(--primary-color);
+}
+
+.time-label {
+	color: var(--text-secondary);
+}
+
+.van-calendar__selected-day {
+	background: var(--primary-color);
+	color: var(--text-inverse) !important;
+}
+
+.van-time-panel {
+	background: var(--card-bg);
+	
+	&__confirm {
+		color: var(--primary-color);
+	}
+}
+
+.van-picker {
+  &-column__item {
+    color: var(--text-primary);
+    
+    &--selected {
+      color: var(--primary-color);
+    }
+  }
+  
+  &-toolbar {
+    background: var(--card-bg);
+  }
 }
 </style>

@@ -21,6 +21,7 @@
 
     <van-toast ref="vanToast"></van-toast>
 
+    <van-pagination v-if="showPagination" :total-items="totalItems" :items-per-page="pageSize" @change="handlePaginationChange" class="van-pagination" />
 
   </view>
 </template>
@@ -46,6 +47,8 @@ export default {
       message: '',
       type: 'success'
     },
+    totalItems: 0,
+    showPagination: false,
   }),
   async created() {
     await this.loadReservations();
@@ -77,6 +80,8 @@ export default {
 
         this.finished = newData.length < this.pageSize;
         this.loading = false;
+        this.totalItems = allData.length;
+        this.showPagination = true;
 
       } catch (error) {
         console.error('[加载异常] 获取预约失败:', error);
@@ -205,6 +210,10 @@ export default {
         });
       }
     },
+    handlePaginationChange(page) {
+      this.currentPage = page;
+      this.loadReservations();
+    },
   },
   watch: {
     '$route'(to, from) {
@@ -274,5 +283,54 @@ export default {
 
 ::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb);
+}
+
+.van-cell {
+  background: var(--card-bg);
+  color: var(--text-primary);
+  
+  &__label {
+    color: var(--text-secondary);
+  }
+
+  &::after {
+    background-color: var(--border-color) !important;
+  }
+}
+
+.van-pagination {
+  &__item {
+    background: var(--card-bg);
+    color: var(--text);
+    
+    &--active {
+      background: var(--primary-color);
+      color: var(--text-inverse);
+    }
+  }
+  
+  &__prev,
+  &__next {
+    background: var(--button-bg);
+  }
+}
+
+.right-button-group .van-button {
+  background: var(--button-bg);
+  border-color: var(--border-color);
+  
+  &:active {
+    background: var(--button-hover);
+  }
+}
+
+.van-dialog {
+  &__confirm {
+    color: var(--primary-color) !important;
+  }
+  
+  &__cancel {
+    color: var(--text-secondary) !important;
+  }
 }
 </style>

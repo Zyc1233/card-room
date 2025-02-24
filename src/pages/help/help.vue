@@ -75,6 +75,16 @@ export default {
 .call-container {
 	padding: 16px;
 	min-height: 100vh;
+	background: var(--background);
+	
+	.van-cell {
+		background: var(--card-bg);
+		color: var(--text-primary);
+		
+		&::after {
+			border-color: var(--border-color);
+		}
+	}
 }
 
 .content {
@@ -90,7 +100,14 @@ export default {
 }
 
 .detail-item {
-	padding: 8px 0;
+	background: var(--card-bg);
+	margin: 8px 0;
+	border-radius: 6px;
+	box-shadow: 0 2px 4px var(--shadow-color);
+	
+	.van-cell__title {
+		color: var(--text-secondary);
+	}
 }
 
 .contact-cell {
@@ -102,18 +119,19 @@ export default {
 .custom-title {
 	font-size: 16px;
 	font-weight: bold;
+	color: var(--text-primary);
 }
 
 .primary-text {
-	color: #1989fa;
+	color: var(--primary-color) !important;
 }
 
 .info-text {
-	color: #969799;
+	color: var(--text-secondary) !important;
 }
 
 .contact {
-	color: #ff976a;
+	color: var(--primary-color);
 	font-size: 14px;
 }
 </style>

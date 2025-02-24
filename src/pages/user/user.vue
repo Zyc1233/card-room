@@ -423,7 +423,7 @@ export default {
     .user-meta {
       display: flex;
       align-items: center;
-      color: #7f8c8d;
+      color: var(--text-secondary);
       font-size: 24rpx;
       
       .meta-divider {
@@ -458,6 +458,10 @@ export default {
         border: none;
       }
     }
+  }
+
+  .van-grid-item__text {
+    color: var(--text);
   }
 }
 
@@ -519,6 +523,49 @@ export default {
   &.selected {
     border: 2px solid #07c160;
     box-shadow: 0 2px 6px rgba(7, 193, 96, 0.3);
+  }
+
+  &:not([src]) {
+    background: var(--button-hover);
+    &::after {
+      content: "头像加载失败";
+      color: var(--text-secondary);
+    }
+  }
+}
+
+.van-button--primary {
+  background: var(--primary-color);
+  color: var(--text-inverse) !important;
+  border-color: var(--primary-color);
+  
+  &:active {
+    filter: brightness(0.8);
+  }
+}
+
+.user-header {
+  background: var(--card-bg);
+  
+  .avatar {
+    border: 2px solid var(--primary-color);
+  }
+  
+  .user-name {
+    color: var(--text-primary);
+  }
+}
+
+.van-cell-group {
+  background: transparent;
+  
+  .van-cell {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    
+    &__label {
+      color: var(--text-secondary);
+    }
   }
 }
 </style>

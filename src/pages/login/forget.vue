@@ -1,7 +1,7 @@
 <template>
   <view class="container">
-    <van-form class="form-area">
-      <van-field v-model="phone" name="phone" placeholder="请输入手机号码" type="tel" maxlength="11"
+    <van-form class="form-area" ref="uForm">
+      <van-field v-model="phone" name="phone" placeholder="请输入手机号码" type="tel" maxlength="11" clearable
         :rules="[{ required: true, message: '请输入手机号码' }]">
         <template #left-icon>
           <van-icon name="phone-o" size="20" color="#999" />
@@ -9,7 +9,7 @@
       </van-field>
 
       <van-field v-model="newPassword" name="newPassword" :type="showPassword ? 'text' : 'password'"
-        placeholder="请输入新密码" :rules="[{ required: true, message: '请输入新密码' }]">
+        placeholder="请输入新密码" clearable :rules="[{ required: true, message: '请输入新密码' }]">
         <template #left-icon>
           <van-icon name="lock" size="20" color="#999" />
         </template>
@@ -19,15 +19,15 @@
       </van-field>
 
       <van-field v-model="verificationCode" name="verificationCode" placeholder="请输入验证码" type="digit" maxlength="6"
-        :rules="[{ required: true, message: '请输入验证码' }]">
+        clearable :rules="[{ required: true, message: '请输入验证码' }]">
         <template #left-icon>
           <van-icon name="comment-o" size="20" color="#999" />
         </template>
         <template #button>
           <van-button size="small" :disabled="counting > 0" @click="getVerificationCode" custom-style="
               width: 120px;
-              background-color: #{counting > 0 ? '#e0e0e0' : '#007aff'};
-              color: #{counting > 0 ? '#999' : 'white'};
+              background: #{counting > 0 ? 'var(--button-bg)' : 'var(--primary-color)'};
+              color: #{counting > 0 ? 'var(--text-secondary)' : 'var(--text-inverse)'};
               border: none;
             ">
             {{ counting > 0 ? `${counting}s` : '获取验证码' }}
@@ -35,7 +35,7 @@
         </template>
       </van-field>
 
-      <van-button type="primary" block round @click="resetPassword" custom-class="reset-btn">
+      <van-button type="primary" block round @click="resetPassword" custom-style="margin-top: 40px" class="action-btn">
         重置密码
       </van-button>
     </van-form>
@@ -43,7 +43,7 @@
 </template>
 
 <script>
-export default {
+export default {  
   data() {
     return {
       phone: '',
@@ -119,20 +119,68 @@ export default {
 }
 </script>
 
-<style>
-.form-area {
+<style lang="scss">
+.container {
   padding: 20px;
-  background: #fff;
-  border-radius: 12px;
+  background: var(--background);
 }
 
-.reset-btn {
-  margin-top: 40px;
-  height: 50px;
-  font-size: 18px;
+.form-area {
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: 12px;  
+  box-shadow: 0 4px 12px var(--shadow-color);
+
+  .van-cell {
+    padding: 16px 0;
+    margin-bottom: 24px;
+    background: var(--card-bg);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+  }
+
+  .van-field__left-icon {
+    margin-right: 8px;
+  }
 }
 
-.van-field__label {
-  width: 80px;
+.action-btn {
+  background: var(--primary-color);
+  color: var(--text-inverse);
+
+  &:active {
+    filter: brightness(0.9);
+  }
+}
+
+.protocol-text {
+  color: var(--text-secondary);
+
+  a {
+    color: var(--primary-color);
+    text-decoration: underline;
+  }
+}
+
+.van-field {
+  border: 1px solid var(--border-color);
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+
+  &--disabled {
+    opacity: 0.7;
+    background: var(--button-bg);
+  }
+
+  &__right-icon {
+    color: var(--text-secondary);
+  }
+}
+
+.error-message {
+  background: var(--error-bg);
+  color: var(--error-text);
+  border: 1px solid var(--error-border);
+  transition: all 0.3s ease;
 }
 </style>
