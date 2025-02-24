@@ -151,12 +151,13 @@ export default {
 <style lang="scss" scoped>
 .info-container {
   padding: 16px;
-  background: #f7f8fa;
+  background: var(--background);
 
   .custom-cell {
     margin: 8px 0;
     border-left: 3px solid #07c160;
-    background: #fff;
+    background: var(--card-bg);
+    color: var(--text);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
     &::after {
@@ -171,6 +172,11 @@ export default {
   .action-btn {
     height: 44px;
     font-size: 16px;
+  }
+
+  .van-button {
+    background: var(--button-bg);
+    color: var(--text);
   }
 }
 

@@ -20,15 +20,35 @@ export const openDB = () => {
         store.createIndex('roomType_date', ['roomType', 'date']);
       } else {
         // 如果对象存储已存在，检查索引是否存在
-        const store = e.target.transaction.objectStore(STORE_NAME);
-        if (!store.indexNames.contains('roomType_date')) {
-          store.createIndex('roomType_date', ['roomType', 'date']);
+        const existingStore = e.target.transaction.objectStore(STORE_NAME);
+        if (!existingStore.indexNames.contains('roomType_date')) {
+          existingStore.createIndex('roomType_date', ['roomType', 'date']);
         }
       }
 
-      // 处理旧版本数据迁移
-      if (e.oldVersion < 1) {
-        // 如果有旧版本需要迁移的数据可以在这里处理
+      // 新增数据迁移逻辑
+      if (e.oldVersion < 2) {
+        console.info('[DB] 开始数据迁移，旧版本:', e.oldVersion);
+        // 确保从事务中获取store引用
+        const transaction = e.target.transaction;
+        const migrationStore = transaction.objectStore(STORE_NAME);
+        
+        const migrateRequest = migrationStore.getAll();
+        
+        migrateRequest.onsuccess = () => {
+          console.info('[DB] 发现需要迁移的记录:', migrateRequest.result.length, '条');
+          migrateRequest.result.forEach((reservation, index) => {
+            if (reservation.date instanceof Date) {
+              console.debug(`[DB] 迁移记录 #${index} ID:${reservation.id} 旧日期:`, reservation.date);
+              const updated = {
+                ...reservation,
+                date: reservation.date.toISOString().split('T')[0]
+              };
+              console.debug(`[DB] 新日期格式:`, updated.date);
+              migrationStore.put(updated);
+            }
+          });
+        };
       }
     };
 
@@ -38,11 +58,18 @@ export const openDB = () => {
 };
 
 export const addReservation = async (reservation) => {
+  console.debug('[DB] 添加预约，原始数据:', reservation);
+  const formattedReservation = {
+    ...reservation,
+    date: new Date(reservation.date).toISOString().split('T')[0]
+  };
+  console.debug('[DB] 格式化后数据:', formattedReservation);
+
   const db = await openDB();
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(STORE_NAME, 'readwrite');
     const store = transaction.objectStore(STORE_NAME);
-    const request = store.add(reservation);
+    const request = store.add(formattedReservation);  // 使用格式化后的数据
 
     request.onsuccess = () => resolve(request.result);
     request.onerror = () => reject(request.error);
@@ -78,7 +105,7 @@ export const getReservationsByRoomAndDate = async (roomType, date) => {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(STORE_NAME, 'readonly');
     const store = transaction.objectStore(STORE_NAME);
-    const index = store.index('roomType_date'); // 需要先创建索引
+    const index = store.index('roomType_date'); 
 
     const range = IDBKeyRange.only([roomType, date]);
     const request = index.getAll(range);
@@ -128,4 +155,55 @@ export const checkDuplicateReservation = async (reservation) => {
     };
     request.onerror = () => reject(request.error);
   });
+};
+// 搜索记录
+export const searchReservations = async (keyword) => {
+  console.debug('[DB] 开始搜索，关键词:', keyword);
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(STORE_NAME, 'readonly');
+    const store = transaction.objectStore(STORE_NAME);
+    const request = store.getAll();
+
+    request.onsuccess = () => {
+      console.debug('[DB] 获取到原始数据:', request.result.length, '条');
+      
+      const results = request.result.filter(item => {
+        console.debug('[DB] 处理记录:', item.id, '原始日期:', item.date, '类型:', typeof item.date);
+        
+        const dateStr = item.date instanceof Date ? 
+          item.date.toISOString().split('T')[0] :
+          String(item.date).split('T')[0];
+        
+        console.debug('[DB] 转换后日期:', dateStr);
+        
+        const match = item.roomType.includes(keyword) || 
+               dateStr.includes(keyword) ||
+               item.user.includes(keyword);
+        
+        console.debug('[DB] 匹配结果:', match ? '符合' : '不符合');
+        return match;
+      });
+
+      console.info('[DB] 最终搜索结果:', results.length, '条');
+      resolve(results);
+    };
+    
+    request.onerror = (e) => {
+      console.error('[DB] 搜索错误:', e.target.error);
+      reject(e.target.error);
+    };
+  });
+};
+
+// 新增日期格式化工具方法
+const formatDateField = (date) => {
+  if (date instanceof Date) {
+    return date.toISOString().split('T')[0];
+  }
+  if (typeof date === 'string') {
+    return date.split('T')[0];
+  }
+  console.error('未知日期格式:', date);
+  return '1970-01-01'; // 默认值
 }; 

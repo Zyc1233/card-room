@@ -480,19 +480,18 @@ export default {
 
 <style scoped>
 .room-reservation {
-  padding: 20rpx 30rpx 120rpx;
+  background: var(--background);
   min-height: 100vh;
-  background: #f5f7f8;
+  padding: 16px;
 }
 
 .form-container {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 16rpx;
   padding: 30rpx;
   margin-top: 40rpx;
   box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.04);
 }
-
 
 .swipe-image {
   height: 200px;
@@ -516,7 +515,7 @@ export default {
   .time-label {
     width: 140r px;
     font-size: 28rpx;
-    color: #333;
+    color: var(--text);
   }
 
   .van-field {
@@ -557,6 +556,8 @@ export default {
 .van-swipe-item {
   height: 200px;
   position: relative;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
 }
 
 .swipe-title {
@@ -565,6 +566,11 @@ export default {
   width: 100%;
   padding: 8px 16px;
   background: rgba(0, 0, 0, 0.6);
-  color: white;
+  color: var(--text-inverse);
+}
+
+.van-cell {
+  background: var(--card-bg);
+  color: var(--text);
 }
 </style>

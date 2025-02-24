@@ -170,13 +170,13 @@ export default {
         await this.loadReservations();
         Toast.success({
           message: '刷新成功',
-          duration: 1500
+          duration: 1000
         });
       } catch (error) {
         console.error('[刷新异常] 刷新失败:', error);
         Toast.fail({
           message: '刷新失败，请重试',
-          duration: 2000
+          duration: 1500
         });
       }
     },
@@ -266,5 +266,13 @@ export default {
   left: 0;
   right: 0;
   z-index: 999;
+}
+
+::-webkit-scrollbar {
+  background: var(--scrollbar-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
 }
 </style>

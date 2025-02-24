@@ -320,18 +320,18 @@ export default {
 
 /* 优化后的样式 */
 .room-reservation {
+	background: var(--background);
 	padding: 20px;
-	background: #f8f9fa;
 	min-height: 100vh;
 }
 
 .form-container {
 	max-width: 600px;
 	margin: 20px auto;
-	padding: 25px;
-	background: white;
-	border-radius: 12px;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	padding: 16px;
+	background: var(--card-bg);
+	border-radius: 8px;
+	box-shadow: 0 2px 12px var(--shadow-color);
 }
 
 .form-group {
@@ -375,9 +375,9 @@ select:focus {
 .submit-button {
 	width: 100%;
 	padding: 14px;
-	background: #00b38a;
-	color: white;
-	border: none;
+	background: var(--primary-color);
+	color: var(--text-inverse);
+	border: 1px solid var(--border-color);
 	border-radius: 8px;
 	font-size: 16px;
 	cursor: pointer;
@@ -391,6 +391,8 @@ select:focus {
 /* 时间选择弹窗样式 */
 .time-picker-content {
 	padding: 15px;
+	background: var(--card-bg);
+	border: 1px solid var(--border-color);
 }
 
 .time-input-container {
@@ -428,9 +430,34 @@ select:focus {
 
 :deep(.van-picker__toolbar) {
 	display: flex !important;
+	background: var(--card-bg);
+	border-bottom: 1px solid var(--border-color);
 }
 
 :deep(.van-picker-column__item) {
 	font-size: 16px !important;
+	color: var(--text);
+}
+
+:deep(.van-picker__confirm) {
+	color: var(--primary-color);
+}
+
+/* 新增全局变量 */
+:root {
+	--shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+.dark-theme {
+	--shadow-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 统一按钮交互效果 */
+.van-button:active {
+	background: var(--button-hover) !important;
+}
+
+.van-button--disabled {
+	background: var(--disabled-bg) !important;
 }
 </style>

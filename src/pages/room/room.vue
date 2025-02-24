@@ -181,7 +181,7 @@ export default {
       } catch (error) {
         console.error('倒计时初始化失败:', error);
         Toast.fail(error.message || '时间参数错误');
-        setTimeout(() => this.exitRoom(), 2000);
+        setTimeout(() => this.exitRoom(), 1000);
       }
     },
     startCountdown() {
@@ -222,7 +222,7 @@ export default {
 <style scoped lang="scss">
 .room-container {
   padding: 16px;
-  background: linear-gradient(180deg, #f7f8fa 0%, #f0f2f5 100%);
+  background: var(--background);
   min-height: 100vh;
 }
 
@@ -269,6 +269,18 @@ export default {
   }
 }
 
+.info-card {
+  background: var(--card-bg);
+  .info-value {
+    color: var(--text-primary);
+  }
+}
+
+.status-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+}
+
 .card-content {
   font-size: 15px;
   color: #303133;
@@ -309,6 +321,11 @@ export default {
     &:active {
       transform: scale(0.98);
     }
+  }
+
+  .device-row {
+    background: var(--card-bg);
+    color: var(--text);
   }
 }
 

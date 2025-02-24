@@ -78,15 +78,23 @@
         </div>
       </div>
     </van-popup>
+	
+	<van-share-sheet
+	  v-model="showShare"
+	  title="立即分享给好友"
+	  :options="options"
+	  @select="onSelect"
+	/>
   </view>
 </template>
 
 <script>
-import { Toast, Tag } from 'vant';
+import { Toast, Tag, ShareSheet } from 'vant';
 
 export default {
   components: {
     [Tag.name]: Tag,
+	[ShareSheet.name]: ShareSheet
   },
   data() {
     return {
@@ -108,6 +116,39 @@ export default {
         '/static/image8.png',
         '/static/image9.png',
       ],
+      showShare: false, // 控制分享面板显示
+      options: [
+        { 
+          name: '微信', 
+          icon: 'https://img.yzcdn.cn/vant/share-sheet-wechat.png',
+          openType: 'share' 
+        },
+        { 
+          name: '微博', 
+          icon: 'https://img.yzcdn.cn/vant/share-sheet-weibo.png',
+          callback: () => Toast('微博分享')
+        },
+        { 
+          name: '复制链接', 
+          icon: 'link',
+          callback: () => {
+            uni.setClipboardData({
+              data: window.location.href,
+              success: () => Toast.success('链接已复制')
+            })
+          }
+        },
+        { 
+          name: '分享海报', 
+          icon: 'https://img.yzcdn.cn/vant/share-sheet-poster.png',
+          callback: this.generatePoster 
+        },
+        { 
+          name: '二维码', 
+          icon: 'https://img.yzcdn.cn/vant/share-sheet-qrcode.png',
+          callback: this.showQrcode 
+        }
+      ],
       selectedAvatar: '',
       // 功能入口配置
       functions: [
@@ -117,8 +158,8 @@ export default {
           handler: this.goToReservation // 路由跳转方法
         },
         {
-          icon: 'clock',
-          title: '记录',
+          icon: 'search',
+          title: '搜索',
           handler: this.goToRecords
         },
         {
@@ -148,6 +189,11 @@ export default {
           icon: 'service',
           name: '帮助中心',
           handler: this.goToHelp
+        },
+        {
+          icon: 'share',
+          name: '分享APP',
+          handler: () => this.showShare = true // 直接触发分享面板
         }
       ]
     };
@@ -158,7 +204,7 @@ export default {
       this.$router.push('/pages/reservation/reservation');
     },
     goToRecords() {
-      this.$router.push('/pages/reservation/check');
+      this.$router.push('/pages/reservation/search');
     },
     goToCoupon() {
       this.$router.push('/pages/reservation/cost');
@@ -252,6 +298,29 @@ export default {
     handleAvatarButtonClick() {
       this.showAvatarDialog = true;
       this.selectedAvatar = this.userInfo.avatar;
+    },
+    // 新增分享处理方法
+    onSelect(option) {
+      this.showShare = false;
+      if (option.callback) {
+        option.callback();
+      }
+    },
+    generatePoster() {
+      Toast.loading({
+        message: '生成中...',
+        forbidClick: true
+      });
+      // 实际项目需实现海报生成逻辑
+      setTimeout(() => {
+        Toast.success('海报已保存到相册');
+      }, 1500);
+    },
+    showQrcode() {
+      uni.previewImage({
+        urls: ['/static/qrcode.png'],
+        current: 0
+      });
     }
   },
   watch: {
@@ -274,7 +343,7 @@ export default {
 /* 页面整体容器样式 */
 .profile-container {
   padding: 20rpx 30rpx;
-  background: linear-gradient(180deg, #f5f7fa 0%, #f0f2f5 100%);
+  background: var(--background);
   min-height: 100vh;
 }
 
@@ -284,7 +353,7 @@ export default {
   border-radius: 16rpx;
   overflow: hidden;
   box-shadow: 0 12rpx 24rpx rgba(0, 0, 0, 0.08);
-  background: #fff;
+  background: var(--card-bg);
   
   .avatar-section {
     position: relative;
@@ -339,7 +408,7 @@ export default {
       .nickname {
         font-size: 40rpx;
         font-weight: 600;
-        color: #2c3e50;
+        color: var(--text-primary);
         margin-right: 20rpx;
       }
       
@@ -370,6 +439,8 @@ export default {
   margin: 32rpx 0;
   border-radius: 24rpx;
   box-shadow: 0 8rpx 40rpx rgba(0, 0, 0, 0.06);
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
 
   .function-grid {
     padding: 20rpx 0;
@@ -399,6 +470,8 @@ export default {
   ::v-deep .van-cell {
     padding: 32rpx;
     transition: all 0.3s;
+    background: var(--card-bg);
+    color: var(--text);
 
     &:active {
       background-color: #f8f9fa;
