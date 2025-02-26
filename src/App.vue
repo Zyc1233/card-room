@@ -10,46 +10,51 @@
 			console.log('App Hide')
 		},
 		mounted() {
-			// 监听主题变化事件
-			window.addEventListener('app-theme-changed', this.applyThemeSettings);
-			
-			// 初始化应用设置
-			const saved = localStorage.getItem('appSettings');
-			if (saved) {
-				const settings = JSON.parse(saved);
-				document.documentElement.style.cssText = `
-					--primary-color: ${settings.color};
-					--font-family: ${settings.font.value};
-					--font-size: ${settings.fontSize}px;
-					
-					/* 新增Vant组件变量 */
-					--van-primary-color: var(--primary-color);
-					--van-font-size-md: var(--font-size);
-					--van-font-family: var(--font-family);
-				`;
-				document.documentElement.classList.toggle('dark-theme', settings.theme === 'dark');
-			}
+			// const isBrowser = typeof window !== 'undefined' && typeof navigator !== 'undefined';
+			// if (isBrowser) {
+			// 	window.addEventListener('app-theme-changed', this.applyThemeSettings);
+				
+			// 	// 初始化应用设置
+			// 	const saved = localStorage.getItem('appSettings');
+			// 	if (saved) {
+			// 		const settings = JSON.parse(saved);
+			// 		document.documentElement.style.cssText = `
+			// 			--primary-color: ${settings.color};
+			// 			--font-family: ${settings.font.value};
+			// 			--font-size: ${settings.fontSize}px;
+						
+			// 			/* 新增Vant组件变量 */
+			// 			--van-primary-color: var(--primary-color);
+			// 			--van-font-size-md: var(--font-size);
+			// 			--van-font-family: var(--font-family);
+			// 		`;
+			// 		document.documentElement.classList.toggle('dark-theme', settings.theme === 'dark');
+			// 	}
+			// }
 		},
 		methods: {
-			applyThemeSettings(event) {
-				const { color, font, fontSize, theme } = event.detail;
-				document.documentElement.style.setProperty('--primary-color', color);
-				document.documentElement.style.setProperty('--font-family', font.value);
-				document.documentElement.style.setProperty('--font-size', `${fontSize}px`);
-				document.documentElement.classList.toggle('dark-theme', theme === 'dark');
-			}
+			// applyThemeSettings(event) {
+			// 	if (typeof document !== 'undefined') {
+			// 		const { color, font, fontSize, theme } = event.detail;
+			// 		document.documentElement.style.setProperty('--primary-color', color);
+			// 		document.documentElement.style.setProperty('--font-family', font.value);
+			// 		document.documentElement.style.setProperty('--font-size', `${fontSize}px`);
+			// 		document.documentElement.classList.toggle('dark-theme', theme === 'dark');
+			// 	}
+			// }
 		}
 	}
 </script>
 
 <style>
+@import 'vant/lib/index.css';
 :root {
   --primary-color: #3a7afe;
   --background: #f5f6fa;
   --card-bg: #ffffff;
   --text: #333;
   --text-primary: #303133;
-  --text-inverse: rgba(255, 255, 255, 0.9);
+  --text-inverse: #fff;
   --border-color: #e4e7ed;
   --shadow-color: rgba(0, 0, 0, 0.1);
   --button-hover: #f0f0f0;

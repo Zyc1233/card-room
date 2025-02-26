@@ -2,32 +2,25 @@ import Vue from 'vue'
 import App from './App'
 import './uni.promisify.adaptor'
 import dayjs from 'dayjs'
-import 'vant/lib/index.css'
-import { Lazyload, Toast } from 'vant'
-import { lightTheme, darkTheme } from './themes'
+import Vant from 'vant'
+import platform from 'platform'
 
-// 使用 Vue.mixin() 添加全局方法
-Vue.mixin({
-  methods: {
-    applyTheme(theme) {
-      for (let key in theme) {
-        document.documentElement.style.setProperty(key, theme[key]);
-      }
-    }
-  }
-});
-
-Vue.config.productionTip = false
 Vue.prototype.$dayjs = dayjs  
-Vue.use(Lazyload);
-Vue.prototype.$toast = Toast;
+Vue.use(Vant)
+Vue.config.productionTip = false
 
 App.mpType = 'app'
 
+// 使用 platform 检测平台
+console.log('Platform:', platform.os.family)
+
+// 全局错误处理
+window.onerror = function (message, source, lineno, colno, error) {
+  console.error('Global error:', message, source, lineno, colno, error);
+  return true; // 阻止默认错误处理
+};
 
 const app = new Vue({
   ...App
 })
 app.$mount()
-Vue.prototype.$applyTheme = Vue.prototype.applyTheme;
-Vue.prototype.$applyTheme(darkTheme);

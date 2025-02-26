@@ -561,8 +561,8 @@ export default {
 }
 
 .swipe-title {
-  background: rgba(0, 0, 0, 0.6);
-  color: var(--text-inverse);
+  background:var(--border-color);
+  color: var(--text);
 }
 
 .van-cell {

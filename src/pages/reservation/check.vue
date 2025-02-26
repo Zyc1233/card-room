@@ -2,8 +2,7 @@
   <view class="container">
     <!-- 新增操作按钮组 -->
     <view class="right-button-group">
-      <van-button round plain icon="back-top" type="primary" size="small" @click="backTop"
-        color="#0055ff"></van-button>
+      <van-button round plain icon="back-top" type="primary" size="small" @click="backTop"color="#0055ff"></van-button>
       <van-button round plain icon="replay" type="primary" size="small" @click="refresh"></van-button>
     </view>
 
@@ -20,8 +19,6 @@
     </van-list>
 
     <van-toast ref="vanToast"></van-toast>
-
-    <van-pagination v-if="showPagination" :total-items="totalItems" :items-per-page="pageSize" @change="handlePaginationChange" class="van-pagination" />
 
   </view>
 </template>
@@ -82,6 +79,16 @@ export default {
         this.loading = false;
         this.totalItems = allData.length;
         this.showPagination = true;
+
+        this.$nextTick(() => {
+          const query = uni.createSelectorQuery().in(this);
+          query.select('.scroll-list').boundingClientRect(data => {
+            if (data) {
+              this.$el.style.setProperty('--total-height', `${data.height}px`);
+              this.$el.style.setProperty('--viewport-height', `${this.$el.clientHeight}px`);
+            }
+          }).exec();
+        });
 
       } catch (error) {
         console.error('[加载异常] 获取预约失败:', error);
@@ -195,24 +202,11 @@ export default {
       }
     },
     backTop() {
-      // 返回顶部功能
-      try {
-        // 微信小程序环境
-        uni.pageScrollTo({
-          scrollTop: 0,
-          duration: 100
-        });
-      } catch (e) {
-        // H5环境
-        window.scrollTo({
-          top: 0,
-          behavior: 'smooth'
-        });
-      }
-    },
-    handlePaginationChange(page) {
-      this.currentPage = page;
-      this.loadReservations();
+      // 统一使用 uni 的滚动方法并立即执行
+      uni.pageScrollTo({
+        scrollTop: 0,
+        duration: 1000  // 将持续时间设为0实现立即滚动
+      });
     },
   },
   watch: {
@@ -278,11 +272,22 @@ export default {
 }
 
 ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
   background: var(--scrollbar-bg);
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb);
+  border-radius: 3px;
+  min-height: 40px; // 设置最小高度保证可操作性
+}
+
+// 新增动态高度样式
+.van-list.scroll-list {
+  &::-webkit-scrollbar-thumb {
+    height: calc(100% * (var(--viewport-height) / var(--total-height)));
+  }
 }
 
 .van-cell {
