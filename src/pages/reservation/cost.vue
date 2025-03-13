@@ -84,19 +84,11 @@
 				@cancel="showRoomPicker = false"
 			></u-picker>
 		</view>
-		<view class="bottom-nav-wrapper">
-		  <BottomNav activeIndex="2" />
-		</view>
 	</view>
 </template>
 
 <script>
-	import BottomNav from '@/pages/BottomNav/BottomNav.vue';
-
 	export default {
-		components: {
-			BottomNav
-		},
 		data() {
 			return {
 				rooms: [

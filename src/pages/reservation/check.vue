@@ -86,21 +86,14 @@
       :custom-style="{right: '20rpx', bottom: '100px'}"
     ></u-back-top>
 
-    <!-- 添加底部导航 -->
-    <view class="bottom-nav-wrapper">
-      <BottomNav activeIndex="1" />
-    </view>
+
   </view>
 </template>
 
 <script>
-import BottomNav from '@/pages/BottomNav/BottomNav.vue';
 import { getAllReservations, deleteReservation } from '@/utils/db';
 
 export default {
-  components: {
-    BottomNav
-  },
   data: () => ({
     reservations: [],
     currentPage: 1,

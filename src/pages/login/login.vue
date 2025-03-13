@@ -258,8 +258,7 @@ export default {
     async validateLogin() {
       try {
         await this.$refs.uForm.validate();
-        // const registeredUsers = JSON.parse(uni.getStorageSync('registeredUsers')) || [];
-        const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+        const registeredUsers = JSON.parse(uni.getStorageSync('registeredUsers')) || [];
         const currentUser = registeredUsers.find(u => u.phone === this.form.phone);
         if (!currentUser) {
           return {
@@ -360,7 +359,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 /* 容器样式 */
 .container {
   min-height: 100vh;

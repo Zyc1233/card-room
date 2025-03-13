@@ -176,18 +176,12 @@
         </view>
       </view>
     </view>
-
-    <bottom-nav></bottom-nav>
   </view>
 </template>
 
 <script>
-import BottomNav from '@/pages/BottomNav/BottomNav.vue';
 
 export default {
-  components: {
-    BottomNav
-  },
   data() {
     return {
       // 用户信息（从本地存储读取）
@@ -234,20 +228,7 @@ export default {
           title: '设置', 
           bgColor: '#909399', 
           handler: this.goToSettings 
-        },
-		{
-		  icon: 'setting', 
-		  title: '设置', 
-		  bgColor: '#909399', 
-		  handler: this.goToSettings 
-		},
-		
-		{
-		  icon: 'setting', 
-		  title: '设置', 
-		  bgColor: '#909399', 
-		  handler: this.goToSettings 
-		}
+        }
       ],
       // 服务列表配置
       services: [
@@ -390,7 +371,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 /* 页面整体容器样式 */
 .profile-container {
   padding: 30rpx; // 使用小程序响应式单位
